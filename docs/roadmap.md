@@ -24,8 +24,8 @@ T7 --> T8["8 Rilis dan portofolio"]
 T8 -.-> T9["9 Sync (fase 2)"]
 ```
 
-- Platform sudah diputuskan: **Android saja**, rilis di Google Play Store (2026-09-19).
-- **Blocker utama saat ini: keputusan stack Android** (Compose atau Views, penyimpanan lokal, min/target SDK). Tahap 2 dan seterusnya bergantung padanya.
+- Platform: **Android saja**, rilis di Google Play Store. Stack: **Kotlin + Jetpack Compose + Room** (2026-09-19).
+- Masih perlu diputuskan: **arah visual** (sebelum desain visual, Tahap 1) dan **detail stack** (modul domain terpisah, min SDK, DI, enkripsi database; sebelum Tahap 2).
 - Tahap 1 (desain) dan Tahap 2 (inti domain) bisa berjalan paralel setelah Tahap 0 selesai.
 - Tahap 9 sengaja opsional: mulai hanya bila ada sinyal kebutuhan dari pengguna nyata.
 
@@ -39,7 +39,7 @@ Menetapkan keputusan yang menentukan arah teknis dan bisnis sebelum kode ditulis
 - [x] Susun breakdown tahap, spesifikasi layar, dan flow UI
 - [x] Pasang tracking Notion, skill `pengembangan-rizqflow`, dan CLAUDE.md repo
 - [x] Putuskan platform: Android saja, rilis di Play Store (2026-09-19)
-- [ ] **Putuskan stack Android** (Urgent)
+- [x] Putuskan stack Android: Kotlin + Jetpack Compose + Room (2026-09-19)
 - [ ] Cek ketersediaan nama (Play Store, domain, GitHub, Google); cadangan: Rizqly
 - [ ] Riset sumber harga emas untuk nisab
 - [ ] Putuskan kalender Hijriyah untuk haul (dan kemungkinan memakai ulang modul hisab Al-Kaukaba)
