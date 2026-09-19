@@ -133,7 +133,7 @@ T -.-> F
 | [ 1 ] [ 2 ] [ 3 ]              |
 | [ 4 ] [ 5 ] [ 6 ]              |
 | [ 7 ] [ 8 ] [ 9 ]              |
-| [ , ] [ 0 ] [ < ]              |
+| [000] [ 0 ] [ < ]              |
 |                                |
 | [ Simpan ]   Simpan + tambah   |
 +--------------------------------+
@@ -141,6 +141,7 @@ T -.-> F
 
 - Tab **Pemasukan**: field Ruang diganti Sumber (Gaji, Usaha, Lainnya) dan Akun tujuan; tombol utama menuju S07, bukan langsung simpan.
 - Ruang default mengikuti ruang dari kategori yang terakhir dipakai.
+- Numpad memakai tombol `000` sebagai ganti koma, karena rupiah tidak memakai desimal.
 - Melewati jatah ruang: banner lembut di atas tombol Simpan, tombol tetap aktif.
 
 ### S07 Pratinjau alokasi
