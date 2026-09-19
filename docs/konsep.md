@@ -41,11 +41,13 @@ Masuk:
 - Aturan alokasi pemasukan ke ruang-ruang (mis. persentase per ruang)
 - Dashboard satu layar: kondisi semua ruang, mana yang belum terpenuhi
 - Modul Memberi: mode zakat/haul Hijriyah **atau** persentase donasi biasa
+- Backup dan restore lokal terenkripsi (wajib: data hanya di perangkat, tanpa backup ganti ponsel berarti kehilangan riwayat)
+- Mode demo dengan data contoh (penilai portofolio bisa mencoba tanpa data keuangan asli)
 
 Sengaja tidak masuk (agar tidak melebar):
 - Sinkronisasi rekening bank
 - Fitur investasi lengkap / portofolio saham
-- Akun pengguna dan sinkronisasi server
+- Akun pengguna dan sinkronisasi server (baru di fase 2, sebagai langganan Sync)
 
 ## Arsitektur (arah)
 
@@ -56,10 +58,31 @@ Sengaja tidak masuk (agar tidak melebar):
 
 ## Draft model data
 
-- **Room** — ruang/peran (nama, jenis, aturan)
+- **Room** — ruang/peran (nama, tipe ruang, target bulanan)
 - **AllocationRule** — cara membagi pemasukan ke ruang (persentase, prioritas)
-- **Transaction** — pemasukan/pengeluaran, terkait ke Room
+- **Account** — dompet/rekening tempat uang berada (bank, dompet digital, tunai), seperti tabel Akun di jurnal Ruang Finansial
+- **Category** — pos pengeluaran/pemasukan di dalam sebuah ruang, seperti tabel Kategori di jurnal Ruang Finansial
+- **Transaction** — pemasukan/pengeluaran/transfer, terkait ke Account, Category, dan Room
+- **AssetProfile** — profil harta yang dihitung zakatnya (emas, tabungan, investasi, piutang, pengurang)
 - **HaulRecord** — pelacakan nisab dan haul (tanggal mulai Hijriyah, nisab saat itu, status)
+
+Semua nominal disimpan sebagai **bilangan bulat dalam satuan terkecil** (value object `Money`), tidak pernah floating point.
+
+## Tipe ruang: arti "hak terpenuhi"
+
+"Terpenuhi" tidak berarti sama untuk semua ruang. Usulan tiga tipe (**perlu dikonfirmasi** sebelum logika status Denah dibuat):
+
+| Tipe ruang | Contoh | Terpenuhi bila |
+|---|---|---|
+| Menunaikan | Memberi | Dana yang tersalurkan mencapai target bulan itu (atau zakat sudah ditunaikan saat haul genap) |
+| Menumbuhkan | Diri (investasi, dana darurat) | Dana yang benar-benar masuk ke akun tujuan mencapai target |
+| Mencukupi | Keluarga (nafkah, kebutuhan) | Kebutuhan bulan itu tertutup dan pengeluaran tidak melebihi jatah |
+
+## Dokumen terkait
+
+- [monetisasi.md](monetisasi.md) — model bisnis Gratis / Pro / Sync
+- [roadmap.md](roadmap.md) — 10 tahap pengerjaan
+- [ui-flow.md](ui-flow.md) — layar S01–S23 dan flow F1–F7
 
 ## Risiko
 
@@ -72,9 +95,17 @@ Sengaja tidak masuk (agar tidak melebar):
 - Nama: **Rizqflow** (akar r-z-q dari "Roziq" = rezeki, ditambah "flow" untuk aliran alokasi). Cadangan: *Rizqly*.
 - Posisi: inti universal + modul Islami opsional.
 - Data: offline-first.
+- Monetisasi: freemium; Pro sekali bayar; Sync sebagai langganan fase 2; tanpa iklan. Detail di [monetisasi.md](monetisasi.md).
+- Keamanan, ekspor data, dan dasar zakat selalu gratis.
 
 ## Keputusan yang masih terbuka
 
-- **Platform:** Android (fondasi dari alkaukabaandroid, cocok dengan offline-first) atau web Laravel (bagian dari roziqrizal.com).
-- **Cek ketersediaan nama:** Play Store, domain, hasil pencarian Google.
+- **Platform:** Android (fondasi dari alkaukabaandroid, cocok dengan offline-first, Play Billing untuk sekali bayar) atau web Laravel (bagian dari roziqrizal.com, tapi butuh payment gateway sendiri). **Ini blocker utama.**
+- **Cek ketersediaan nama:** Play Store, domain, GitHub, hasil pencarian Google.
 - **Sumber harga emas** untuk nisab (API atau input manual).
+- **Kalender Hijriyah untuk haul:** hisab Al-Kaukaba, Umm al-Qura, atau kriteria Kemenag; selisih satu hari memengaruhi tanggal haul.
+- **Asumsi fikih default zakat mal** (nisab 85 gram emas, 2,5%, haul 1 tahun Hijriyah) dan cara menampilkannya beserta disclaimer.
+- **Arti "terpenuhi" per tipe ruang** (lihat bagian Tipe ruang).
+- **Arah visual:** pakai ulang identitas homepage roziqrizal.com atau identitas produk sendiri.
+- **Pengingat haul:** tetap gratis untuk satu profil atau masuk Pro.
+- **Harga final** Pro dan Sync, berdasarkan uji minat.
