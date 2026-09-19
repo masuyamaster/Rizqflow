@@ -1,0 +1,179 @@
+/*
+ * Rizqflow — design tokens (arah visual opsi A: identitas homepage roziqrizal.com)
+ *
+ * - Warna chrome mode terang: disalin dari roziqrizalcom/resources/css/app.css
+ *   (palet Material 3), jadi nama perannya sama dengan Compose ColorScheme.
+ * - Mode gelap: TURUNAN dari palet sage (homepage belum punya mode gelap).
+ *   Perlu dikonfirmasi setelah dilihat.
+ * - Warna identitas ruang dan status: divalidasi dengan validate_palette.js
+ *   (skill dataviz). Hasilnya ada di docs/design/README.md.
+ * - Ukuran teks memakai --rf-scale (mirip sp di Android: teks ikut membesar,
+ *   ukuran elemen tetap seperti dp).
+ *
+ * Peta ke Jetpack Compose: lihat docs/design/README.md.
+ */
+
+:root {
+  color-scheme: light;
+  --rf-scale: 1;
+
+  /* ---- Chrome: Material 3, mode terang (sumber: homepage) ---- */
+  --rf-background: #faf9f7;
+  --rf-on-background: #1b1c1b;
+  --rf-surface: #faf9f7;
+  --rf-on-surface: #1b1c1b;
+  --rf-on-surface-variant: #424845;
+  --rf-surface-container-lowest: #ffffff;
+  --rf-surface-container-low: #f5f3f1;
+  --rf-surface-container: #efeeec;
+  --rf-surface-container-high: #e9e8e6;
+  --rf-surface-container-highest: #e3e2e0;
+  --rf-outline: #727874;
+  --rf-outline-variant: #c2c8c3;
+
+  --rf-primary: #4d6359;
+  --rf-on-primary: #ffffff;
+  --rf-primary-container: #8fa79b;
+  --rf-on-primary-container: #273c33;
+  --rf-primary-fixed: #cfe8db;
+  --rf-inverse-primary: #b3ccbf;
+
+  --rf-secondary: #48626e;
+  --rf-on-secondary: #ffffff;
+  --rf-secondary-container: #cbe7f5;
+  --rf-on-secondary-container: #4e6874;
+
+  --rf-error: #ba1a1a;
+  --rf-on-error: #ffffff;
+  --rf-error-container: #ffdad6;
+  --rf-on-error-container: #93000a;
+
+  --rf-inverse-surface: #30312f;
+  --rf-inverse-on-surface: #f2f0ee;
+
+  /* ---- Data: identitas ruang (kategorikal, slot 1..3, tervalidasi) ---- */
+  --rf-room-1: #3b6fa8; /* ruang ke-1 (Memberi) */
+  --rf-room-2: #c4653a; /* ruang ke-2 (Diri) */
+  --rf-room-3: #2a9a80; /* ruang ke-3 (Keluarga) */
+
+  /* ---- Status (tetap, tidak ikut tema; selalu dipasangkan ikon + teks) ---- */
+  --rf-status-good: #0ca30c;
+  --rf-status-warning: #fab219;
+  --rf-status-serious: #ec835a;
+  --rf-status-critical: #d03b3b;
+
+  /* ---- Tipografi ---- */
+  --rf-font-display: 'Libre Caslon Text', Georgia, 'Times New Roman', serif; /* hanya judul */
+  --rf-font-ui: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif; /* UI dan semua angka */
+  /* Angka besar sudah besar: skalanya dibatasi 1,25x agar tidak pecah di layar sempit */
+  --rf-size-hero: calc(40px * min(var(--rf-scale), 1.25));
+  --rf-size-headline: calc(28px * var(--rf-scale));
+  --rf-size-title: calc(18px * var(--rf-scale));
+  --rf-size-body: calc(14px * var(--rf-scale));
+  --rf-size-label: calc(12px * var(--rf-scale));
+
+  /* ---- Bentuk dan jarak (dp, tidak ikut --rf-scale) ---- */
+  --rf-space-1: 4px;
+  --rf-space-2: 8px;
+  --rf-space-3: 12px;
+  --rf-space-4: 16px;
+  --rf-space-5: 24px;
+  --rf-space-6: 32px;
+  --rf-radius-sm: 8px;
+  --rf-radius-md: 16px;
+  --rf-radius-lg: 20px;
+  --rf-radius-full: 999px;
+  --rf-border: 1px solid var(--rf-outline-variant);
+  --rf-bar-thickness: 16px; /* maksimum 24px */
+  --rf-bar-gap: 2px;
+
+  /* ---- Gerak ---- */
+  --rf-motion-fast: 160ms;
+  --rf-motion-flow: 900ms;
+  --rf-ease: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* ---- Mode gelap (turunan) ---- */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --rf-background: #121412;
+  --rf-on-background: #e3e3e0;
+  --rf-surface: #121412;
+  --rf-on-surface: #e3e3e0;
+  --rf-on-surface-variant: #c2c8c3;
+  --rf-surface-container-lowest: #0d0f0e;
+  --rf-surface-container-low: #1a1c1a;
+  --rf-surface-container: #1e201e;
+  --rf-surface-container-high: #282a28;
+  --rf-surface-container-highest: #333533;
+  --rf-outline: #8c928e;
+  --rf-outline-variant: #424845;
+
+  --rf-primary: #b3ccbf;
+  --rf-on-primary: #1f352b;
+  --rf-primary-container: #354b42;
+  --rf-on-primary-container: #cfe8db;
+  --rf-primary-fixed: #354b42;
+  --rf-inverse-primary: #4d6359;
+
+  --rf-secondary: #afcbd9;
+  --rf-on-secondary: #1b3542;
+  --rf-secondary-container: #314a56;
+  --rf-on-secondary-container: #cbe7f5;
+
+  --rf-error: #ffb4ab;
+  --rf-on-error: #690005;
+  --rf-error-container: #93000a;
+  --rf-on-error-container: #ffdad6;
+
+  --rf-inverse-surface: #e3e3e0;
+  --rf-inverse-on-surface: #30312f;
+
+  --rf-room-1: #4384d0;
+  --rf-room-2: #cf6a3a;
+  --rf-room-3: #22a37a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme='light'])) {
+    color-scheme: dark;
+
+    --rf-background: #121412;
+    --rf-on-background: #e3e3e0;
+    --rf-surface: #121412;
+    --rf-on-surface: #e3e3e0;
+    --rf-on-surface-variant: #c2c8c3;
+    --rf-surface-container-lowest: #0d0f0e;
+    --rf-surface-container-low: #1a1c1a;
+    --rf-surface-container: #1e201e;
+    --rf-surface-container-high: #282a28;
+    --rf-surface-container-highest: #333533;
+    --rf-outline: #8c928e;
+    --rf-outline-variant: #424845;
+
+    --rf-primary: #b3ccbf;
+    --rf-on-primary: #1f352b;
+    --rf-primary-container: #354b42;
+    --rf-on-primary-container: #cfe8db;
+    --rf-primary-fixed: #354b42;
+    --rf-inverse-primary: #4d6359;
+
+    --rf-secondary: #afcbd9;
+    --rf-on-secondary: #1b3542;
+    --rf-secondary-container: #314a56;
+    --rf-on-secondary-container: #cbe7f5;
+
+    --rf-error: #ffb4ab;
+    --rf-on-error: #690005;
+    --rf-error-container: #93000a;
+    --rf-on-error-container: #ffdad6;
+
+    --rf-inverse-surface: #e3e3e0;
+    --rf-inverse-on-surface: #30312f;
+
+    --rf-room-1: #4384d0;
+    --rf-room-2: #cf6a3a;
+    --rf-room-3: #22a37a;
+  }
+}
