@@ -25,7 +25,8 @@ Aplikasi finansial berbasis "hak": rezeki yang masuk dialirkan ke ruang-ruang (M
 - Notion: hub **Rizqflow** di dalam Ruang Finansial, berisi database "🧩 Tahap Rizqflow" (bagian-bagian besar) dan "🚀 Pengembangan Rizqflow" (tugas dan log). Hub: https://app.notion.com/p/3e0edbb47c0b8184a091ddcf591766fd
 - Catat progres lewat skill **`/pengembangan-rizqflow`** (Notion + dokumentasi repo). Detail mapping dan ID database ada di skill itu.
 - Platform: **Android saja**, dirilis di Google Play Store. Stack: **Kotlin + Jetpack Compose + Room** (diputuskan 2026-09-19). Web tidak dibuat.
-- Masih terbuka: **arah visual** dan **detail stack** (modul domain terpisah, min/target SDK, DI, enkripsi database; usulan di `docs/konsep.md`). Jangan memutuskan sendiri; tanyakan dulu.
+- Arah visual: **opsi A**, pakai ulang identitas homepage roziqrizal.com (diputuskan 2026-09-19); warna dan font disimpan sebagai design tokens, angka besar selalu Manrope.
+- Masih terbuka: **detail stack** (modul domain terpisah, min/target SDK, DI, enkripsi database; usulan di `docs/konsep.md`). Jangan memutuskan sendiri; tanyakan dulu.
 
 ## Konvensi
 

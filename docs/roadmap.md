@@ -25,7 +25,8 @@ T8 -.-> T9["9 Sync (fase 2)"]
 ```
 
 - Platform: **Android saja**, rilis di Google Play Store. Stack: **Kotlin + Jetpack Compose + Room** (2026-09-19).
-- Masih perlu diputuskan: **arah visual** (sebelum desain visual, Tahap 1) dan **detail stack** (modul domain terpisah, min SDK, DI, enkripsi database; sebelum Tahap 2).
+- Arah visual: **opsi A**, pakai ulang identitas homepage roziqrizal.com (2026-09-19).
+- Masih perlu diputuskan: **detail stack** (modul domain terpisah, min SDK, DI, enkripsi database; sebelum Tahap 2).
 - Tahap 1 (desain) dan Tahap 2 (inti domain) bisa berjalan paralel setelah Tahap 0 selesai.
 - Tahap 9 sengaja opsional: mulai hanya bila ada sinyal kebutuhan dari pengguna nyata.
 
@@ -50,7 +51,7 @@ Menetapkan keputusan yang menentukan arah teknis dan bisnis sebelum kode ditulis
 
 Spesifikasi teks sudah ada di [ui-flow.md](ui-flow.md); tahap ini mengubahnya menjadi desain visual.
 
-- [ ] Putuskan arah visual (pakai ulang identitas homepage atau baru)
+- [x] Putuskan arah visual: opsi A, pakai ulang identitas homepage (2026-09-19)
 - [ ] Tetapkan design tokens dan komponen dasar
 - [ ] Wireframe seluruh layar MVP (S01–S23)
 - [ ] Hi-fi layar kunci: Denah, Catat + Pratinjau alokasi, Detail ruang, Kartu haul

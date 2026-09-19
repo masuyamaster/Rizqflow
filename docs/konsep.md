@@ -99,6 +99,7 @@ Semua nominal disimpan sebagai **bilangan bulat dalam satuan terkecil** (value o
 - Keamanan, ekspor data, dan dasar zakat selalu gratis.
 - Platform: **Android saja**, dirilis di Google Play Store (2026-09-19). Web tidak dibuat; landing page dan case study tetap di roziqrizal.com. Pembelian lewat Google Play Billing.
 - Stack: **Kotlin + Jetpack Compose + Room** (2026-09-19). Compose dipilih untuk kartu ruang, cincin progres, dan animasi aliran; alkaukabaandroid memakai Views/XML, jadi ada kurva belajar yang diterima.
+- Arah visual: **opsi A**, pakai ulang identitas homepage roziqrizal.com (palet sage Material 3, Manrope, Libre Caslon Text), dengan warna dan font disimpan sebagai design tokens (2026-09-19). Detail di [ui-flow.md](ui-flow.md).
 
 ## Keputusan yang masih terbuka
 
@@ -113,6 +114,5 @@ Semua nominal disimpan sebagai **bilangan bulat dalam satuan terkecil** (value o
 - **Kalender Hijriyah untuk haul:** hisab Al-Kaukaba, Umm al-Qura, atau kriteria Kemenag; selisih satu hari memengaruhi tanggal haul.
 - **Asumsi fikih default zakat mal** (nisab 85 gram emas, 2,5%, haul 1 tahun Hijriyah) dan cara menampilkannya beserta disclaimer.
 - **Arti "terpenuhi" per tipe ruang** (lihat bagian Tipe ruang).
-- **Arah visual:** pakai ulang identitas homepage roziqrizal.com atau identitas produk sendiri.
 - **Pengingat haul:** tetap gratis untuk satu profil atau masuk Pro.
 - **Harga final** Pro dan Sync, berdasarkan uji minat.

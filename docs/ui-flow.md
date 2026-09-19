@@ -370,9 +370,12 @@ Status di Denah bergantung pada **tipe ruang** (Menunaikan, Menumbuhkan, Mencuku
 | Pembelian gagal atau batal | Kembali ke layar asal, tidak ada perubahan data |
 | Mode demo aktif | Penanda jelas di header; data demo tidak tercampur dengan data asli |
 
-## Arah visual (keputusan terbuka)
+## Arah visual (diputuskan: opsi A)
 
-- **Opsi A: pakai ulang identitas homepage** roziqrizal.com (palet sage Material 3, Manrope untuk UI dan angka, Libre Caslon Text untuk judul). Untung: konsisten dengan brand pribadi, palet tenang cocok dengan prinsip tenang-bukan-panik, keputusan lebih sedikit. Rugi: bisa terasa terlalu editorial dan kurang meyakinkan sebagai produk finansial yang berdiri sendiri.
-- **Opsi B: identitas produk sendiri.** Untung: bisa berdiri sendiri saat dimonetisasi. Rugi: lebih banyak keputusan dan risiko tidak selaras dengan situs.
-- Usulan: opsi A untuk versi pertama, dengan semua warna dan font disimpan sebagai design tokens agar mudah diganti.
-- Apa pun pilihannya, status tidak boleh bergantung pada merah/hijau saja.
+**Diputuskan 2026-09-19: opsi A.** Rizqflow memakai ulang identitas homepage roziqrizal.com: palet sage Material 3 (nama peran warnanya sama dengan Material 3, jadi langsung dipetakan ke `ColorScheme` Compose), Manrope untuk UI dan angka, Libre Caslon Text untuk judul layar dan judul bagian. Opsi B (identitas baru) ditolak untuk versi pertama; kalau nanti ingin pindah, cukup mengganti design tokens.
+
+Aturan turunan:
+
+- Semua warna dan font disimpan sebagai **design tokens**, bukan ditulis langsung di layar.
+- **Angka besar selalu Manrope**, bukan serif: hero "Rezeki bulan ini", nilai di cincin progres, dan nominal di kartu. Libre Caslon hanya untuk judul.
+- Status tidak boleh bergantung pada warna saja (apalagi merah/hijau): selalu ikon plus teks.
