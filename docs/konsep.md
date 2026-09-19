@@ -97,10 +97,16 @@ Semua nominal disimpan sebagai **bilangan bulat dalam satuan terkecil** (value o
 - Data: offline-first.
 - Monetisasi: freemium; Pro sekali bayar; Sync sebagai langganan fase 2; tanpa iklan. Detail di [monetisasi.md](monetisasi.md).
 - Keamanan, ekspor data, dan dasar zakat selalu gratis.
+- Platform: **Android saja**, dirilis di Google Play Store (2026-09-19). Web tidak dibuat; landing page dan case study tetap di roziqrizal.com. Pembelian lewat Google Play Billing.
 
 ## Keputusan yang masih terbuka
 
-- **Platform:** Android (fondasi dari alkaukabaandroid, cocok dengan offline-first, Play Billing untuk sekali bayar) atau web Laravel (bagian dari roziqrizal.com, tapi butuh payment gateway sendiri). **Ini blocker utama.**
+- **Stack Android** (**blocker utama** untuk Tahap 2). Usulan, belum diputuskan:
+  - Kotlin + **Jetpack Compose** (Material 3): cocok untuk kartu ruang, cincin progres, dan animasi aliran, dan lebih bernilai di portofolio. Harganya kurva belajar, karena alkaukabaandroid memakai Views/XML dengan ViewBinding.
+  - Penyimpanan lokal: **Room** (SQLite). Backup dienkripsi dengan kata sandi; enkripsi database diputuskan terpisah.
+  - **Modul domain Kotlin murni** (tanpa dependensi Android) untuk alokasi, nisab, dan haul, supaya unit test berjalan cepat di JVM; modul `app` untuk UI. Ikuti `docs/strategi-unit-test.md` di alkaukabaandroid (JUnit + MockK).
+  - Target SDK mengikuti syarat Google Play terbaru; min SDK ditentukan bersama stack.
+  - DI: alkaukabaandroid tanpa framework DI; untuk Rizqflow bisa manual atau Hilt/Koin.
 - **Cek ketersediaan nama:** Play Store, domain, GitHub, hasil pencarian Google.
 - **Sumber harga emas** untuk nisab (API atau input manual).
 - **Kalender Hijriyah untuk haul:** hisab Al-Kaukaba, Umm al-Qura, atau kriteria Kemenag; selisih satu hari memengaruhi tanggal haul.

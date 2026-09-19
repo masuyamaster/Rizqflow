@@ -24,7 +24,8 @@ T7 --> T8["8 Rilis dan portofolio"]
 T8 -.-> T9["9 Sync (fase 2)"]
 ```
 
-- **Blocker utama saat ini: keputusan platform** (Android native atau web). Tahap 2 dan seterusnya bergantung padanya.
+- Platform sudah diputuskan: **Android saja**, rilis di Google Play Store (2026-09-19).
+- **Blocker utama saat ini: keputusan stack Android** (Compose atau Views, penyimpanan lokal, min/target SDK). Tahap 2 dan seterusnya bergantung padanya.
 - Tahap 1 (desain) dan Tahap 2 (inti domain) bisa berjalan paralel setelah Tahap 0 selesai.
 - Tahap 9 sengaja opsional: mulai hanya bila ada sinyal kebutuhan dari pengguna nyata.
 
@@ -37,7 +38,8 @@ Menetapkan keputusan yang menentukan arah teknis dan bisnis sebelum kode ditulis
 - [x] Rumuskan model bisnis freemium ([monetisasi.md](monetisasi.md))
 - [x] Susun breakdown tahap, spesifikasi layar, dan flow UI
 - [x] Pasang tracking Notion, skill `pengembangan-rizqflow`, dan CLAUDE.md repo
-- [ ] **Putuskan platform: Android native atau web** (Urgent)
+- [x] Putuskan platform: Android saja, rilis di Play Store (2026-09-19)
+- [ ] **Putuskan stack Android** (Urgent)
 - [ ] Cek ketersediaan nama (Play Store, domain, GitHub, Google); cadangan: Rizqly
 - [ ] Riset sumber harga emas untuk nisab
 - [ ] Putuskan kalender Hijriyah untuk haul (dan kemungkinan memakai ulang modul hisab Al-Kaukaba)
@@ -67,6 +69,7 @@ Logika bisnis yang benar dan teruji sebelum ada layar.
 - [ ] Kalkulator nisab dan haul Hijriyah
 - [ ] Strategi unit test domain (ikuti `docs/strategi-unit-test.md` di alkaukabaandroid)
 - [ ] Stub lapisan entitlement
+- [ ] Setup proyek Android: modul domain terpisah, unit test, CI dasar
 
 **Selesai bila:** unit test hijau untuk alokasi, nisab, dan haul (termasuk kasus tepi); tidak ada floating point untuk uang; skema penyimpanan punya jalur migrasi.
 
@@ -117,7 +120,7 @@ Pembeda utama produk.
 
 ## Tahap 7 — Monetisasi dan Pro (Backlog)
 
-- [ ] Integrasi pembelian dan pulihkan pembelian
+- [ ] Integrasi pembelian (Google Play Billing) dan pulihkan pembelian
 - [ ] Paywall bottom sheet dan titik penguncian (S21)
 - [ ] Pro: ruang peran tak terbatas dan sistem per peran
 - [ ] Pro: aturan alokasi lanjutan

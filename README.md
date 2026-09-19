@@ -6,7 +6,7 @@ Aplikasi finansial berbasis **hak**: rezeki yang masuk dibagi ke ruang-ruang keh
 
 Inti aplikasinya universal (role-based budgeting). Modul Islami, yaitu tracker zakat mal dengan nisab dan haul kalender Hijriyah, bersifat opsional dan menjadi pembeda utama.
 
-**Status:** tahap perencanaan (belum ada kode). Platform belum diputuskan.
+**Status:** tahap perencanaan (belum ada kode). Platform: Android, dirilis di Google Play Store.
 
 ## Dokumen
 

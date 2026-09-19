@@ -13,6 +13,7 @@ Aplikasi finansial berbasis "hak": rezeki yang masuk dialirkan ke ruang-ruang (M
 
 - **Inti universal, Islami sebagai modul opsional** (zakat/haul). Penamaan internal kode netral (`allocation`, `room`, `giving-module`), bukan istilah Islami.
 - **Uang = bilangan bulat dalam satuan terkecil** (value object `Money`). Tidak pernah floating point.
+- **Android saja**: UI mengikuti konvensi Android (bottom navigation, FAB, bottom sheet, snackbar); pembelian lewat Google Play Billing.
 - **Offline-first**: data lokal. Backup terenkripsi wajib ada.
 - **Semua penguncian fitur lewat satu lapisan entitlement**, tidak ada pengecekan Pro yang tersebar.
 - **Selalu gratis**: keamanan (PIN/biometrik), ekspor data, dan dasar zakat. **Tanpa iklan.**
@@ -23,7 +24,8 @@ Aplikasi finansial berbasis "hak": rezeki yang masuk dialirkan ke ruang-ruang (M
 
 - Notion: hub **Rizqflow** di dalam Ruang Finansial, berisi database "🧩 Tahap Rizqflow" (bagian-bagian besar) dan "🚀 Pengembangan Rizqflow" (tugas dan log). Hub: https://app.notion.com/p/3e0edbb47c0b8184a091ddcf591766fd
 - Catat progres lewat skill **`/pengembangan-rizqflow`** (Notion + dokumentasi repo). Detail mapping dan ID database ada di skill itu.
-- Keputusan terbuka terbesar saat ini: **platform (Android native atau web)**. Selama belum diputuskan, jangan memilih stack sendiri.
+- Platform: **Android saja**, dirilis di Google Play Store (diputuskan 2026-09-19). Web tidak dibuat.
+- Keputusan terbuka terbesar saat ini: **stack Android** (Compose atau Views, penyimpanan lokal, min/target SDK; usulan di `docs/konsep.md`). Selama belum diputuskan, jangan memilih stack sendiri.
 
 ## Konvensi
 

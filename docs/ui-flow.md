@@ -2,7 +2,7 @@
 
 Spesifikasi teks tampilan dan alur pengguna. **Belum desain visual**; ini bahan untuk Tahap 1 (lihat [roadmap.md](roadmap.md)).
 
-- Asumsi: mobile-first (Android). Platform belum diputuskan, tetapi pola di bawah tidak bergantung pada platform.
+- Platform: **Android** (diputuskan 2026-09-19). Pola di bawah mengikuti konvensi Android: bottom navigation, FAB, bottom sheet, snackbar.
 - Semua angka pada wireframe hanya **contoh**, bukan saran keuangan.
 - Kode layar (S01–S23) dan flow (F1–F7) dipakai bersama di Notion dan dokumen ini.
 
