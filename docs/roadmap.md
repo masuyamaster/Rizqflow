@@ -53,7 +53,7 @@ Spesifikasi teks sudah ada di [ui-flow.md](ui-flow.md); tahap ini mengubahnya me
 
 - [x] Putuskan arah visual: opsi A, pakai ulang identitas homepage (2026-09-19)
 - [x] Tetapkan design tokens dan komponen dasar ([design/tokens.css](design/tokens.css))
-- [ ] Wireframe seluruh layar MVP (S01–S23)
+- [ ] Wireframe seluruh layar MVP (S01–S26)
 - [x] Hi-fi layar kunci: Denah, Catat + Pratinjau alokasi, Detail ruang, Kartu haul (prototipe HTML di [design/](design/README.md); menunggu review)
 - [ ] Prototipe klik untuk flow F1–F5 (sebagian: F2, F3, dan F5 jalur ke kartu haul sudah; F1 dan F4 belum)
 - [ ] Uji prototipe dengan data nyata dari Transaksi Harian di Ruang Finansial
