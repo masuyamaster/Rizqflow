@@ -43,11 +43,29 @@ Masuk:
 - Modul Memberi: mode zakat/haul Hijriyah **atau** persentase donasi biasa
 - Backup dan restore lokal terenkripsi (wajib: data hanya di perangkat, tanpa backup ganti ponsel berarti kehilangan riwayat)
 - Mode demo dengan data contoh (penilai portofolio bisa mencoba tanpa data keuangan asli)
+- Kemudahan mencatat: catat kilat dan favorit, pengingat malam, koreksi saldo (lihat bagian Disiplin mencatat)
 
 Sengaja tidak masuk (agar tidak melebar):
 - Sinkronisasi rekening bank
 - Fitur investasi lengkap / portofolio saham
 - Akun pengguna dan sinkronisasi server (baru di fase 2, sebagai langganan Sync)
+
+## Disiplin mencatat
+
+Masalah nyata dari pemilik proyek, dan alasan aplikasi ini layak dipakai sendiri: pengeluaran kecil sering terlewat karena lupa atau malas, baik yang tunai, QRIS, maupun e-wallet. Aplikasi tidak bisa memaksa disiplin. Yang bisa dilakukan adalah membuat mencatat lebih murah daripada lupa, dan membuat yang terlewat mudah dikejar tanpa rasa bersalah.
+
+| Mekanisme | Mengatasi | Layar |
+|---|---|---|
+| **Catat kilat**: pintasan ikon, tile Quick Settings, dan favorit (nominal, kategori, ruang, akun) yang tersimpan dengan satu ketukan | Terlalu banyak langkah | S24 |
+| **Pengingat malam**: satu notifikasi per hari dengan kolom balasan (misalnya `kopi 25000`) dan tindakan "Tidak ada" | Tidak ada pemicu | S26 |
+| **Koreksi saldo**: pengguna memasukkan saldo sebenarnya per akun; selisihnya dicatat sebagai satu baris "Tak terlacak" | Malas membereskan yang bolong | S25 |
+| **Petunjuk hari kosong**: teks lembut bila kemarin belum ada catatan pengeluaran dan belum ditandai "Tidak ada" | Tidak sadar ada yang bolong | S08 |
+
+Karena kasusnya bercampur (tunai, QRIS, e-wallet), tidak ada mekanisme yang boleh bergantung pada satu jenis pembayaran. Koreksi saldo bekerja per akun untuk semua jenis: tunai, e-wallet, dan bank (QRIS memotong saldo akun yang dipakai membayar). Inilah jaring pengaman universalnya.
+
+Sengaja ditunda: menangkap transaksi otomatis dari notifikasi bank atau e-wallet. Cara itu hanya menjangkau yang digital, bukan tunai; izin akses notifikasi sensitif bagi Play Store; dan cakupannya melebar (sinkronisasi rekening bank sudah dikeluarkan dari MVP). Kandidat setelah rilis.
+
+Semua mekanisme mengikuti prinsip "tenang, bukan panik": tanpa streak, tanpa warna merah, dan bisa dimatikan.
 
 ## Arsitektur (arah)
 
@@ -63,6 +81,8 @@ Sengaja tidak masuk (agar tidak melebar):
 - **Account** — dompet/rekening tempat uang berada (bank, dompet digital, tunai), seperti tabel Akun di jurnal Ruang Finansial
 - **Category** — pos pengeluaran/pemasukan di dalam sebuah ruang, seperti tabel Kategori di jurnal Ruang Finansial
 - **Transaction** — pemasukan/pengeluaran/transfer, terkait ke Account, Category, dan Room
+- **QuickEntry** — favorit untuk catat kilat (nama, nominal, Category, Room, Account, urutan pemakaian)
+- **BalanceCheck** — hasil koreksi saldo (Account, saldo menurut catatan, saldo sebenarnya, selisih, Transaction yang dihasilkan bila ada)
 - **AssetProfile** — profil harta yang dihitung zakatnya (emas, tabungan, investasi, piutang, pengurang)
 - **HaulRecord** — pelacakan nisab dan haul (tanggal mulai Hijriyah, nisab saat itu, status)
 
@@ -82,7 +102,7 @@ Semua nominal disimpan sebagai **bilangan bulat dalam satuan terkecil** (value o
 
 - [monetisasi.md](monetisasi.md) — model bisnis Gratis / Pro / Sync
 - [roadmap.md](roadmap.md) — 10 tahap pengerjaan
-- [ui-flow.md](ui-flow.md) — layar S01–S23 dan flow F1–F7
+- [ui-flow.md](ui-flow.md) — layar S01–S26 dan flow F1–F8
 
 ## Risiko
 
@@ -116,3 +136,7 @@ Semua nominal disimpan sebagai **bilangan bulat dalam satuan terkecil** (value o
 - **Arti "terpenuhi" per tipe ruang** (lihat bagian Tipe ruang).
 - **Pengingat haul:** tetap gratis untuk satu profil atau masuk Pro.
 - **Harga final** Pro dan Sync, berdasarkan uji minat.
+- **Widget catat kilat:** gratis atau Pro. `monetisasi.md` menaruh "widget" di Pro, sementara mencatat dengan cepat adalah janji utama. Usulan: pintasan ikon, tile, dan balasan notifikasi gratis; widget bertema tetap Pro.
+- **Ruang untuk selisih Koreksi saldo** (usulan: ruang dari pengeluaran terakhir di akun itu, atau ruang bertipe Mencukupi) dan apakah selisih ikut memengaruhi status ruang.
+- **Pengingat malam:** jam bawaan, aktif sejak awal atau tidak, dan kapan izin notifikasi Android 13+ diminta.
+- **Tangkap otomatis dari notifikasi bank/e-wallet:** dikerjakan setelah rilis atau tidak sama sekali.
