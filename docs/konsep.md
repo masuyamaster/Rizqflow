@@ -99,13 +99,13 @@ Semua nominal disimpan sebagai **bilangan bulat dalam satuan terkecil** (value o
 
 ## Tipe ruang: arti "hak terpenuhi"
 
-"Terpenuhi" tidak berarti sama untuk semua ruang. Usulan tiga tipe (**perlu dikonfirmasi** sebelum logika status Denah dibuat):
+"Terpenuhi" tidak berarti sama untuk semua ruang. Tiga tipe berikut sudah dikonfirmasi (2026-09-20), dengan ambang 85% untuk tipe Mencukupi:
 
 | Tipe ruang | Contoh | Terpenuhi bila |
 |---|---|---|
 | Menunaikan | Memberi | Dana yang tersalurkan mencapai target bulan itu (atau zakat sudah ditunaikan saat haul genap) |
 | Menumbuhkan | Diri (investasi, dana darurat) | Dana yang benar-benar masuk ke akun tujuan mencapai target |
-| Mencukupi | Keluarga (nafkah, kebutuhan) | Kebutuhan bulan itu tertutup dan pengeluaran tidak melebihi jatah |
+| Mencukupi | Keluarga (nafkah, kebutuhan) | Kebutuhan bulan itu tertutup dan pengeluaran tidak melebihi jatah; masuk Perlu perhatian saat pemakaian mencapai 85% jatah atau lebih |
 
 ## Dokumen terkait
 
@@ -119,9 +119,25 @@ Semua nominal disimpan sebagai **bilangan bulat dalam satuan terkecil** (value o
 - **Perbedaan pendapat fikih** soal nisab dan haul. Tulis asumsi yang dipakai secara eksplisit, atau sediakan pilihan.
 - **Data sensitif.** Simpan lokal, jangan kirim ke mana pun tanpa alasan kuat.
 
+## Cek nama (hasil awal, 2026-09-20)
+
+Dicek lewat GitHub API, RDAP domain (dengan domain kontrol), dan pencarian web. Belum menggantikan pengecekan manual di Play Store dan pangkalan merek.
+
+| Yang dicek | Rizqflow | Rizqly (cadangan) |
+|---|---|---|
+| Domain .com | Sudah terdaftar sejak 24 Jul 2026 (Hostinger, DNS parkir); pemiliknya belum diketahui | Sudah terdaftar sejak 14 Feb 2026 (NameCheap) |
+| Domain .app | Belum terdaftar | Sudah terdaftar; situsnya aktif sebagai pelacak pengeluaran pribadi |
+| Domain .id, .co.id, .net | Belum terdaftar | .id belum terdaftar |
+| Nama pengguna atau organisasi GitHub | Bebas | Bebas |
+| Repo GitHub bernama sama | Ada repo orang lain (faz1303/Rizqflow, tanpa deskripsi) | Ada rizqly-app (mumar000) |
+| Pencarian web | Ada rizqflow.tech: perusahaan rekayasa dan AI, bidang berbeda | Ada aplikasi keuangan Rizqly (rizqly.app): **satu kategori dengan Rizqflow** |
+| Google Play | Pencarian "rizqflow" tanpa hasil (perlu diverifikasi langsung di aplikasi Play Store) | Belum dicek langsung |
+
+Kesimpulan awal: **Rizqflow masih layak dipakai**. **Rizqly bukan cadangan yang baik** karena bentrok dengan aplikasi keuangan yang sudah aktif; cari cadangan lain bila perlu. Yang masih perlu dicek manual: pencarian di Play Store, apakah rizqflow.com milik pemilik proyek, dan pangkalan merek DJKI (pdki-indonesia.dgip.go.id). Catatan: package name aplikasi (misalnya com.roziqrizal.rizqflow) harus unik di Play Store, sedangkan judul umumnya boleh sama; tetap hindari nama yang membingungkan.
+
 ## Keputusan yang sudah diambil
 
-- Nama: **Rizqflow** (akar r-z-q dari "Roziq" = rezeki, ditambah "flow" untuk aliran alokasi). Cadangan: *Rizqly*.
+- Nama: **Rizqflow** (akar r-z-q dari "Roziq" = rezeki, ditambah "flow" untuk aliran alokasi). Cadangan: *Rizqly* (lihat Cek nama: bentrok dengan aplikasi keuangan yang sudah ada).
 - Posisi: inti universal + modul Islami opsional.
 - Data: offline-first.
 - Monetisasi: freemium; Pro sekali bayar; Sync sebagai langganan fase 2; tanpa iklan. Detail di [monetisasi.md](monetisasi.md).
@@ -133,6 +149,9 @@ Semua nominal disimpan sebagai **bilangan bulat dalam satuan terkecil** (value o
 - Selisih Koreksi saldo dicatat di **ruang dari pengeluaran terakhir di akun itu** (2026-09-20). Bila akun belum punya pengeluaran, usulannya ruang bertipe Mencukupi. Selisih adalah transaksi biasa, jadi ikut dihitung dalam jatah ruang itu.
 - Pengingat malam **aktif secara bawaan** dan bisa dimatikan (2026-09-20).
 - **Tangkap otomatis dari notifikasi** disetujui: dikerjakan di versi 1.1 setelah rilis, dan masuk **Pro** (2026-09-20).
+- **Asumsi fikih default zakat mal** (2026-09-20): nisab 85 gram emas, tarif 2,5%, haul 1 tahun Hijriyah. Ini **default sementara**: pemilik akan memverifikasinya dengan rujukan kitab, dan bila ada perubahan cukup mengganti konstanta di modul domain. Tetap ditampilkan di layar beserta disclaimer.
+- **Arti "terpenuhi" per tipe ruang** dikonfirmasi (2026-09-20): Menunaikan dan Menumbuhkan terpenuhi saat penggunaan mencapai jatah; Mencukupi masuk Perlu perhatian pada pemakaian 85% jatah atau lebih.
+- **Sumber harga emas** (2026-09-20): versi gratis memakai input manual; harga otomatis lewat API masuk Pro. Riset sumber API dilakukan di Tahap 7.
 
 ## Keputusan yang masih terbuka
 
@@ -142,11 +161,8 @@ Semua nominal disimpan sebagai **bilangan bulat dalam satuan terkecil** (value o
   - DI: alkaukabaandroid tanpa framework DI; untuk Rizqflow bisa manual atau Hilt/Koin.
   - Enkripsi: backup dienkripsi dengan kata sandi; enkripsi database itu sendiri (mis. SQLCipher) diputuskan terpisah.
   - Komponen UI: basis Material 3 atau kustom mengikuti keputusan arah visual.
-- **Cek ketersediaan nama:** Play Store, domain, GitHub, hasil pencarian Google.
-- **Sumber harga emas** untuk nisab (API atau input manual).
+- **Cek ketersediaan nama:** hasil awal sudah ada (lihat Cek nama). Tinggal cek manual di Play Store, kepemilikan rizqflow.com, dan merek DJKI.
 - **Kalender Hijriyah untuk haul:** hisab Al-Kaukaba, Umm al-Qura, atau kriteria Kemenag; selisih satu hari memengaruhi tanggal haul.
-- **Asumsi fikih default zakat mal** (nisab 85 gram emas, 2,5%, haul 1 tahun Hijriyah) dan cara menampilkannya beserta disclaimer.
-- **Arti "terpenuhi" per tipe ruang** (lihat bagian Tipe ruang).
 - **Pengingat haul:** tetap gratis untuk satu profil atau masuk Pro.
 - **Harga final** Pro dan Sync, berdasarkan uji minat.
 - **Pengingat malam:** jam bawaan dan kapan izin notifikasi Android 13+ diminta. Usulan: pukul 21.00, dan izin diminta setelah transaksi pertama disimpan, bukan di awal onboarding.

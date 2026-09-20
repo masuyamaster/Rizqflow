@@ -483,7 +483,7 @@ F -->|"Abaikan"| I["Draf dihapus"]
 
 ## Tipe ruang dan status
 
-Status di Denah bergantung pada **tipe ruang** (Menunaikan, Menumbuhkan, Mencukupi). Definisi dan usulannya ada di [konsep.md](konsep.md); ini keputusan yang perlu dikonfirmasi sebelum logika status dibuat.
+Status di Denah bergantung pada **tipe ruang** (Menunaikan, Menumbuhkan, Mencukupi). Definisi dan ambangnya (85% untuk Mencukupi) sudah dikonfirmasi pada 2026-09-20 dan ada di [konsep.md](konsep.md).
 
 ## State dan kasus tepi
 

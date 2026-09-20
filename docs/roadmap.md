@@ -41,10 +41,10 @@ Menetapkan keputusan yang menentukan arah teknis dan bisnis sebelum kode ditulis
 - [x] Pasang tracking Notion, skill `pengembangan-rizqflow`, dan CLAUDE.md repo
 - [x] Putuskan platform: Android saja, rilis di Play Store (2026-09-19)
 - [x] Putuskan stack Android: Kotlin + Jetpack Compose + Room (2026-09-19)
-- [ ] Cek ketersediaan nama (Play Store, domain, GitHub, Google); cadangan: Rizqly
-- [ ] Riset sumber harga emas untuk nisab
+- [ ] Cek ketersediaan nama (Play Store, domain, GitHub, Google). Hasil awal 2026-09-20 di [konsep.md](konsep.md): Rizqflow layak, Rizqly bukan cadangan yang baik; tinggal cek manual Play Store, kepemilikan rizqflow.com, dan merek DJKI
+- [x] Putuskan sumber harga emas: input manual (gratis), otomatis lewat API (Pro); riset API dilakukan di Tahap 7 (2026-09-20)
 - [ ] Putuskan kalender Hijriyah untuk haul (dan kemungkinan memakai ulang modul hisab Al-Kaukaba)
-- [ ] Tetapkan asumsi fikih default zakat mal
+- [x] Tetapkan asumsi fikih default zakat mal: 85 g emas, 2,5%, haul 1 tahun Hijriyah (2026-09-20); default sementara, menunggu verifikasi kitab oleh pemilik
 - [ ] Validasi minat lewat landing page dan daftar tunggu
 
 ## Tahap 1 — Desain UI/UX (Planning)
@@ -65,7 +65,7 @@ Logika bisnis yang benar dan teruji sebelum ada layar.
 - [ ] Rancang model data dan skema penyimpanan lokal
 - [ ] Value object Money (bilangan bulat) dan aturan pembulatan alokasi
 - [ ] Rule engine alokasi persentase
-- [ ] Definisikan arti "terpenuhi" per tipe ruang (lihat [konsep.md](konsep.md))
+- [x] Definisikan arti "terpenuhi" per tipe ruang, ambang 85% untuk Mencukupi (2026-09-20, lihat [konsep.md](konsep.md))
 - [ ] Strategi modul Memberi: `zakat-haul-hijri` dan `percentage`
 - [ ] Kalkulator nisab dan haul Hijriyah
 - [ ] Strategi unit test domain (ikuti `docs/strategi-unit-test.md` di alkaukabaandroid)
