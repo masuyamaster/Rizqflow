@@ -84,6 +84,8 @@ Semua mekanisme mengikuti prinsip "tenang, bukan panik": tanpa streak, tanpa war
 
 ## Draft model data
 
+Draf awal di bawah sudah dirinci menjadi rancangan lengkap dan skema Room di [model-data.md](model-data.md); bila berbeda, model-data.md yang berlaku.
+
 - **Room** — ruang/peran (nama, tipe ruang, target bulanan)
 - **AllocationRule** — cara membagi pemasukan ke ruang (persentase, prioritas)
 - **Account** — dompet/rekening tempat uang berada (bank, dompet digital, tunai), seperti tabel Akun di jurnal Ruang Finansial
@@ -150,6 +152,8 @@ Kesimpulan awal: **Rizqflow masih layak dipakai**. **Rizqly bukan cadangan yang 
 - Pengingat malam **aktif secara bawaan** dan bisa dimatikan (2026-09-20).
 - **Tangkap otomatis dari notifikasi** disetujui: dikerjakan di versi 1.1 setelah rilis, dan masuk **Pro** (2026-09-20).
 - **Asumsi fikih default zakat mal** (2026-09-20): nisab 85 gram emas, tarif 2,5%, haul 1 tahun Hijriyah. Ini **default sementara**: pemilik akan memverifikasinya dengan rujukan kitab, dan bila ada perubahan cukup mengganti konstanta di modul domain. Tetap ditampilkan di layar beserta disclaimer.
+- **Aturan pembulatan alokasi: metode sisa terbesar** (2026-09-21). Tiap ruang menerima bagian yang dibulatkan ke bawah; sisa rupiah dibagikan satu-satu ke ruang dengan pecahan terbesar, dan urutan prioritas ruang memutus seri. Jumlah bagian selalu persis nominal (contoh: Rp 1.234.567 dengan 10/50/40% menjadi 123.457, 617.283, 493.827). Persentase disimpan sebagai basis point supaya 2,5% tetap eksak. Sudah diimplementasikan dan diuji di `AllocationEngine`.
+- **Kalender Hijriyah untuk haul: Umm al-Qura** (2026-09-21), lewat `HijrahChronology` bawaan Java di balik antarmuka `HijriCalendar`. Berbasis tabel, deterministik, dan tanpa internet. Bisa berbeda satu hari dari penetapan Kemenag, jadi tanggal Hijriyah tampil sebagai perkiraan; kalender lain (Kemenag, hisab Al-Kaukaba) tinggal menukar implementasi.
 - **Arti "terpenuhi" per tipe ruang** dikonfirmasi (2026-09-20): Menunaikan dan Menumbuhkan terpenuhi saat penggunaan mencapai jatah; Mencukupi masuk Perlu perhatian pada pemakaian 85% jatah atau lebih.
 - **Sumber harga emas** (2026-09-20): versi gratis memakai input manual; harga otomatis lewat API masuk Pro. Riset sumber API dilakukan di Tahap 7.
 - **Detail stack Android** disetujui pemilik (2026-09-20):
@@ -165,7 +169,7 @@ Kesimpulan awal: **Rizqflow masih layak dipakai**. **Rizqly bukan cadangan yang 
 ## Keputusan yang masih terbuka
 
 - **Cek ketersediaan nama:** hasil awal sudah ada (lihat Cek nama). Tinggal cek manual di Play Store dan merek DJKI, serta memutuskan apakah perlu domain sendiri (rizqflow.com dipegang pihak lain; .app dan .id bebas).
-- **Kalender Hijriyah untuk haul:** hisab Al-Kaukaba, Umm al-Qura, atau kriteria Kemenag; selisih satu hari memengaruhi tanggal haul.
+- **Haul saat harta turun di bawah nisab di tengah tahun:** terputus lalu mulai dari nol (bawaan sementara), atau hanya diperiksa di awal dan akhir haul (pendapat lain). Keduanya sudah ada sebagai `HaulBreakPolicy`; menunggu verifikasi kitab oleh pemilik.
 - **Pengingat haul:** tetap gratis untuk satu profil atau masuk Pro.
 - **Harga final** Pro dan Sync, berdasarkan uji minat.
 - **Pengingat malam:** jam bawaan dan kapan izin notifikasi Android 13+ diminta. Usulan: pukul 21.00, dan izin diminta setelah transaksi pertama disimpan, bukan di awal onboarding.

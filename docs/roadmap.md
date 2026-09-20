@@ -44,7 +44,7 @@ Menetapkan keputusan yang menentukan arah teknis dan bisnis sebelum kode ditulis
 - [x] Setujui detail stack Android: modul, min SDK 26, DI manual, enkripsi (2026-09-20)
 - [ ] Cek ketersediaan nama (Play Store, domain, GitHub, Google). Hasil awal 2026-09-20 di [konsep.md](konsep.md): Rizqflow layak, Rizqly bukan cadangan yang baik; tinggal cek manual Play Store, kepemilikan rizqflow.com, dan merek DJKI
 - [x] Putuskan sumber harga emas: input manual (gratis), otomatis lewat API (Pro); riset API dilakukan di Tahap 7 (2026-09-20)
-- [ ] Putuskan kalender Hijriyah untuk haul (dan kemungkinan memakai ulang modul hisab Al-Kaukaba)
+- [x] Putuskan kalender Hijriyah untuk haul: Umm al-Qura di balik antarmuka `HijriCalendar`; hisab Al-Kaukaba bisa menyusul (2026-09-21)
 - [x] Tetapkan asumsi fikih default zakat mal: 85 g emas, 2,5%, haul 1 tahun Hijriyah (2026-09-20); default sementara, menunggu verifikasi kitab oleh pemilik
 - [ ] Validasi minat lewat landing page dan daftar tunggu
 
@@ -63,18 +63,20 @@ Spesifikasi teks sudah ada di [ui-flow.md](ui-flow.md); tahap ini mengubahnya me
 
 Logika bisnis yang benar dan teruji sebelum ada layar.
 
-- [ ] Rancang model data dan skema penyimpanan lokal
+- [x] Rancang model data dan skema penyimpanan lokal: [model-data.md](model-data.md), skema Room versi 1 di `:data` dengan berkas skema JSON (2026-09-21)
 - [x] Value object Money (bilangan bulat, aritmetika eksak) (2026-09-20)
-- [ ] Aturan pembulatan alokasi
-- [ ] Rule engine alokasi persentase
+- [x] Aturan pembulatan alokasi: metode sisa terbesar, prioritas sebagai pemutus seri (2026-09-21)
+- [x] Rule engine alokasi persentase: `AllocationEngine`, basis point, 20 tes (2026-09-21)
 - [x] Definisikan arti "terpenuhi" per tipe ruang, ambang 85% untuk Mencukupi (2026-09-20, lihat [konsep.md](konsep.md))
-- [ ] Strategi modul Memberi: `zakat-haul-hijri` dan `percentage`
-- [ ] Kalkulator nisab dan haul Hijriyah
-- [ ] Strategi unit test domain (ikuti `docs/strategi-unit-test.md` di alkaukabaandroid)
-- [ ] Stub lapisan entitlement
+- [x] Strategi modul Memberi: `zakat-haul-hijri` dan `percentage` (2026-09-21)
+- [x] Kalkulator nisab dan haul Hijriyah, dengan dua kebijakan haul yang bisa diganti (2026-09-21)
+- [x] Strategi unit test domain: [strategi-unit-test.md](strategi-unit-test.md), ditulis dari nol (2026-09-21)
+- [x] Stub lapisan entitlement: `Entitlements`, `Feature`, `Plan`, `PlanEntitlements` (2026-09-21)
 - [x] Setup proyek Android: modul domain terpisah, unit test, CI dasar (2026-09-20; CI pertama di GitHub hijau, 2026-09-20)
 
 **Selesai bila:** unit test hijau untuk alokasi, nisab, dan haul (termasuk kasus tepi); tidak ada floating point untuk uang; skema penyimpanan punya jalur migrasi.
+
+**Status 2026-09-21:** semua kriteria terpenuhi (82 tes domain hijau, skema Room versi 1 dengan berkas skema JSON dan larangan migrasi destruktif). Yang tersisa hanya dua tugas infrastruktur milik pengguna: memperbarui Android Studio dan memasang image emulator API 37.
 
 ## Tahap 3 — Layar inti: onboarding, catat, transaksi (Backlog)
 
