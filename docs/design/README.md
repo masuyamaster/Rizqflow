@@ -25,20 +25,29 @@ Langsung ke layar tertentu lewat parameter URL: `prototype.html?screen=denah&the
 | `detail-memberi`, `detail-diri`, `detail-keluarga` | S11 Detail ruang |
 | `haul` | S16 Kartu haul |
 | `pro` | S21 Paywall |
+| `kilat` | S24 Catat kilat |
+| `koreksi` (opsional `&acct=tunai&actual=265000`) | S25 Koreksi saldo |
+| `pengingat` | S26 Pengingat harian |
+| `notif` | Notifikasi malam (F8) |
+| `draf`, `tangkap` | S27 Draf dan S28 Tangkap otomatis (otomatis dalam mode Pro; `&pro=1` membuka mode Pro di layar mana pun) |
 
 ## Cakupan prototipe
 
 **Sudah ada:** S05 Denah, S06 Catat (pemasukan dan pengeluaran), S07 Pratinjau alokasi (termasuk Ubah sekali ini), S11 Detail ruang, S16 Kartu haul, S21 Paywall. Versi ringkas: S08 Transaksi, S10 Ruang, S18 Lainnya.
 
+**Ditambah 2026-09-20 (kemudahan mencatat):** S24 Catat kilat, S25 Koreksi saldo, S26 Pengingat harian, notifikasi malam dengan balasan langsung, petunjuk hari kosong di S08, saklar Jadikan favorit di S06, serta S27 Draf dari notifikasi dan S28 Tangkap otomatis (keduanya v1.1, Pro).
+
 **Flow yang bisa dicoba:**
 - **F2** rezeki masuk dialirkan, penuh: bar dan cincin bergerak, status ruang berubah.
 - **F3** pengeluaran, penuh: banner lembut saat jatah terlampaui (tidak pernah memblokir) dan snackbar Urungkan.
 - **F5** sebagian: ruang Memberi lalu kartu Zakat mal lalu kartu haul.
-- **F6** hanya tampilan sheet; tidak ada pembayaran.
+- **F6** sheet Pro dengan tiga pemicu (Rizqflow Pro, Tangkap otomatis, Widget catat kilat): manfaat menyesuaikan pemicu, dan aksi tadi dilanjutkan setelah beli. Tidak ada pembayaran sungguhan.
+- **F8** mengejar yang terlewat: Catat kilat (favorit satu ketukan), notifikasi malam dengan balasan seperti "kopi 25000", Koreksi saldo (selisih, saldo lebih besar, cocok), dan petunjuk hari kosong.
+- **F9** tangkap otomatis (v1.1): beli, beri akses (simulasi), simulasikan pembayaran masuk, lalu Setujui, Ubah, atau Abaikan draf, termasuk tanda "Mungkin sudah dicatat".
 
 **Belum ada:** onboarding S01–S04 (F1), S09, S12–S15, S17, S19, S20, S22, S23; flow F4 dan F7.
 
-**Diuji:** skrip klik otomatis (Chrome headless) menjalankan F2 dan F3 termasuk Urungkan tanpa error konsol; tampilan diperiksa di mode terang, gelap, dan teks 150% dan 200%.
+**Diuji:** skrip klik otomatis (Chrome headless) menjalankan F2 dan F3 termasuk Urungkan tanpa error konsol; tampilan diperiksa di mode terang, gelap, dan teks 150% dan 200%. Pembaruan 2026-09-20: skrip klik otomatis baru (Chrome headless, tidak disimpan di repo) menjalankan 63 pemeriksaan untuk F2, F3, F6, F8, dan F9 tanpa galat konsol; layar baru diperiksa di mode gelap dan teks 200%, yang menemukan keterangan draf pecah baris dan sudah diperbaiki.
 
 ## Keputusan desain
 
@@ -49,7 +58,7 @@ Langsung ke layar tertentu lewat parameter URL: `prototype.html?screen=denah&the
 - **Aturan bar dan cincin** (dari panduan visualisasi data): tebal 16px, jeda 2px antar segmen, ujung data membulat 4px, jalur cincin berupa warna ruang yang lebih muda, legenda selalu ada, teks tidak diwarnai warna seri.
 - **Denah = grid kartu**, bukan ilustrasi denah harfiah, supaya tetap rapi saat ruangnya banyak.
 - **Teks besar (sp) ikut skala, ukuran elemen (dp) tidak.** Angka hero dibatasi 1,25x dan label navigasi 1,3x; kartu ruang menjadi 1 kolom di 150% ke atas. Pengujian 200% menemukan angka hero pecah di tengah, dan ini yang diperbaiki.
-- **Status ruang mengikuti tipe ruang** (usulan di [konsep.md](../konsep.md), perlu konfirmasi): Menunaikan dan Menumbuhkan terpenuhi saat penggunaan mencapai jatah; Mencukupi masuk Perlu perhatian saat pemakaian 85% atau lebih dari jatah.
+- **Status ruang mengikuti tipe ruang** (dikonfirmasi 2026-09-20, lihat [konsep.md](../konsep.md)): Menunaikan dan Menumbuhkan terpenuhi saat penggunaan mencapai jatah; Mencukupi masuk Perlu perhatian saat pemakaian 85% atau lebih dari jatah.
 
 ## Hasil validasi warna
 
@@ -101,10 +110,11 @@ val RizqflowLight = lightColorScheme(
 
 1. **Mode gelap.** Ini turunan dari palet sage karena homepage belum punya mode gelap. Nilainya bisa diubah di satu blok di `tokens.css`.
 2. **Warna ruang ke-4 dan seterusnya (Pro: ruang tak terbatas).** Hanya tiga slot pertama yang tervalidasi. Usulan: ruang 4 dan seterusnya memakai cincin sage netral dengan nama sebagai identitas, atau slot berikutnya dari palet dokumentasi yang divalidasi dulu untuk bentuk yang dipakai.
-3. **Ambang 85%** untuk Perlu perhatian di ruang Mencukupi.
+3. **Ambang 85%** untuk Perlu perhatian di ruang Mencukupi: sudah dikonfirmasi 2026-09-20.
 4. **Tanggal Hijriyah** pada layar S05 dan S16 hanyalah perkiraan; metode kalender masih keputusan terbuka.
 5. **Semua angka** (harga emas, harta, harga Pro Rp 129.000) hanya contoh.
+6. **Kemudahan mencatat (S24–S28)**: jumlah favorit, isi teks Koreksi saldo yang menghindari kesan menghakimi, dan apakah notifikasi malam perlu kolom balasan langsung.
 
 ## Keterbatasan
 
-Data tidak disimpan (reset saat halaman dimuat ulang), tanggal tetap September 2026, dan tidak ada pembayaran atau notifikasi sungguhan. Prototipe HTML tidak menguji nuansa native (gestur, haptik, ukuran sentuh); itu dinilai saat implementasi Compose di Tahap 3.
+Data tidak disimpan (reset saat halaman dimuat ulang), tanggal tetap September 2026, dan tidak ada pembayaran, notifikasi, atau izin sistem sungguhan (semuanya disimulasikan). Prototipe HTML tidak menguji nuansa native (gestur, haptik, ukuran sentuh); itu dinilai saat implementasi Compose di Tahap 3.

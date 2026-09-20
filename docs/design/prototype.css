@@ -1298,3 +1298,137 @@ details.card[open] summary {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---------- Catat kilat, koreksi saldo, pengingat, draf (S24-S28) ---------- */
+
+.sheet__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rf-space-3);
+}
+
+.sheet__head h2 {
+  margin: 0;
+}
+
+.sheet .amount {
+  margin: var(--rf-space-2) 0;
+}
+
+.banner--info {
+  background: var(--rf-surface-container-high);
+}
+
+.banner--info .icon {
+  color: var(--rf-primary);
+}
+
+.banner__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rf-space-2);
+  margin-top: var(--rf-space-2);
+}
+
+.notif {
+  position: absolute;
+  top: var(--rf-space-3);
+  left: var(--rf-space-3);
+  right: var(--rf-space-3);
+  z-index: 10;
+  padding: var(--rf-space-3) var(--rf-space-4);
+  border: var(--rf-border);
+  border-radius: var(--rf-radius-md);
+  background: var(--rf-surface-container-lowest);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.22);
+}
+
+.notif[hidden] {
+  display: none;
+}
+
+.notif--static {
+  position: static;
+  box-shadow: none;
+}
+
+.notif__app {
+  margin: 0;
+  font-size: var(--rf-size-label);
+  color: var(--rf-on-surface-variant);
+}
+
+.notif__title {
+  margin: 2px 0;
+  font-weight: 700;
+}
+
+.notif__body {
+  margin: 0 0 var(--rf-space-2);
+  color: var(--rf-on-surface-variant);
+}
+
+.notif--static .notif__body {
+  margin-bottom: 0;
+}
+
+.notif__reply {
+  display: flex;
+  gap: var(--rf-space-2);
+}
+
+.notif__reply input {
+  flex: 1;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 var(--rf-space-3);
+  border: var(--rf-border);
+  border-radius: var(--rf-radius-sm);
+  background: var(--rf-background);
+  color: inherit;
+  font: inherit;
+}
+
+.notif__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rf-space-1);
+  margin-top: var(--rf-space-2);
+}
+
+.draft {
+  margin-bottom: var(--rf-space-3);
+}
+
+.draft__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--rf-space-3);
+  flex-wrap: wrap;
+  font-size: var(--rf-size-title);
+}
+
+.draft__top .muted {
+  font-size: var(--rf-size-body);
+}
+
+.draft__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rf-space-2);
+  margin-top: var(--rf-space-3);
+}
+
+.triggers {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
