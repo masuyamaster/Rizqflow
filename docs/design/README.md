@@ -108,6 +108,8 @@ val RizqflowLight = lightColorScheme(
 
 ## Yang perlu dikonfirmasi setelah melihat prototipe
 
+**Prototipe disetujui pemilik pada 2026-09-20.** Butir di bawah tetap dicatat sebagai asumsi yang ikut menjadi dasar; warna ruang ke-4 dan seterusnya belum tervalidasi dan perlu dibereskan sebelum layar ruang dikerjakan (Tahap 3).
+
 1. **Mode gelap.** Ini turunan dari palet sage karena homepage belum punya mode gelap. Nilainya bisa diubah di satu blok di `tokens.css`.
 2. **Warna ruang ke-4 dan seterusnya (Pro: ruang tak terbatas).** Hanya tiga slot pertama yang tervalidasi. Usulan: ruang 4 dan seterusnya memakai cincin sage netral dengan nama sebagai identitas, atau slot berikutnya dari palet dokumentasi yang divalidasi dulu untuk bentuk yang dipakai.
 3. **Ambang 85%** untuk Perlu perhatian di ruang Mencukupi: sudah dikonfirmasi 2026-09-20.

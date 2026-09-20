@@ -26,7 +26,7 @@ T8 -.-> T9["9 Sync (fase 2)"]
 
 - Platform: **Android saja**, rilis di Google Play Store. Stack: **Kotlin + Jetpack Compose + Room** (2026-09-19).
 - Arah visual: **opsi A**, pakai ulang identitas homepage roziqrizal.com (2026-09-19).
-- Masih perlu diputuskan: **detail stack** (modul domain terpisah, min SDK, DI, enkripsi database; sebelum Tahap 2).
+- Detail stack **disetujui 2026-09-20**: tiga modul Gradle (`:domain`, `:data`, `:app`), min SDK 26, DI manual, backup AES-GCM, tanpa SQLCipher untuk v1 (lihat [konsep.md](konsep.md)).
 - Tahap 1 (desain) dan Tahap 2 (inti domain) bisa berjalan paralel setelah Tahap 0 selesai.
 - Tahap 9 sengaja opsional: mulai hanya bila ada sinyal kebutuhan dari pengguna nyata.
 
@@ -41,6 +41,7 @@ Menetapkan keputusan yang menentukan arah teknis dan bisnis sebelum kode ditulis
 - [x] Pasang tracking Notion, skill `pengembangan-rizqflow`, dan CLAUDE.md repo
 - [x] Putuskan platform: Android saja, rilis di Play Store (2026-09-19)
 - [x] Putuskan stack Android: Kotlin + Jetpack Compose + Room (2026-09-19)
+- [x] Setujui detail stack Android: modul, min SDK 26, DI manual, enkripsi (2026-09-20)
 - [ ] Cek ketersediaan nama (Play Store, domain, GitHub, Google). Hasil awal 2026-09-20 di [konsep.md](konsep.md): Rizqflow layak, Rizqly bukan cadangan yang baik; tinggal cek manual Play Store, kepemilikan rizqflow.com, dan merek DJKI
 - [x] Putuskan sumber harga emas: input manual (gratis), otomatis lewat API (Pro); riset API dilakukan di Tahap 7 (2026-09-20)
 - [ ] Putuskan kalender Hijriyah untuk haul (dan kemungkinan memakai ulang modul hisab Al-Kaukaba)
@@ -54,8 +55,8 @@ Spesifikasi teks sudah ada di [ui-flow.md](ui-flow.md); tahap ini mengubahnya me
 - [x] Putuskan arah visual: opsi A, pakai ulang identitas homepage (2026-09-19)
 - [x] Tetapkan design tokens dan komponen dasar ([design/tokens.css](design/tokens.css))
 - [ ] Wireframe seluruh layar MVP (S01–S26)
-- [x] Hi-fi layar kunci: Denah, Catat + Pratinjau alokasi, Detail ruang, Kartu haul (prototipe HTML di [design/](design/README.md); menunggu review)
-- [ ] Prototipe klik untuk flow F1–F5 (sebagian: F2, F3, dan F5 jalur ke kartu haul sudah; F1 dan F4 belum)
+- [x] Hi-fi layar kunci: Denah, Catat + Pratinjau alokasi, Detail ruang, Kartu haul (prototipe HTML di [design/](design/README.md); disetujui pemilik 2026-09-20)
+- [ ] Prototipe klik untuk flow F1–F5 (sebagian: F2, F3, dan F5 jalur ke kartu haul sudah; F1 dan F4 belum; F6, F8, dan F9 sudah)
 - [ ] Uji prototipe dengan data nyata dari Transaksi Harian di Ruang Finansial
 
 ## Tahap 2 — Inti domain, tanpa UI (Backlog)

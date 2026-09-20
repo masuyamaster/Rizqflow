@@ -125,7 +125,7 @@ Dicek lewat GitHub API, RDAP domain (dengan domain kontrol), dan pencarian web. 
 
 | Yang dicek | Rizqflow | Rizqly (cadangan) |
 |---|---|---|
-| Domain .com | Sudah terdaftar sejak 24 Jul 2026 (Hostinger, DNS parkir); pemiliknya belum diketahui | Sudah terdaftar sejak 14 Feb 2026 (NameCheap) |
+| Domain .com | Sudah terdaftar sejak 24 Jul 2026 (Hostinger, DNS parkir); pemilik proyek memastikan bukan miliknya, jadi dipegang pihak lain | Sudah terdaftar sejak 14 Feb 2026 (NameCheap) |
 | Domain .app | Belum terdaftar | Sudah terdaftar; situsnya aktif sebagai pelacak pengeluaran pribadi |
 | Domain .id, .co.id, .net | Belum terdaftar | .id belum terdaftar |
 | Nama pengguna atau organisasi GitHub | Bebas | Bebas |
@@ -133,7 +133,7 @@ Dicek lewat GitHub API, RDAP domain (dengan domain kontrol), dan pencarian web. 
 | Pencarian web | Ada rizqflow.tech: perusahaan rekayasa dan AI, bidang berbeda | Ada aplikasi keuangan Rizqly (rizqly.app): **satu kategori dengan Rizqflow** |
 | Google Play | Pencarian "rizqflow" tanpa hasil (perlu diverifikasi langsung di aplikasi Play Store) | Belum dicek langsung |
 
-Kesimpulan awal: **Rizqflow masih layak dipakai**. **Rizqly bukan cadangan yang baik** karena bentrok dengan aplikasi keuangan yang sudah aktif; cari cadangan lain bila perlu. Yang masih perlu dicek manual: pencarian di Play Store, apakah rizqflow.com milik pemilik proyek, dan pangkalan merek DJKI (pdki-indonesia.dgip.go.id). Catatan: package name aplikasi (misalnya com.roziqrizal.rizqflow) harus unik di Play Store, sedangkan judul umumnya boleh sama; tetap hindari nama yang membingungkan.
+Kesimpulan awal: **Rizqflow masih layak dipakai**. **Rizqly bukan cadangan yang baik** karena bentrok dengan aplikasi keuangan yang sudah aktif; cari cadangan lain bila perlu. Yang masih perlu dicek manual: pencarian di Play Store dan pangkalan merek DJKI (pdki-indonesia.dgip.go.id). Pemilik proyek memastikan (2026-09-20) belum pernah mendaftarkan domain apa pun, jadi rizqflow.com dipegang pihak lain. Alternatif yang masih bebas: rizqflow.app atau rizqflow.id; domain sendiri belum tentu perlu karena landing page bisa berada di roziqrizal.com. Catatan: package name aplikasi (misalnya com.roziqrizal.rizqflow) harus unik di Play Store, sedangkan judul umumnya boleh sama; tetap hindari nama yang membingungkan.
 
 ## Keputusan yang sudah diambil
 
@@ -152,16 +152,17 @@ Kesimpulan awal: **Rizqflow masih layak dipakai**. **Rizqly bukan cadangan yang 
 - **Asumsi fikih default zakat mal** (2026-09-20): nisab 85 gram emas, tarif 2,5%, haul 1 tahun Hijriyah. Ini **default sementara**: pemilik akan memverifikasinya dengan rujukan kitab, dan bila ada perubahan cukup mengganti konstanta di modul domain. Tetap ditampilkan di layar beserta disclaimer.
 - **Arti "terpenuhi" per tipe ruang** dikonfirmasi (2026-09-20): Menunaikan dan Menumbuhkan terpenuhi saat penggunaan mencapai jatah; Mencukupi masuk Perlu perhatian pada pemakaian 85% jatah atau lebih.
 - **Sumber harga emas** (2026-09-20): versi gratis memakai input manual; harga otomatis lewat API masuk Pro. Riset sumber API dilakukan di Tahap 7.
-
-## Keputusan yang masih terbuka
-
-- **Detail stack Android** (perlu sebelum Tahap 2; inti stack sudah diputuskan). Usulan 2026-09-20, menunggu keputusan pemilik:
+- **Detail stack Android** disetujui pemilik (2026-09-20):
   - **Tiga modul Gradle.** `:domain` (Kotlin/JVM murni, tanpa dependensi Android) berisi `Money`, alokasi, nisab, haul, dan antarmuka repositori; `:data` (Room dan implementasi repositori); `:app` (Jetpack Compose, ViewModel, perakitan dependensi). Unit test domain berjalan cepat di JVM mengikuti `docs/strategi-unit-test.md` di alkaukabaandroid (JUnit + MockK).
   - **Min SDK 26 (Android 8.0); target SDK terbaru yang stabil** saat Tahap 2 dimulai (cek syaratnya di Play Console). Alasan min SDK 26: `java.time` (termasuk kalender Hijriyah `HijrahChronology`) dan channel notifikasi tersedia bawaan tanpa desugaring. Sebaran perangkat dicek di dialog proyek baru Android Studio.
   - **DI manual:** injeksi lewat konstruktor, satu kelas perakit di `:app`, dan pabrik ViewModel, sama seperti alkaukabaandroid. Graf dependensinya kecil; pindah ke Hilt bila graf membesar.
   - **Enkripsi:** backup dienkripsi dengan kata sandi (AES-256-GCM, kunci dari PBKDF2 dengan salt acak, format berkas berversi, dan diuji). Database Room **tanpa SQLCipher untuk v1**: data sudah terlindungi sandbox aplikasi dan enkripsi penyimpanan Android, PIN/biometrik menutup akses lewat aplikasi, dan `allowBackup` dimatikan supaya salinan otomatis tidak keluar dari kendali. Tinjau ulang bila model ancaman mencakup perangkat root; SQLCipher menambah ukuran aplikasi dan urusan pengelolaan kunci.
   - **UI dan domain:** Material 3 sebagai basis dengan tema dari design tokens (peta di `docs/design/README.md`), navigation-compose, `StateFlow` dan coroutine. `Money` berupa value class berisi bilangan bulat satuan terkecil (rupiah tanpa desimal) dengan penanda mata uang untuk multi-mata uang di Pro. Kalender Hijriyah diakses lewat antarmuka `HijriCalendar` di `:domain` supaya implementasinya (hisab Al-Kaukaba atau Umm al-Qura) bisa ditukar.
-- **Cek ketersediaan nama:** hasil awal sudah ada (lihat Cek nama). Tinggal cek manual di Play Store, kepemilikan rizqflow.com, dan merek DJKI.
+- **Prototipe klik disetujui** pemilik (2026-09-20) sebagai acuan layar kunci dan kemudahan mencatat. Prototipe F1 (onboarding) dan F4 (ubah aturan) belum ada.
+
+## Keputusan yang masih terbuka
+
+- **Cek ketersediaan nama:** hasil awal sudah ada (lihat Cek nama). Tinggal cek manual di Play Store dan merek DJKI, serta memutuskan apakah perlu domain sendiri (rizqflow.com dipegang pihak lain; .app dan .id bebas).
 - **Kalender Hijriyah untuk haul:** hisab Al-Kaukaba, Umm al-Qura, atau kriteria Kemenag; selisih satu hari memengaruhi tanggal haul.
 - **Pengingat haul:** tetap gratis untuk satu profil atau masuk Pro.
 - **Harga final** Pro dan Sync, berdasarkan uji minat.
