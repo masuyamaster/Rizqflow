@@ -1,6 +1,6 @@
 # Rizqflow — Roadmap
 
-Breakdown proyek menjadi 10 tahap yang diselesaikan berurutan. **Status hidup ada di Notion**; dokumen ini adalah snapshot per 2026-09-19 untuk yang membaca kode langsung.
+Breakdown proyek menjadi 10 tahap yang diselesaikan berurutan. **Status hidup ada di Notion**; dokumen ini adalah snapshot per 2026-09-21 untuk yang membaca kode langsung.
 
 - Hub proyek: [Rizqflow di Ruang Finansial](https://app.notion.com/p/3e0edbb47c0b8184a091ddcf591766fd)
 - Database tahap: [🧩 Tahap Rizqflow](https://app.notion.com/p/b5cf720718084e19a4cbb89a738c17ef)
@@ -48,15 +48,15 @@ Menetapkan keputusan yang menentukan arah teknis dan bisnis sebelum kode ditulis
 - [x] Tetapkan asumsi fikih default zakat mal: 85 g emas, 2,5%, haul 1 tahun Hijriyah (2026-09-20); default sementara, menunggu verifikasi kitab oleh pemilik
 - [ ] Validasi minat lewat landing page dan daftar tunggu
 
-## Tahap 1 — Desain UI/UX (Planning)
+## Tahap 1 — Desain UI/UX (In Progress)
 
 Spesifikasi teks sudah ada di [ui-flow.md](ui-flow.md); tahap ini mengubahnya menjadi desain visual.
 
 - [x] Putuskan arah visual: opsi A, pakai ulang identitas homepage (2026-09-19)
 - [x] Tetapkan design tokens dan komponen dasar ([design/tokens.css](design/tokens.css))
-- [ ] Wireframe seluruh layar MVP (S01–S26)
+- [x] Wireframe seluruh layar (S01–S28), termasuk keadaan kosong ([wireframe.md](wireframe.md), 2026-09-21)
 - [x] Hi-fi layar kunci: Denah, Catat + Pratinjau alokasi, Detail ruang, Kartu haul (prototipe HTML di [design/](design/README.md); disetujui pemilik 2026-09-20)
-- [ ] Prototipe klik untuk flow F1–F5 (sebagian: F2, F3, dan F5 jalur ke kartu haul sudah; F1 dan F4 belum; F6, F8, dan F9 sudah)
+- [ ] Prototipe klik untuk flow F1–F5 (F1, F2, F3, dan F4 sudah, 2026-09-21; F5 baru sampai kartu haul, S14, S15, dan S17 belum; F6, F8, dan F9 sudah)
 - [ ] Uji prototipe dengan data nyata dari Transaksi Harian di Ruang Finansial
 
 ## Tahap 2 — Inti domain, tanpa UI (In Progress)
@@ -72,7 +72,7 @@ Logika bisnis yang benar dan teruji sebelum ada layar.
 - [ ] Kalkulator nisab dan haul Hijriyah
 - [ ] Strategi unit test domain (ikuti `docs/strategi-unit-test.md` di alkaukabaandroid)
 - [ ] Stub lapisan entitlement
-- [x] Setup proyek Android: modul domain terpisah, unit test, CI dasar (2026-09-20; CI baru berjalan setelah push)
+- [x] Setup proyek Android: modul domain terpisah, unit test, CI dasar (2026-09-20; CI pertama di GitHub hijau, 2026-09-20)
 
 **Selesai bila:** unit test hijau untuk alokasi, nisab, dan haul (termasuk kasus tepi); tidak ada floating point untuk uang; skema penyimpanan punya jalur migrasi.
 
