@@ -155,12 +155,12 @@ Kesimpulan awal: **Rizqflow masih layak dipakai**. **Rizqly bukan cadangan yang 
 
 ## Keputusan yang masih terbuka
 
-- **Detail stack Android** (perlu sebelum Tahap 2; inti stack sudah diputuskan). Usulan, belum diputuskan:
-  - **Modul domain Kotlin murni** (tanpa dependensi Android) untuk alokasi, nisab, dan haul, supaya unit test berjalan cepat di JVM; modul `app` untuk UI. Ikuti `docs/strategi-unit-test.md` di alkaukabaandroid (JUnit + MockK).
-  - Target SDK mengikuti syarat Google Play terbaru; min SDK ditentukan bersama.
-  - DI: alkaukabaandroid tanpa framework DI; untuk Rizqflow bisa manual atau Hilt/Koin.
-  - Enkripsi: backup dienkripsi dengan kata sandi; enkripsi database itu sendiri (mis. SQLCipher) diputuskan terpisah.
-  - Komponen UI: basis Material 3 atau kustom mengikuti keputusan arah visual.
+- **Detail stack Android** (perlu sebelum Tahap 2; inti stack sudah diputuskan). Usulan 2026-09-20, menunggu keputusan pemilik:
+  - **Tiga modul Gradle.** `:domain` (Kotlin/JVM murni, tanpa dependensi Android) berisi `Money`, alokasi, nisab, haul, dan antarmuka repositori; `:data` (Room dan implementasi repositori); `:app` (Jetpack Compose, ViewModel, perakitan dependensi). Unit test domain berjalan cepat di JVM mengikuti `docs/strategi-unit-test.md` di alkaukabaandroid (JUnit + MockK).
+  - **Min SDK 26 (Android 8.0); target SDK terbaru yang stabil** saat Tahap 2 dimulai (cek syaratnya di Play Console). Alasan min SDK 26: `java.time` (termasuk kalender Hijriyah `HijrahChronology`) dan channel notifikasi tersedia bawaan tanpa desugaring. Sebaran perangkat dicek di dialog proyek baru Android Studio.
+  - **DI manual:** injeksi lewat konstruktor, satu kelas perakit di `:app`, dan pabrik ViewModel, sama seperti alkaukabaandroid. Graf dependensinya kecil; pindah ke Hilt bila graf membesar.
+  - **Enkripsi:** backup dienkripsi dengan kata sandi (AES-256-GCM, kunci dari PBKDF2 dengan salt acak, format berkas berversi, dan diuji). Database Room **tanpa SQLCipher untuk v1**: data sudah terlindungi sandbox aplikasi dan enkripsi penyimpanan Android, PIN/biometrik menutup akses lewat aplikasi, dan `allowBackup` dimatikan supaya salinan otomatis tidak keluar dari kendali. Tinjau ulang bila model ancaman mencakup perangkat root; SQLCipher menambah ukuran aplikasi dan urusan pengelolaan kunci.
+  - **UI dan domain:** Material 3 sebagai basis dengan tema dari design tokens (peta di `docs/design/README.md`), navigation-compose, `StateFlow` dan coroutine. `Money` berupa value class berisi bilangan bulat satuan terkecil (rupiah tanpa desimal) dengan penanda mata uang untuk multi-mata uang di Pro. Kalender Hijriyah diakses lewat antarmuka `HijriCalendar` di `:domain` supaya implementasinya (hisab Al-Kaukaba atau Umm al-Qura) bisa ditukar.
 - **Cek ketersediaan nama:** hasil awal sudah ada (lihat Cek nama). Tinggal cek manual di Play Store, kepemilikan rizqflow.com, dan merek DJKI.
 - **Kalender Hijriyah untuk haul:** hisab Al-Kaukaba, Umm al-Qura, atau kriteria Kemenag; selisih satu hari memengaruhi tanggal haul.
 - **Pengingat haul:** tetap gratis untuk satu profil atau masuk Pro.
