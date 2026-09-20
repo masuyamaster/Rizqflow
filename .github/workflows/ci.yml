@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # Logika inti (uang, alokasi, nisab, haul) diuji di JVM tanpa emulator.
+      - name: Unit test domain
+        run: ./gradlew :domain:test
+
+      # Memastikan seluruh modul, termasuk Compose, tetap bisa dibangun.
+      - name: Build APK debug
+        run: ./gradlew :app:assembleDebug
