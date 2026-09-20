@@ -1,7 +1,8 @@
-// Room dan implementasi repositori. Masih kerangka kosong; skema penyimpanan dirancang di tugas
-// "Rancang model data dan skema penyimpanan lokal" (Tahap 2).
+// Room dan implementasi repositori. Skema versi 1 ada di db/ dan dirancang di docs/model-data.md.
 plugins {
     alias(libs.plugins.android.library)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.androidx.room)
 }
 
 android {
@@ -20,6 +21,13 @@ android {
     }
 }
 
+// Berkas skema JSON masuk git supaya setiap versi skema bisa diuji migrasinya.
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
 dependencies {
     implementation(project(":domain"))
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
 }
