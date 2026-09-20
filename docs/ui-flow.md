@@ -1,6 +1,6 @@
 # Rizqflow — Layar dan Flow (UI)
 
-Spesifikasi teks tampilan dan alur pengguna. **Belum desain visual**; ini bahan untuk Tahap 1 (lihat [roadmap.md](roadmap.md)).
+Spesifikasi teks tampilan dan alur pengguna. Tata letak seluruh layar ada di [wireframe.md](wireframe.md), dan prototipe klik untuk layar kunci di [design/](design/README.md) (lihat [roadmap.md](roadmap.md) untuk tahapnya).
 
 - Platform: **Android** (diputuskan 2026-09-19). Pola di bawah mengikuti konvensi Android: bottom navigation, FAB, bottom sheet, snackbar.
 - Semua angka pada wireframe hanya **contoh**, bukan saran keuangan.
@@ -79,6 +79,8 @@ T -.-> F
 | S28 | Tangkap otomatis | Penjelasan izin, aplikasi yang didukung, pemetaan ke akun (Pro) | v1.1 |
 
 ## Wireframe layar kunci
+
+Hanya sebagian layar ada di sini; wireframe semua layar S01–S28 (termasuk keadaan kosong) ada di [wireframe.md](wireframe.md).
 
 ### S05 Denah (beranda)
 
@@ -357,11 +359,12 @@ E --> F["Catat rezeki pertama"]
 E --> G["Coba data contoh"]
 ```
 
-- S01: tagline dan satu tombol Mulai, tanpa slide berlapis.
-- S02: kartu **Tiga hak** (Memberi, Diri, Keluarga) atau **Mulai kosong**; bisa dilewati dan diubah nanti.
-- S03: slider dengan total selalu 100%; tampilkan hasil untuk contoh Rp 1.000.000 supaya konkret.
-- S04: nama akun (bank, dompet digital, tunai) dan saldo awal.
-- S05 kosong menawarkan dua jalan: catat rezeki pertama, atau coba data contoh (mode demo).
+- S01: tagline dan satu tombol Mulai, tanpa slide berlapis. Tautan teks **Pulihkan dari cadangan** untuk yang pindah ponsel (menuju F7).
+- S02: kartu **Tiga hak** (Memberi, Diri, Keluarga) atau **Mulai kosong**; **Mulai kosong** sekaligus cara melewati langkah ini (S03 dilewati), dan pilihan bisa diubah nanti. Layar S02 sampai S04 menampilkan penghitung langkah.
+- S03: slider dengan total selalu 100%: ruang terakhir menerima sisanya dan tidak punya slider; tampilkan hasil untuk contoh Rp 1.000.000 supaya konkret.
+- S04: jenis akun (tunai, bank, dompet digital), nama akun (wajib), dan saldo awal (boleh nol). Saldo awal **bukan rezeki**: tidak masuk "Rezeki bulan ini" dan tidak dialirkan ke ruang.
+- S05 kosong menawarkan dua jalan: catat rezeki pertama, atau coba data contoh (mode demo). Tanpa ruang (dari Mulai kosong), rezeki yang dicatat tersimpan sebagai "belum dialirkan" sampai ada ruang; Denah menawarkan Pakai pola Tiga hak.
+- Mode demo memakai data terpisah: penanda di header, dan keluar dari demo mengembalikan data pengguna (S22).
 
 ### F2 Rezeki masuk, dialirkan otomatis
 
@@ -393,7 +396,12 @@ G --> I["Kembali ke layar asal, snackbar Urungkan"]
 
 ### F4 Mengubah aturan alokasi
 
-S10 Daftar ruang, lalu S12 Aturan alokasi, lalu ubah persentase. Total harus 100%; tombol Simpan nonaktif bila tidak. Berlaku untuk pemasukan berikutnya, riwayat tidak berubah.
+S10 Daftar ruang, lalu S12 Aturan alokasi, lalu ubah persentase. Total harus 100%; tombol Simpan nonaktif bila tidak, dan juga bila belum ada perubahan. Berlaku untuk pemasukan berikutnya, riwayat tidak berubah.
+
+- Jalan masuk: S10 (baris Pembagian rezeki), tombol Atur aturan di S11 (baris ruang itu disorot), atau S18 Lainnya.
+- Keluar dengan perubahan yang belum disimpan menampilkan sheet "Buang perubahan?". Sesudah simpan: snackbar Urungkan.
+- Baris **Aturan lanjutan** (prioritas, batas atas, sisa mengalir) terkunci Pro dan membuka S21.
+- Rezeki yang tidak habis terbagi (total di bawah 100% pada Ubah sekali ini) tidak hilang: ia tersimpan sebagai "belum dialirkan" di Denah.
 
 ### F5 Dari harta sampai zakat ditunaikan
 

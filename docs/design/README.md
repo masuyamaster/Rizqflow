@@ -30,6 +30,9 @@ Langsung ke layar tertentu lewat parameter URL: `prototype.html?screen=denah&the
 | `pengingat` | S26 Pengingat harian |
 | `notif` | Notifikasi malam (F8) |
 | `draf`, `tangkap` | S27 Draf dan S28 Tangkap otomatis (otomatis dalam mode Pro; `&pro=1` membuka mode Pro di layar mana pun) |
+| `sambutan`, `pola`, `persen`, `akun` | S01–S04 Onboarding (tambah `&template=kosong` untuk pola Mulai kosong). Tombol *Mulai dari awal* di panel kiri menjalankan seluruh F1 |
+| `kosong`, `kosong-tanpa-ruang` | S05 Denah pengguna baru: dengan pola Tiga hak, atau tanpa ruang sama sekali |
+| `aturan` (opsional `&focus=diri`) | S12 Aturan alokasi |
 
 ## Cakupan prototipe
 
@@ -38,6 +41,8 @@ Langsung ke layar tertentu lewat parameter URL: `prototype.html?screen=denah&the
 **Ditambah 2026-09-20 (kemudahan mencatat):** S24 Catat kilat, S25 Koreksi saldo, S26 Pengingat harian, notifikasi malam dengan balasan langsung, petunjuk hari kosong di S08, saklar Jadikan favorit di S06, serta S27 Draf dari notifikasi dan S28 Tangkap otomatis (keduanya v1.1, Pro).
 
 **Flow yang bisa dicoba:**
+- **F1** pertama kali membuka aplikasi: S01 Sambutan, S02 pola (Tiga hak atau Mulai kosong), S03 persentase (slider, Keluarga otomatis menerima sisa sehingga total selalu 100%), S04 akun pertama dan saldo awal, lalu Denah kosong dengan dua jalan (catat rezeki pertama, atau coba data contoh). Pola Mulai kosong berakhir di Denah tanpa ruang dengan tombol Pakai pola Tiga hak.
+- **F4** ubah aturan: Ruang, Pembagian rezeki (atau Atur aturan di detail ruang), geser persentase; Simpan aktif hanya bila total 100% dan ada perubahan; keluar dengan perubahan menanyakan Buang perubahan; aturan baru langsung dipakai pemasukan berikutnya.
 - **F2** rezeki masuk dialirkan, penuh: bar dan cincin bergerak, status ruang berubah.
 - **F3** pengeluaran, penuh: banner lembut saat jatah terlampaui (tidak pernah memblokir) dan snackbar Urungkan.
 - **F5** sebagian: ruang Memberi lalu kartu Zakat mal lalu kartu haul.
@@ -45,9 +50,13 @@ Langsung ke layar tertentu lewat parameter URL: `prototype.html?screen=denah&the
 - **F8** mengejar yang terlewat: Catat kilat (favorit satu ketukan), notifikasi malam dengan balasan seperti "kopi 25000", Koreksi saldo (selisih, saldo lebih besar, cocok), dan petunjuk hari kosong.
 - **F9** tangkap otomatis (v1.1): beli, beri akses (simulasi), simulasikan pembayaran masuk, lalu Setujui, Ubah, atau Abaikan draf, termasuk tanda "Mungkin sudah dicatat".
 
-**Belum ada:** onboarding S01–S04 (F1), S09, S12–S15, S17, S19, S20, S22, S23; flow F4 dan F7.
+**Ditambah 2026-09-21:** onboarding S01–S04 (flow F1), S12 Aturan alokasi (flow F4), Denah pengguna baru (kosong, tanpa ruang), dan mode demo yang terpisah dari data pengguna (penanda di header, keluar dari demo mengembalikan data pengguna). Rezeki yang tidak habis terbagi kini tersimpan sebagai "belum dialirkan" (sebelumnya hilang saat total persentase kurang dari 100%).
 
-**Diuji:** skrip klik otomatis (Chrome headless) menjalankan F2 dan F3 termasuk Urungkan tanpa error konsol; tampilan diperiksa di mode terang, gelap, dan teks 150% dan 200%. Pembaruan 2026-09-20: skrip klik otomatis baru (Chrome headless, tidak disimpan di repo) menjalankan 63 pemeriksaan untuk F2, F3, F6, F8, dan F9 tanpa galat konsol; layar baru diperiksa di mode gelap dan teks 200%, yang menemukan keterangan draf pecah baris dan sudah diperbaiki.
+**Belum ada:** S09, S13–S15, S17, S19, S20, S22 (selain penanda dan keluar mode demo), S23, tab Transfer di S06; flow F7 dan sebagian F5 (S14, S15, S17). Wireframe teks semuanya sudah ada di [../wireframe.md](../wireframe.md).
+
+**Diuji 2026-09-21:** skrip klik otomatis baru (Chrome headless, tidak disimpan di repo) menjalankan 82 pemeriksaan: regresi F2 dan F3, F1 penuh (kedua pola, batas slider, nama akun wajib), rezeki pertama di data baru, F4 (total 105%, simpan, buang perubahan, aturan baru dipakai), jalur tanpa ruang (sisa tidak menggandakan saldo), mode demo, dan Tangkap otomatis di data baru; tanpa galat konsol. Layar baru diperiksa di mode terang, gelap, dan teks 200% tanpa overflow.
+
+**Diuji sebelumnya:** skrip klik otomatis (Chrome headless) menjalankan F2 dan F3 termasuk Urungkan tanpa error konsol; tampilan diperiksa di mode terang, gelap, dan teks 150% dan 200%. Pembaruan 2026-09-20: skrip klik otomatis baru (Chrome headless, tidak disimpan di repo) menjalankan 63 pemeriksaan untuk F2, F3, F6, F8, dan F9 tanpa galat konsol; layar baru diperiksa di mode gelap dan teks 200%, yang menemukan keterangan draf pecah baris dan sudah diperbaiki.
 
 ## Keputusan desain
 

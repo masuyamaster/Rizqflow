@@ -1,5 +1,5 @@
 /*
- * Rizqflow — prototipe klik (S05, S06/S07, S11, S16, S21, S24-S28 + tab lain versi ringkas).
+ * Rizqflow — prototipe klik (S01-S04, S05, S06/S07, S11, S12, S16, S21, S24-S28 + tab lain versi ringkas).
  * Ini prototipe untuk menilai tampilan dan alur, BUKAN kode produksi.
  * Semua data adalah contoh. Uang selalu bilangan bulat (rupiah), tidak pernah floating point.
  */
@@ -46,6 +46,8 @@
     balance:
       '<path d="M12 4v16M6 20h12"/><path d="M5 8h14"/><path d="m5 8-2.5 6a3 3 0 0 0 5 0z"/><path d="m19 8 2.5 6a3 3 0 0 1-5 0z"/>',
     inbox: '<path d="M4 13.5 6.5 5h11L20 13.5V19H4z"/><path d="M4 13.5h5l1 2h4l1-2h5"/>',
+    sliders: '<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',
+    lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
   };
   const icon = (name) => `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${ICON[name]}</svg>`;
 
@@ -55,6 +57,11 @@
   const ACCT_ORDER = ['tunai', 'jago', 'gopay'];
 
   const seed = () => ({
+    // Ruang dan akun yang dipakai, berurutan. Data contoh memakai tiga ruang dan tiga akun.
+    order: ORDER.slice(),
+    acctOrder: ACCT_ORDER.slice(),
+    demo: true, // data contoh (mode demo), bukan data pengguna
+    zakat: true, // profil harta zakat sudah diisi
     pending: [{ id: 'p1', label: 'Freelance desain', amount: 1200000 }],
     rooms: {
       memberi: {
@@ -113,6 +120,40 @@
     lastAcct: 'tunai',
   });
 
+  // Pola "Tiga hak" (S02): ruang bawaan untuk onboarding.
+  const TEMPLATE_IDS = ['memberi', 'diri', 'keluarga'];
+  const TEMPLATE = seed().rooms;
+  const TEMPLATE_DESC = {
+    memberi: 'Sedekah, infak, dan zakat',
+    diri: 'Dana darurat, investasi, belajar',
+    keluarga: 'Belanja, listrik dan air, sekolah',
+  };
+  const RULE_SAMPLE = 1000000; // nominal contoh di penyunting persentase (S03, S12)
+
+  /** Data awal pengguna baru setelah onboarding: ruang kosong, satu akun, tanpa transaksi. */
+  function freshState(ob) {
+    const base = seed();
+    const order = ob.template === 'tiga' ? TEMPLATE_IDS.slice() : [];
+    const rooms = {};
+    order.forEach((id) => {
+      const r = base.rooms[id];
+      r.pct = ob.pcts[id];
+      r.alloc = 0;
+      r.used = 0;
+      r.pos.forEach((p) => {
+        p.used = 0;
+      });
+      rooms[id] = r;
+    });
+    const acctId = 'akun1';
+    return Object.assign(base, {
+      order, rooms, demo: false, zakat: false, pending: [], tx: [], favs: [], checked: {}, drafts: [], sampleIdx: 0,
+      acct: { [acctId]: { id: acctId, name: ob.acctName.trim(), bal: Number(ob.balance || 0), days: 0 } },
+      acctOrder: [acctId], lastAcct: acctId,
+      last: { room: order.includes('keluarga') ? 'keluarga' : null, cat: order.includes('keluarga') ? 'Lain-lain' : null },
+    });
+  }
+
   let S = seed();
   let prevView = null; // snapshot Denah sebelum alokasi, untuk animasi aliran
   let route = { name: 'denah' };
@@ -124,25 +165,36 @@
   let K = null; // draf Catat kilat (S24)
   let K2 = null; // draf Koreksi saldo (S25)
   let sheetAfter = null; // aksi yang dilanjutkan setelah pembelian (flow F6)
+  let OB = null; // draf onboarding (S01-S04, flow F1)
+  let R = null; // penyunting persentase: S03 (onboarding) dan S12 (aturan alokasi, flow F4)
+  let realState = null; // data pengguna yang disimpan selama mode demo (S22)
 
   function newDraft() {
-    return { mode: 'masuk', amount: '', sumber: 'Freelance', room: 'keluarga', cat: null, acct: 'jago', fav: false, fromDraft: null };
+    return {
+      mode: 'masuk', amount: '', sumber: S.demo ? 'Freelance' : 'Gaji',
+      room: S.rooms.keluarga ? 'keluarga' : S.order[0] || null, cat: null, acct: defAcct(), fav: false, fromDraft: null,
+    };
+  }
+
+  /** Akun bawaan untuk pemasukan: Bank Jago di data contoh, akun pertama di data pengguna. */
+  function defAcct() {
+    return S.acct.jago ? 'jago' : S.acctOrder[0];
   }
 
   /* ------------------------------------------------------------- turunan */
 
-  const rooms = () => ORDER.map((id) => S.rooms[id]);
+  const rooms = () => S.order.map((id) => S.rooms[id]);
   const pendingTotal = () => S.pending.reduce((a, p) => a + p.amount, 0);
   const allocTotal = () => rooms().reduce((a, r) => a + r.alloc, 0);
   const incomeTotal = () => allocTotal() + pendingTotal();
   const color = (r) => `var(--rf-room-${r.slot})`;
-  const accts = () => ACCT_ORDER.map((id) => S.acct[id]);
+  const accts = () => S.acctOrder.map((id) => S.acct[id]);
   const catsOf = (r) => r.pos.filter((p) => p.base > 0);
 
   /** Ruang dari pengeluaran terakhir di sebuah akun; cadangan: ruang bertipe Mencukupi (Keluarga). */
   function lastRoomFor(acctId) {
     const t = S.tx.find((x) => x.acct === acctId && x.amt < 0 && x.room);
-    return t ? t.room : 'keluarga';
+    return t ? t.room : S.rooms.keluarga ? 'keluarga' : S.order[0] || null;
   }
 
   /** Satu pengeluaran memengaruhi ruang, pos, saldo akun, dan daftar transaksi sekaligus. */
@@ -161,6 +213,8 @@
 
   /** Status hak terpenuhi menurut tipe ruang (dikonfirmasi 2026-09-20, lihat docs/konsep.md). */
   function status(r) {
+    // Ruang baru tanpa jatah tampil netral (bukan Perlu perhatian) sampai ada pemasukan.
+    if (!r.alloc) return { key: 'idle', label: 'Belum ada jatah', ratio: 0 };
     const ratio = r.alloc ? r.used / r.alloc : 0;
     if (r.kind === 'mencukupi') {
       return ratio >= 0.85
@@ -172,7 +226,7 @@
       : { key: 'progress', label: 'Berjalan', ratio };
   }
 
-  const STATUS_ICON = { good: 'check', progress: 'clock', attn: 'alert' };
+  const STATUS_ICON = { good: 'check', progress: 'clock', attn: 'alert', idle: 'clock' };
   const chip = (st) =>
     `<span class="chip chip--${st.key}">${icon(STATUS_ICON[st.key])}${st.label}</span>`;
 
@@ -196,9 +250,10 @@
   }
 
   /** Membagi nominal ke ruang. Sisa pembulatan masuk ke ruang pertama (prioritas). */
-  function split(amount, pcts) {
-    const total = ORDER.reduce((a, id) => a + pcts[id], 0);
-    const parts = ORDER.map((id) => Math.floor((amount * pcts[id]) / 100));
+  function split(amount, pcts, ids = S.order) {
+    if (!ids.length) return { parts: {}, total: 0, rest: amount, valid: true };
+    const total = ids.reduce((a, id) => a + pcts[id], 0);
+    const parts = ids.map((id) => Math.floor((amount * pcts[id]) / 100));
     const valid = total <= 100;
     let rest = 0;
     if (valid) {
@@ -206,7 +261,7 @@
       parts[0] += target - parts.reduce((a, b) => a + b, 0);
       rest = amount - target;
     }
-    return { parts: Object.fromEntries(ORDER.map((id, i) => [id, parts[i]])), total, rest, valid };
+    return { parts: Object.fromEntries(ids.map((id, i) => [id, parts[i]])), total, rest, valid };
   }
 
   /* ----------------------------------------------------------- komponen */
@@ -274,7 +329,7 @@
         return `<button type="button" class="room-card${flowing}" style="--seg:${color(r)}" data-action="open-room" data-arg="${r.id}">
           <span class="room-card__head">${roomIcon(r)}<span class="room-name">${esc(r.name)}</span></span>
           <span class="room-card__body">${ring(from, to, r, undefined, '', st.ratio)}
-            <span class="metric"><b>${rpShort(r.used)}</b>${r.verb} dari ${rpShort(r.alloc)}</span></span>
+            <span class="metric">${r.alloc ? `<b>${rpShort(r.used)}</b>${r.verb} dari ${rpShort(r.alloc)}` : `<b>Rp${NBSP}0</b>Menunggu rezeki`}</span></span>
           ${chip(st)}
         </button>`;
       })
@@ -295,7 +350,9 @@
         attn.push({ icon: 'clock', tone: 'info', text: `Saldo ${a.name} belum dicocokkan ${a.days} hari`, action: ['Cocokkan', 'open-koreksi', a.id] });
       }
     });
-    attn.push({ icon: 'clock', tone: 'info', text: 'Nilai harta zakat terakhir diperbarui 40 hari lalu', action: ['Lihat', 'open-haul'] });
+    if (S.zakat) {
+      attn.push({ icon: 'clock', tone: 'info', text: 'Nilai harta zakat terakhir diperbarui 40 hari lalu', action: ['Lihat', 'open-haul'] });
+    }
     const attnHtml = attn
       .slice(0, 3)
       .map(
@@ -305,13 +362,24 @@
       )
       .join('');
 
+    // Denah tanpa data: satu kalimat dan dua ajakan (catat rezeki pertama, coba data contoh).
+    const emptyCard = `<section class="card empty-card" aria-label="Belum ada rezeki">
+        <p class="empty-card__title">Belum ada rezeki bulan ini</p>
+        <p class="list-row__sub">Catat rezeki pertamamu, lalu lihat ia mengalir ke ruang-ruangmu.</p>
+        <div class="actions" style="margin-top:var(--rf-space-4)">
+          <button type="button" class="btn btn--primary btn--block" data-action="catat">Catat rezeki pertama</button>
+          <button type="button" class="btn btn--text btn--block" data-action="enter-demo">Coba data contoh</button></div></section>`;
+    const noRooms = `<div class="card empty-card"><p class="empty-card__title">Belum ada ruang</p>
+        <p class="list-row__sub">Rezeki yang masuk akan menunggu sampai ada ruang untuk dialirkan.</p>
+        <div class="actions" style="margin-top:var(--rf-space-3)"><button type="button" class="btn btn--tonal btn--block" data-action="apply-template">Pakai pola Tiga hak</button></div></div>`;
     return `<header class="topbar"><div><h1 tabindex="-1">Denah</h1>
-        <p class="topbar__sub">September 2026 · ±7 Rabiul Akhir 1448</p></div><span class="badge">Mode demo</span></header>
+        <p class="topbar__sub">September 2026${S.zakat ? ' · ±7 Rabiul Akhir 1448' : ''}</p></div>${
+          S.demo ? '<button type="button" class="badge badge--btn" data-action="demo-info">Mode demo</button>' : ''
+        }</header>
       <section class="card card--hero" aria-label="Ringkasan rezeki bulan ini">
         <p class="hero-label">Rezeki bulan ini</p>
         <p class="hero-number">${rp(total)}</p>
-        ${stackBar(items, pend, aria)}
-        ${legend(items, total, pend)}
+        ${total ? stackBar(items, pend, aria) + legend(items, total, pend) : ''}
         ${
           pend
             ? `<div class="pending"><span>${icon('alert')}</span><span class="pending__text">${rp(pend)} belum dialirkan</span>
@@ -319,12 +387,14 @@
             : ''
         }
       </section>
+      ${total ? '' : emptyCard}
       <h2 class="section-title">Ruang</h2>
+      ${rooms().length ? '' : noRooms}
       <div class="rooms-grid">${cards}
         <button type="button" class="room-card room-card--add" data-action="info" data-arg="Menambah ruang (S10) belum dibuat di prototipe. Gratis sampai 5 ruang.">${icon('plus')}Ruang baru</button>
       </div>
       <h2 class="section-title">Perlu perhatian</h2>
-      <ul class="list">${attnHtml}</ul>`;
+      ${attnHtml ? `<ul class="list">${attnHtml}</ul>` : '<p class="empty">Tidak ada yang perlu diperhatikan sekarang.</p>'}`;
   }
 
   function catatScreen() {
@@ -340,7 +410,11 @@
         .map((s) => `<button type="button" class="chip-btn" aria-pressed="${d.sumber === s}" data-action="sumber" data-arg="${s}">${s}</button>`)
         .join('');
       fields = `<p class="field-label">Sumber</p><div class="chips">${chips}</div>`;
+    } else if (!rooms().length) {
+      fields = `<div class="banner banner--info">${icon('clock')}<span>Belum ada ruang untuk pengeluaran. Pakai pola Tiga hak, atau tambah ruang di tab Ruang.</span></div>
+        <div class="actions" style="margin-top:var(--rf-space-3)"><button type="button" class="btn btn--tonal btn--block" data-action="apply-template">Pakai pola Tiga hak</button></div>`;
     } else {
+      if (!S.rooms[d.room]) d.room = S.order[0];
       const r = S.rooms[d.room];
       if (!d.cat || !catsOf(r).some((p) => p.name === d.cat)) d.cat = catsOf(r)[0].name;
       const roomChips = rooms()
@@ -395,11 +469,12 @@
     if (!el) return;
     el.textContent = n ? nf.format(n) : '0';
     el.classList.toggle('is-empty', !n);
-    $('#btn-primary').disabled = !n;
+    const noRoom = d.mode === 'keluar' && !rooms().length;
+    $('#btn-primary').disabled = !n || noRoom;
     const add = $('#btn-add');
-    if (add) add.disabled = !n;
+    if (add) add.disabled = !n || noRoom;
     const banner = $('#banner');
-    if (d.mode === 'keluar') {
+    if (d.mode === 'keluar' && !noRoom) {
       const r = S.rooms[d.room];
       const over = r.used + n - r.alloc;
       if (n && over > 0) {
@@ -440,9 +515,13 @@
           ? ''
           : `<div class="banner">${icon('alert')}<span>Total ${total}% lebih dari 100%. Kurangi salah satu ruang.</span></div>`
       }
-      <div class="switch-row"><div><b>Ubah sekali ini</b><p class="list-row__sub">${A.edit ? 'Hanya untuk pemasukan ini. Aturan tetap tidak berubah.' : 'Sesuaikan pembagian tanpa mengubah aturan.'}</p></div>
-        <button type="button" class="switch" role="switch" aria-checked="${A.edit}" aria-label="Ubah sekali ini" data-action="toggle-edit"></button></div>
-      <button type="button" class="btn btn--primary btn--block" data-action="confirm-alokasi" ${valid ? '' : 'disabled'}>Alirkan</button>`;
+      ${
+        rooms().length
+          ? `<div class="switch-row"><div><b>Ubah sekali ini</b><p class="list-row__sub">${A.edit ? 'Hanya untuk pemasukan ini. Aturan tetap tidak berubah.' : 'Sesuaikan pembagian tanpa mengubah aturan.'}</p></div>
+        <button type="button" class="switch" role="switch" aria-checked="${A.edit}" aria-label="Ubah sekali ini" data-action="toggle-edit"></button></div>`
+          : `<div class="banner banner--info">${icon('clock')}<span>Belum ada ruang. Rezeki ini tersimpan sebagai belum dialirkan sampai kamu menambah ruang.</span></div>`
+      }
+      <button type="button" class="btn btn--primary btn--block" data-action="confirm-alokasi" ${valid ? '' : 'disabled'}>${rooms().length ? 'Alirkan' : 'Simpan, alirkan nanti'}</button>`;
   }
 
   function detailScreen() {
@@ -462,7 +541,7 @@
         const over = p.used - p.alloc;
         if (!p.alloc) {
           return `<li><div class="pos" style="--seg:${color(r)}"><div class="pos__top"><span>${esc(p.name)}</span><span>${rp(p.used)}</span></div>
-            <p class="pos__sub">Tanpa jatah tersendiri. Ikut dihitung dalam jatah ${esc(r.name)}.</p></div></li>`;
+            <p class="pos__sub">${r.alloc ? `Tanpa jatah tersendiri. Ikut dihitung dalam jatah ${esc(r.name)}.` : 'Belum ada jatah bulan ini. Alirkan rezeki dulu.'}</p></div></li>`;
         }
         return `<li><div class="pos" style="--seg:${color(r)}"><div class="pos__top"><span>${esc(p.name)}</span><span>${pct(ratio)}%</span></div>
           <p class="pos__sub">${rp(p.used)} dari ${rp(p.alloc)}</p>
@@ -486,7 +565,7 @@
       ${zakat}
       <h2 class="section-title">Pos</h2><ul class="list">${pos}</ul>
       <h2 class="section-title">Transaksi terbaru</h2><ul class="list">${txHtml}</ul>
-      <div style="margin-top:var(--rf-space-4)"><button type="button" class="btn btn--tonal btn--block" data-action="info" data-arg="Pengaturan aturan (S12) belum dibuat di prototipe.">Atur aturan ${esc(r.name)}</button></div>`;
+      <div style="margin-top:var(--rf-space-4)"><button type="button" class="btn btn--tonal btn--block" data-action="open-aturan" data-arg="${r.id}">Atur aturan ${esc(r.name)}</button></div>`;
   }
 
   function haulScreen() {
@@ -541,13 +620,14 @@
             .join('');
           return `<h2 class="section-title">${esc(g.date)}</h2><ul class="list">${rows}</ul>`;
         })
-        .join('') || `<p class="empty">Belum ada transaksi di akun ini.</p>`;
+        .join('') ||
+      `<p class="empty">${route.acct ? 'Belum ada transaksi di akun ini.' : 'Belum ada transaksi. Rezeki dan pengeluaran yang kamu catat akan muncul di sini.'}</p>`;
 
     const filter = route.acct
       ? `<div class="chips" style="margin:var(--rf-space-2) 0"><button type="button" class="chip-btn" aria-pressed="true" data-action="clear-filter">Akun: ${esc(S.acct[route.acct].name)} ✕</button></div>`
       : '';
     // Petunjuk hari kosong: lembut, tanpa streak dan tanpa warna merah.
-    const yesterdayEmpty = !S.checked['19 Sep'] && !S.tx.some((t) => t.date === '19 Sep' && t.amt < 0);
+    const yesterdayEmpty = S.tx.length > 0 && !S.checked['19 Sep'] && !S.tx.some((t) => t.date === '19 Sep' && t.amt < 0);
     const hint =
       !route.acct && yesterdayEmpty
         ? `<div class="banner banner--info">${icon('clock')}<span class="banner__body">Kemarin belum ada catatan pengeluaran.
@@ -574,9 +654,18 @@
       .join('');
     return `<header class="topbar"><div><h1 tabindex="-1">Ruang</h1>
       <p class="topbar__sub">Versi ringkas (S10)</p></div></header>
-      <ul class="list">${rows}</ul>
+      ${
+        rows
+          ? `<ul class="list">${rows}</ul>
+      <h2 class="section-title">Aturan alokasi</h2>
+      <ul class="list"><li><button type="button" class="list-row" data-action="open-aturan"><span class="attn-icon" style="color:var(--rf-primary)">${icon('sliders')}</span>
+        <span class="list-row__main"><p class="list-row__title">Pembagian rezeki</p><p class="list-row__sub">${rooms().map((r) => `${esc(r.name)} ${r.pct}%`).join(' · ')}</p></span>${icon('chevron')}</button></li></ul>`
+          : `<div class="card empty-card"><p class="empty-card__title">Belum ada ruang</p>
+        <p class="list-row__sub">Ruang adalah tempat rezeki dialirkan, misalnya Memberi, Diri, dan Keluarga.</p>
+        <div class="actions" style="margin-top:var(--rf-space-3)"><button type="button" class="btn btn--tonal btn--block" data-action="apply-template">Pakai pola Tiga hak</button></div></div>`
+      }
       <div style="margin-top:var(--rf-space-4)"><button type="button" class="btn btn--tonal btn--block" data-action="info" data-arg="Menambah ruang belum dibuat di prototipe. Gratis sampai 5 ruang; lebih dari itu butuh Pro.">${icon('plus')}Tambah ruang</button>
-      <p class="list-row__sub" style="text-align:center;margin-top:8px">3 dari 5 ruang gratis</p></div>`;
+      <p class="list-row__sub" style="text-align:center;margin-top:8px">${rooms().length} dari 5 ruang gratis</p></div>`;
   }
 
   function lainnyaScreen() {
@@ -595,7 +684,7 @@
         ${act('Tangkap otomatis', 'S28 · Pro, versi 1.1', 'open-tangkap', '', 'inbox')}
         ${act('Widget catat kilat', 'Pro · pintasan ikon, tile, dan balasan notifikasi tetap gratis', 'open-widget', '', 'bolt')}
         ${row('Akun, kategori, dan favorit', 'S13', 'S13 belum dibuat di prototipe.')}
-        ${row('Aturan alokasi', 'S12', 'S12 belum dibuat di prototipe.')}
+        ${act('Aturan alokasi', 'S12 · ubah pembagian rezeki ke ruang', 'open-aturan', '', 'sliders')}
         ${row('Keamanan', 'PIN dan biometrik (S19), selalu gratis', 'S19 belum dibuat di prototipe.')}
         ${row('Backup, restore, dan ekspor', 'S20, selalu gratis', 'S20 belum dibuat di prototipe.')}
         ${row('Tentang dan disclaimer', 'S23', 'S23 belum dibuat di prototipe.')}
@@ -745,7 +834,7 @@
   function tangkapScreen() {
     const C = S.capture;
     const appRow = (id, label) =>
-      `<div class="switch-row" style="margin:var(--rf-space-3) 0"><div><b>${esc(label)}</b><p class="list-row__sub">Dipetakan ke akun ${esc(S.acct[id].name)}</p></div>
+      `<div class="switch-row" style="margin:var(--rf-space-3) 0"><div><b>${esc(label)}</b><p class="list-row__sub">Dipetakan ke akun ${esc((S.acct[id] || S.acct[S.acctOrder[0]]).name)}</p></div>
         <button type="button" class="switch" role="switch" aria-checked="${C.apps[id]}" aria-label="${esc(label)}" data-action="capture-app" data-arg="${id}"></button></div>`;
     return `${topbarNav('Tangkap otomatis')}
       <p class="list-row__sub" style="margin:0 0 var(--rf-space-3)">Fitur v1.1 · Pro. Rizqflow menyiapkan draf dari notifikasi pembayaran; kamu yang menyetujui.</p>
@@ -767,12 +856,219 @@
       <p class="disclaimer">Daftar aplikasi diperluas bertahap. Notifikasi dari aplikasi lain diabaikan dan tidak dibaca lebih jauh.</p>`;
   }
 
+  /* ------------------------------------ S01-S04: onboarding (flow F1) */
+
+  const newOB = () => ({
+    template: 'tiga', pcts: { memberi: 10, diri: 30, keluarga: 60 },
+    acctType: 'tunai', acctName: 'Tunai', nameTouched: false, balance: '',
+  });
+
+  const ACCT_TYPES = [
+    { id: 'tunai', label: 'Tunai', def: 'Tunai', hint: 'Contoh: Dompet' },
+    { id: 'bank', label: 'Bank', def: '', hint: 'Contoh: Bank Jago' },
+    { id: 'ewallet', label: 'Dompet digital', def: '', hint: 'Contoh: GoPay' },
+  ];
+
+  const stepNote = (n) => `<p class="step-note">Langkah ${n} dari ${OB.template === 'tiga' ? 3 : 2}</p>`;
+
+  /** S01 Sambutan: tagline dan satu tombol Mulai, tanpa slide berlapis. */
+  function sambutanScreen() {
+    const marks = TEMPLATE_IDS.map((id) => `<span class="room-icon" style="--seg:${color(TEMPLATE[id])}">${icon(TEMPLATE[id].icon)}</span>`).join('');
+    const point = (t) => `<li>${icon('check')}<span>${t}</span></li>`;
+    return `<div class="welcome">
+      <div class="welcome__mark" aria-hidden="true">${marks}</div>
+      <h1 class="welcome__brand" tabindex="-1">Rizqflow</h1>
+      <p class="welcome__tag">Rezeki mengalir, setiap hak terpenuhi.</p>
+      <ul class="welcome__points">${point('Data tersimpan di ponselmu, tanpa akun')}${point('Jalan tanpa internet')}${point('Tanpa iklan')}</ul>
+      <div class="actions welcome__actions">
+        <button type="button" class="btn btn--primary btn--block" data-action="ob-start">Mulai</button>
+        <button type="button" class="btn btn--text btn--block" data-action="info" data-arg="Pulihkan dari cadangan (S20, flow F7) belum dibuat di prototipe.">Pulihkan dari cadangan</button>
+      </div></div>`;
+  }
+
+  /** S02 Pilih pola ruang: Tiga hak atau Mulai kosong. Bisa diubah nanti. */
+  function polaScreen() {
+    const three = TEMPLATE_IDS.map((id) => {
+      const r = TEMPLATE[id];
+      return `<li>${roomIcon(r)}<span><b>${esc(r.name)}</b> <span class="muted">· ${esc(TEMPLATE_DESC[id])}</span></span></li>`;
+    }).join('');
+    const card = (id, title, sub, extra) =>
+      `<button type="button" class="choice" aria-pressed="${OB.template === id}" data-action="ob-template" data-arg="${id}">
+        <span class="choice__radio" aria-hidden="true"></span>
+        <span class="choice__body"><b>${title}</b><span class="list-row__sub">${sub}</span>${extra || ''}</span></button>`;
+    return `${topbarNav('Pilih pola ruang')}${stepNote(1)}
+      <p class="list-row__sub" style="margin:var(--rf-space-2) 0 var(--rf-space-4)">Ruang adalah tempat rezeki dialirkan. Pilihan ini bisa diubah kapan saja.</p>
+      ${card('tiga', 'Tiga hak', 'Cara paling mudah untuk mulai. Rezeki dibagi ke tiga ruang:', `<ul class="choice__list">${three}</ul>`)}
+      ${card('kosong', 'Mulai kosong', 'Susun ruangmu sendiri nanti di tab Ruang. Rezeki yang masuk menunggu sampai ada ruang.')}
+      <div class="actions" style="margin-top:var(--rf-space-4)"><button type="button" class="btn btn--primary btn--block" data-action="ob-next-pola">Lanjut</button></div>`;
+  }
+
+  /** S03 Atur persentase: total selalu 100% karena Keluarga menerima sisanya. */
+  function persenScreen() {
+    return `${topbarNav('Atur pembagian')}${stepNote(2)}
+      <p class="list-row__sub" style="margin:var(--rf-space-2) 0 0">Setiap rezeki yang masuk dialirkan ke ruang-ruang ini. Bisa diubah kapan saja di Ruang, Aturan alokasi.</p>
+      ${ruleEditor()}
+      <div class="actions" style="margin-top:var(--rf-space-4)"><button type="button" class="btn btn--primary btn--block" data-action="ob-next-persen">Lanjut</button></div>`;
+  }
+
+  /** S04 Tambah akun pertama: jenis, nama, dan saldo awal (saldo awal bukan rezeki). */
+  function akunScreen() {
+    const types = ACCT_TYPES.map(
+      (t) => `<button type="button" class="chip-btn" aria-pressed="${OB.acctType === t.id}" data-action="ob-type" data-arg="${t.id}">${t.label}</button>`
+    ).join('');
+    const t = ACCT_TYPES.find((x) => x.id === OB.acctType);
+    return `${topbarNav('Akun pertama')}${stepNote(OB.template === 'tiga' ? 3 : 2)}
+      <p class="list-row__sub" style="margin:var(--rf-space-2) 0 0">Tempat uangmu berada: dompet, rekening, atau dompet digital. Akun lain bisa ditambah nanti.</p>
+      <p class="field-label">Jenis akun</p><div class="chips">${types}</div>
+      <p class="field-label"><label for="ob-name">Nama akun</label></p>
+      <input id="ob-name" class="field-input" type="text" maxlength="30" autocomplete="off" placeholder="${esc(t.hint)}" value="${esc(OB.acctName)}" />
+      <p class="field-label" style="margin-top:var(--rf-space-4)">Saldo awal</p>
+      <div class="amount" style="margin:var(--rf-space-3) 0" aria-live="polite"><span class="amount__cur">Rp</span><span class="amount__num" id="ob-num"></span></div>
+      <p class="list-row__sub" style="text-align:center;margin:0">Saldo yang ada sekarang. Ini bukan rezeki, jadi tidak dialirkan ke ruang.</p>
+      <div class="numpad">${numpadHtml('ob-key')}</div>
+      <div class="actions"><button type="button" class="btn btn--primary btn--block" id="ob-done" data-action="ob-done">Mulai memakai</button></div>`;
+  }
+
+  function updateOb() {
+    const el = $('#ob-num');
+    if (!el) return;
+    const n = Number(OB.balance || 0);
+    el.textContent = n ? nf.format(n) : '0';
+    el.classList.toggle('is-empty', !n);
+    const done = $('#ob-done');
+    if (done) done.disabled = !OB.acctName.trim();
+  }
+
+  function startOnboarding() {
+    OB = newOB();
+    R = null;
+    realState = null;
+    hideNotif();
+    closeSheet();
+    dismissToast();
+    S = seed(); // belum dipakai di layar onboarding
+    draft = newDraft();
+    A = K = K2 = undo = prevView = null;
+    stack = [];
+    route = { name: 'sambutan' };
+    render();
+  }
+
+  /* --------------------- penyunting persentase: S03 dan S12 (flow F4) */
+
+  /**
+   * Dipakai bersama. Di S03 (kind 'ob') ruang terakhir menerima sisanya sehingga total selalu 100%.
+   * Di S12 (kind 'ar') semua bebas diubah, tetapi Simpan hanya aktif bila total tepat 100%.
+   */
+  function ruleEditor() {
+    const auto = R.kind === 'ob';
+    const rows = R.ids
+      .map((id, i) => {
+        const r = R.rooms[id];
+        const isRest = auto && i === R.ids.length - 1;
+        const ctl = isRest
+          ? `<p class="list-row__sub" style="margin:var(--rf-space-1) 0 0">Otomatis: menerima sisanya supaya total tepat 100%.</p>`
+          : `<div class="rule-row__ctl">
+              <button type="button" class="step-btn" data-action="rule-step" data-arg="${id}:-1" aria-label="Kurangi ${esc(r.name)} 1 persen">−</button>
+              <input type="range" min="0" max="100" step="1" value="${R.pcts[id]}" data-rule="${id}" aria-label="Persentase ${esc(r.name)}" />
+              <button type="button" class="step-btn" data-action="rule-step" data-arg="${id}:1" aria-label="Tambah ${esc(r.name)} 1 persen">+</button></div>`;
+        return `<div class="rule-row${R.focus === id ? ' is-focus' : ''}" style="--seg:${color(r)}">
+          <div class="rule-row__top">${roomIcon(r)}<div class="alloc-row__main"><p class="alloc-row__name">${esc(r.name)}</p>
+          <p class="alloc-row__pct" id="rule-amt-${id}"></p></div><span class="rule-row__pct" id="rule-pct-${id}"></span></div>${ctl}</div>`;
+      })
+      .join('');
+    return `<div class="card" style="margin-top:var(--rf-space-3)"><p class="hero-label">Contoh untuk ${rp(RULE_SAMPLE)}</p><div id="rule-summary"></div></div>
+      <div class="card" style="margin-top:var(--rf-space-3)">${rows}
+        <div class="total-line"><span>Total</span><span id="rule-total"></span></div></div>
+      <div id="rule-note" role="status"></div>`;
+  }
+
+  const ruleSum = () => R.ids.reduce((a, id) => a + R.pcts[id], 0);
+  const ruleDirty = () => !!R && R.kind === 'ar' && R.ids.some((id) => R.pcts[id] !== R.orig[id]);
+
+  function updateRules() {
+    if (!R || !R.ids.length) return;
+    const sum = ruleSum();
+    const { parts, rest } = split(RULE_SAMPLE, R.pcts, R.ids);
+    R.ids.forEach((id) => {
+      const p = $('#rule-pct-' + id);
+      if (p) p.textContent = `${R.pcts[id]}%`;
+      const a = $('#rule-amt-' + id);
+      if (a) a.textContent = rp(parts[id]);
+      const input = $(`[data-rule="${id}"]`);
+      if (input && Number(input.value) !== R.pcts[id]) input.value = R.pcts[id];
+    });
+    const items = R.ids.map((id) => ({ id, name: R.rooms[id].name, color: color(R.rooms[id]), to: parts[id], from: parts[id] }));
+    const aria = 'Contoh pembagian: ' + items.map((i) => `${i.name} ${rp(i.to)}`).join(', ') + (rest ? `, belum dialirkan ${rp(rest)}` : '');
+    const summary = $('#rule-summary');
+    if (summary) summary.innerHTML = stackBar(items, rest, aria) + legend(items, RULE_SAMPLE, rest);
+    const total = $('#rule-total');
+    if (total) {
+      total.innerHTML =
+        sum === 100
+          ? `<span class="chip chip--good">${icon('check')}100%</span>`
+          : `<span class="chip chip--attn">${icon('alert')}${sum}%</span>`;
+    }
+    const note = $('#rule-note');
+    if (note) {
+      note.innerHTML =
+        sum === 100
+          ? ''
+          : `<div class="banner">${icon('alert')}<span>${sum < 100 ? `Total ${sum}%. Tambah ${100 - sum}% supaya genap 100%.` : `Total ${sum}%. Kurangi ${sum - 100}% supaya genap 100%.`} Sisanya tidak dialirkan ke ruang mana pun.</span></div>`;
+    }
+    const save = $('#ar-save');
+    if (save) save.disabled = !(sum === 100 && ruleDirty());
+  }
+
+  function setRule(id, value) {
+    let v = Math.max(0, Math.min(100, Math.round(value)));
+    if (R.kind === 'ob') {
+      const free = R.ids.slice(0, -1);
+      const others = free.filter((x) => x !== id).reduce((a, x) => a + R.pcts[x], 0);
+      v = Math.min(v, 100 - others);
+      R.pcts[id] = v;
+      R.pcts[R.ids[R.ids.length - 1]] = 100 - free.reduce((a, x) => a + R.pcts[x], 0);
+    } else {
+      R.pcts[id] = v;
+    }
+    updateRules();
+  }
+
+  /** S12 Aturan alokasi. Berlaku untuk pemasukan berikutnya; riwayat tidak berubah. */
+  function aturanScreen() {
+    if (!S.order.length) {
+      return `${topbarNav('Aturan alokasi')}
+        <p class="empty">Belum ada ruang, jadi belum ada yang diatur.</p>
+        <button type="button" class="btn btn--tonal btn--block" data-action="apply-template">Pakai pola Tiga hak</button>`;
+    }
+    return `${topbarNav('Aturan alokasi')}
+      <p class="list-row__sub" style="margin:0">Berlaku untuk pemasukan berikutnya. Riwayat yang sudah tercatat tidak berubah.</p>
+      ${ruleEditor()}
+      <ul class="list" style="margin-top:var(--rf-space-4)"><li><button type="button" class="list-row" data-action="ar-pro"><span class="attn-icon" style="color:var(--rf-primary)">${icon('lock')}</span>
+        <span class="list-row__main"><p class="list-row__title">Aturan lanjutan</p><p class="list-row__sub">Pro · prioritas, batas atas, sisa mengalir</p></span>${icon('chevron')}</button></li></ul>
+      <div class="actions" style="margin-top:var(--rf-space-4)"><button type="button" class="btn btn--primary btn--block" id="ar-save" data-action="ar-save" disabled>Simpan aturan</button></div>`;
+  }
+
+  function askDiscard() {
+    showSheet(
+      `<div class="sheet__grab"></div>
+      <h2>Buang perubahan?</h2>
+      <p class="list-row__sub" style="margin:0 0 var(--rf-space-4)">Perubahan pada aturan alokasi belum disimpan.</p>
+      <div class="actions">
+        <button type="button" class="btn btn--primary btn--block" data-action="close-sheet">Lanjut mengubah</button>
+        <button type="button" class="btn btn--text btn--block" data-action="ar-discard">Buang perubahan</button>
+      </div>`,
+      'Buang perubahan?'
+    );
+  }
+
   const SCREENS = {
     denah: denahScreen, catat: catatScreen, alokasi: alokasiScreen, detail: detailScreen,
     haul: haulScreen, transaksi: transaksiScreen, ruang: ruangScreen, lainnya: lainnyaScreen,
     koreksi: koreksiScreen, pengingat: pengingatScreen, draf: drafScreen, tangkap: tangkapScreen,
+    sambutan: sambutanScreen, pola: polaScreen, persen: persenScreen, akun: akunScreen, aturan: aturanScreen,
   };
-  const NO_NAV = ['catat', 'alokasi', 'haul', 'koreksi'];
+  const NO_NAV = ['catat', 'alokasi', 'haul', 'koreksi', 'sambutan', 'pola', 'persen', 'akun', 'aturan'];
   const TABS = ['denah', 'transaksi', 'ruang', 'lainnya'];
 
   /* --------------------------------------------------------------- router */
@@ -843,6 +1139,8 @@
     });
     if (route.name === 'catat') updateCatat();
     if (route.name === 'koreksi') updateKoreksi();
+    if (route.name === 'akun') updateOb();
+    if (R && (route.name === 'persen' || route.name === 'aturan')) updateRules();
     const h1 = $('h1', screenEl);
     if (h1) h1.focus({ preventScroll: true });
     requestAnimationFrame(() =>
@@ -922,26 +1220,38 @@
     $('#sheet').hidden = true;
   }
 
-  function startAlokasi(label, amount, pendingId, acct) {
+  function startAlokasi(label, amount, pendingId, acct, counted) {
     A = {
       label, amount, pendingId,
-      acct: acct || 'jago',
-      pcts: Object.fromEntries(ORDER.map((id) => [id, S.rooms[id].pct])),
+      counted: !!counted, // sisa dari alokasi sebelumnya: saldo dan transaksinya sudah tercatat
+      acct: acct || defAcct(),
+      pcts: Object.fromEntries(S.order.map((id) => [id, S.rooms[id].pct])),
       edit: false,
     };
     go('alokasi');
   }
 
   function confirmAlokasi() {
-    const { parts, valid } = split(A.amount, A.pcts);
+    const { parts, rest, valid } = split(A.amount, A.pcts);
     if (!valid) return;
     prevView = snapshot();
-    const ids = ORDER.filter((id) => parts[id] > 0);
+    const ids = S.order.filter((id) => parts[id] > 0);
     ids.forEach((id) => (S.rooms[id].alloc += parts[id]));
     if (A.pendingId) S.pending = S.pending.filter((p) => p.id !== A.pendingId);
-    S.acct[A.acct].bal += A.amount;
-    S.tx.unshift({ date: 'Hari ini', title: A.label, sub: `Pemasukan · dialirkan ke ${ids.length} ruang`, amt: A.amount, room: null, acct: A.acct });
-    const msg = `${rp(A.amount)} dialirkan ke ${ids.length} ruang`;
+    // Yang belum terbagi tidak hilang: tampil di Denah sebagai "belum dialirkan".
+    if (rest > 0) {
+      S.pending.push({ id: 'p' + (S.tx.length + 1) + '-' + rest, label: ids.length ? A.label + ' (sisa)' : A.label, amount: rest, counted: true });
+    }
+    if (!A.counted) {
+      S.acct[A.acct].bal += A.amount;
+      S.tx.unshift({
+        date: 'Hari ini', title: A.label, amt: A.amount, room: null, acct: A.acct,
+        sub: ids.length ? `Pemasukan · dialirkan ke ${ids.length} ruang` : 'Pemasukan · belum dialirkan',
+      });
+    }
+    const msg = ids.length
+      ? `${rp(A.amount - rest)} dialirkan ke ${ids.length} ruang${rest ? `, ${rp(rest)} belum dialirkan` : ''}`
+      : `${rp(A.amount)} tersimpan, belum dialirkan`;
     A = null;
     stack = [];
     route = { name: 'denah', flow: ids };
@@ -995,7 +1305,10 @@
   function pushSample() {
     const smp = SAMPLES[S.sampleIdx % SAMPLES.length];
     S.sampleIdx += 1;
-    S.drafts.push(Object.assign({ id: 'd' + S.sampleIdx }, smp));
+    if (!S.order.length) return smp;
+    // Data pengguna hanya punya akun dan ruang miliknya: contoh disesuaikan ke yang ada.
+    const fit = { acct: S.acct[smp.acct] ? smp.acct : S.acctOrder[0], room: S.rooms[smp.room] ? smp.room : S.order[0] };
+    S.drafts.push(Object.assign({ id: 'd' + S.sampleIdx }, smp, fit));
     return smp;
   }
 
@@ -1010,6 +1323,10 @@
 
   /** Simpan pengeluaran dari jalur cepat (favorit, nominal, balasan notifikasi), dengan Urungkan. */
   function quickSave(e) {
+    if (!S.rooms[e.room]) {
+      toast('Belum ada ruang untuk pengeluaran ini. Pakai pola Tiga hak di tab Ruang.');
+      return;
+    }
     const before = JSON.stringify(S);
     addExpense(e);
     S.last = { room: e.room, cat: e.cat };
@@ -1101,7 +1418,10 @@
       draft = newDraft();
       go('catat');
     },
-    back: () => back(),
+    back: () => {
+      if (route.name === 'aturan' && ruleDirty()) askDiscard();
+      else back();
+    },
     mode: (arg) => {
       draft.mode = arg;
       screenEl.innerHTML = catatScreen();
@@ -1133,7 +1453,7 @@
     },
     'alirkan-pending': () => {
       const p = S.pending[0];
-      if (p) startAlokasi(p.label, p.amount, p.id);
+      if (p) startAlokasi(p.label, p.amount, p.id, null, p.counted);
     },
     'toggle-edit': () => {
       A.edit = !A.edit;
@@ -1239,7 +1559,7 @@
 
     /* --- S25 Koreksi saldo */
     'open-koreksi': (arg) => {
-      const id = ACCT_ORDER.includes(arg) ? arg : 'tunai';
+      const id = S.acctOrder.includes(arg) ? arg : S.acctOrder[0];
       K2 = { acct: id, actual: '', room: lastRoomFor(id) };
       go('koreksi');
     },
@@ -1260,6 +1580,10 @@
       const a = S.acct[K2.acct];
       const diff = a.bal - Number(K2.actual || 0);
       if (K2.actual === '' || diff <= 0) return;
+      if (!S.rooms[K2.room]) {
+        toast('Belum ada ruang untuk mencatat selisih. Pakai pola Tiga hak di tab Ruang.');
+        return;
+      }
       const before = JSON.stringify(S);
       const roomName = S.rooms[K2.room].name;
       addExpense({ n: diff, room: K2.room, cat: 'Tak terlacak', acct: K2.acct, title: 'Tak terlacak' });
@@ -1330,6 +1654,10 @@
         toast(`Notifikasi ${smp.app} diabaikan karena aplikasinya dimatikan.`);
         return;
       }
+      if (!S.order.length) {
+        toast('Tambah ruang dulu supaya draf punya tujuan.');
+        return;
+      }
       pushSample();
       screenEl.innerHTML = tangkapScreen();
       toast(`Draf baru: ${smp.to} ${rp(smp.amt)}`);
@@ -1376,6 +1704,144 @@
       draft.fromDraft = d.id;
       go('catat');
     },
+    /* --- F1 onboarding (S01-S04) */
+    'ob-start': () => go('pola'),
+    'ob-template': (arg) => {
+      OB.template = arg;
+      screenEl.innerHTML = polaScreen();
+    },
+    'ob-next-pola': () => {
+      if (OB.template === 'tiga') {
+        R = { kind: 'ob', ids: TEMPLATE_IDS, rooms: TEMPLATE, pcts: OB.pcts, focus: null };
+        go('persen');
+      } else {
+        go('akun');
+      }
+    },
+    'ob-next-persen': () => go('akun'),
+    'ob-type': (arg) => {
+      OB.acctType = arg;
+      if (!OB.nameTouched) OB.acctName = ACCT_TYPES.find((t) => t.id === arg).def;
+      screenEl.innerHTML = akunScreen();
+      updateOb();
+    },
+    'ob-key': (arg) => {
+      OB.balance = applyKey(OB.balance, arg);
+      updateOb();
+    },
+    'ob-done': () => {
+      if (!OB.acctName.trim()) return;
+      S = freshState(OB);
+      const name = S.acct.akun1.name;
+      const bal = S.acct.akun1.bal;
+      draft = newDraft();
+      prevView = null;
+      R = null;
+      stack = [];
+      route = { name: 'denah' };
+      render();
+      toast(`Akun ${name} dibuat dengan saldo ${rp(bal)}.`);
+    },
+    'ob-restart': () => startOnboarding(),
+    /** Pakai pola Tiga hak dari Denah, Ruang, atau Catat saat belum ada ruang. */
+    'apply-template': () => {
+      const before = JSON.stringify(S);
+      const t = seed();
+      TEMPLATE_IDS.forEach((id) => {
+        const r = t.rooms[id];
+        r.alloc = 0;
+        r.used = 0;
+        r.pos.forEach((p) => {
+          p.used = 0;
+        });
+        S.rooms[id] = r;
+      });
+      S.order = TEMPLATE_IDS.slice();
+      S.last = { room: 'keluarga', cat: 'Lain-lain' };
+      if (route.name === 'catat') {
+        draft.room = 'keluarga';
+        draft.cat = null;
+      }
+      undo = () => {
+        S = JSON.parse(before);
+        render();
+      };
+      render();
+      toast('Pola Tiga hak dipakai: Memberi, Diri, dan Keluarga.', 'Urungkan');
+    },
+    'enter-demo': () => {
+      realState = JSON.stringify(S);
+      S = seed();
+      draft = newDraft();
+      prevView = null;
+      stack = [];
+      route = { name: 'denah' };
+      render();
+      toast('Mode demo: data contoh, terpisah dari datamu.');
+    },
+    'demo-info': () =>
+      showSheet(
+        `<div class="sheet__grab"></div>
+        <h2>Mode demo</h2>
+        <p class="list-row__sub" style="margin:0 0 var(--rf-space-4)">Kamu sedang melihat data contoh. Data ini terpisah dari datamu sendiri dan hilang saat kamu keluar.</p>
+        <div class="actions">
+          <button type="button" class="btn btn--primary btn--block" data-action="exit-demo">Keluar dari mode demo</button>
+          <button type="button" class="btn btn--text btn--block" data-action="close-sheet">Tetap di mode demo</button>
+        </div>`,
+        'Mode demo'
+      ),
+    'exit-demo': () => {
+      closeSheet();
+      if (!realState) {
+        startOnboarding();
+        return;
+      }
+      S = JSON.parse(realState);
+      realState = null;
+      draft = newDraft();
+      prevView = null;
+      stack = [];
+      route = { name: 'denah' };
+      render();
+      toast('Kembali ke datamu.');
+    },
+
+    /* --- F4 aturan alokasi (S12) */
+    'open-aturan': (arg) => {
+      R = {
+        kind: 'ar', ids: S.order.slice(), rooms: S.rooms, focus: S.rooms[arg] ? arg : null,
+        pcts: Object.fromEntries(S.order.map((id) => [id, S.rooms[id].pct])),
+      };
+      R.orig = Object.assign({}, R.pcts);
+      go('aturan');
+    },
+    'rule-step': (arg) => {
+      const [id, d] = arg.split(':');
+      setRule(id, R.pcts[id] + Number(d));
+    },
+    'ar-save': () => {
+      if (ruleSum() !== 100 || !ruleDirty()) return;
+      const before = JSON.stringify(S);
+      R.ids.forEach((id) => {
+        S.rooms[id].pct = R.pcts[id];
+      });
+      R = null;
+      undo = () => {
+        S = JSON.parse(before);
+        render();
+      };
+      back();
+      toast('Aturan disimpan. Berlaku untuk pemasukan berikutnya.', 'Urungkan');
+    },
+    'ar-discard': () => {
+      closeSheet();
+      R = null;
+      back();
+    },
+    'ar-pro': () => {
+      if (S.pro) toast('Simulasi: aturan lanjutan belum dibuat di prototipe.');
+      else openSheet('pro');
+    },
     info: (arg) => toast(arg),
     undo: () => {
       if (undo) undo();
@@ -1400,6 +1866,18 @@
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && e.target && e.target.id === 'notif-input') ACTIONS['notif-send']();
+  });
+
+  document.addEventListener('input', (e) => {
+    const t = e.target;
+    if (!t || !t.dataset) return;
+    if (t.id === 'ob-name') {
+      OB.acctName = t.value;
+      OB.nameTouched = true;
+      updateOb();
+    } else if (t.dataset.rule && R) {
+      setRule(t.dataset.rule, Number(t.value));
+    }
   });
 
   /* ------------------------------------------------- panel: tema, ukuran */
@@ -1440,6 +1918,9 @@
       else if (c === 'scale') setScale(b.dataset.value);
       else if (c === 'reset') {
         S = seed();
+        realState = null;
+        OB = newOB();
+        R = null;
         prevView = null;
         draft = newDraft();
         A = null;
@@ -1462,6 +1943,7 @@
   setScale(q.get('scale') || load('rf-scale') || '1');
 
   if (q.get('pro') === '1') S.pro = true;
+  OB = newOB();
   const start = q.get('screen') || 'denah';
   if (start.startsWith('detail-') && S.rooms[start.slice(7)]) {
     route = { name: 'detail', id: start.slice(7), tab: 'denah' };
@@ -1494,6 +1976,22 @@
     if (start === 'draf') grantCapture();
     route = { name: start };
     stack = [{ name: start === 'draf' ? 'transaksi' : 'lainnya' }];
+  } else if (['sambutan', 'pola', 'persen', 'akun'].includes(start)) {
+    const seq = ['sambutan', 'pola', 'persen', 'akun'];
+    if (q.get('template') === 'kosong') OB.template = 'kosong';
+    R = { kind: 'ob', ids: TEMPLATE_IDS, rooms: TEMPLATE, pcts: OB.pcts, focus: null };
+    route = { name: start };
+    stack = seq.slice(0, seq.indexOf(start)).map((name) => ({ name }));
+  } else if (start === 'kosong' || start === 'kosong-tanpa-ruang') {
+    // Denah pengguna baru setelah onboarding: dengan pola Tiga hak, atau tanpa ruang sama sekali.
+    OB.template = start === 'kosong' ? 'tiga' : 'kosong';
+    S = freshState(OB);
+    if (q.get('pro') === '1') S.pro = true;
+    draft = newDraft();
+    route = { name: 'denah' };
+  } else if (start === 'aturan') {
+    ACTIONS['open-aturan'](q.get('focus') || '');
+    stack = [{ name: 'ruang' }];
   } else if (SCREENS[start]) {
     route = { name: start };
   }

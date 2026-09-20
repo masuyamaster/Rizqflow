@@ -1432,3 +1432,241 @@ details.card[open] summary {
   align-items: flex-start;
   gap: 8px;
 }
+
+/* ---------- Onboarding (S01-S04), aturan alokasi (S12), mode demo ---------- */
+
+.welcome {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--rf-space-4);
+  padding-top: var(--rf-space-6);
+  text-align: center;
+}
+
+.welcome__mark {
+  display: flex;
+  justify-content: center;
+  gap: var(--rf-space-3);
+}
+
+.welcome__mark .room-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--rf-radius-md);
+}
+
+.welcome__mark .room-icon .icon {
+  width: 28px;
+  height: 28px;
+}
+
+.welcome__brand {
+  margin: 0;
+  font-family: var(--rf-font-display);
+  font-weight: 400;
+  font-size: var(--rf-size-hero);
+  line-height: 1.1;
+}
+
+.welcome__brand:focus {
+  outline: none;
+}
+
+.welcome__tag {
+  margin: 0;
+  font-family: var(--rf-font-display);
+  font-size: var(--rf-size-title);
+  color: var(--rf-on-surface-variant);
+}
+
+.welcome__points {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  display: grid;
+  gap: var(--rf-space-2);
+  text-align: left;
+}
+
+.welcome__points li {
+  display: flex;
+  align-items: center;
+  gap: var(--rf-space-2);
+}
+
+.welcome__points .icon {
+  width: 20px;
+  height: 20px;
+  color: var(--rf-primary);
+}
+
+.welcome__actions {
+  margin-top: var(--rf-space-4);
+}
+
+.step-note {
+  margin: 0;
+  font-size: var(--rf-size-label);
+  font-weight: 700;
+  color: var(--rf-on-surface-variant);
+}
+
+.choice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rf-space-3);
+  width: 100%;
+  padding: var(--rf-space-4);
+  text-align: left;
+  background: var(--rf-surface-container-lowest);
+  border: var(--rf-border);
+  border-radius: var(--rf-radius-md);
+}
+
+.choice + .choice {
+  margin-top: var(--rf-space-3);
+}
+
+.choice[aria-pressed='true'] {
+  border-color: var(--rf-primary);
+  box-shadow: inset 0 0 0 1px var(--rf-primary);
+}
+
+.choice__radio {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  border: 2px solid var(--rf-outline);
+  border-radius: var(--rf-radius-full);
+}
+
+.choice[aria-pressed='true'] .choice__radio {
+  border-color: var(--rf-primary);
+  background: radial-gradient(circle, var(--rf-primary) 42%, transparent 46%);
+}
+
+.choice__body {
+  display: grid;
+  gap: var(--rf-space-1);
+  min-width: 0;
+}
+
+.choice__list {
+  list-style: none;
+  margin: var(--rf-space-2) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--rf-space-2);
+}
+
+.choice__list li {
+  display: flex;
+  align-items: center;
+  gap: var(--rf-space-2);
+}
+
+.choice__list .room-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.choice__list .room-icon .icon {
+  width: 18px;
+  height: 18px;
+}
+
+.field-input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 var(--rf-space-3);
+  border: var(--rf-border);
+  border-radius: var(--rf-radius-sm);
+  background: var(--rf-surface-container-lowest);
+  color: inherit;
+  font: inherit;
+}
+
+.rule-row {
+  padding: var(--rf-space-3) 0;
+}
+
+.rule-row + .rule-row {
+  border-top: var(--rf-border);
+}
+
+.rule-row.is-focus {
+  margin-inline: calc(-1 * var(--rf-space-2));
+  padding-inline: var(--rf-space-2);
+  border-radius: var(--rf-radius-sm);
+  background: color-mix(in srgb, var(--seg) 9%, transparent);
+}
+
+.rule-row__top {
+  display: flex;
+  align-items: center;
+  gap: var(--rf-space-3);
+}
+
+.rule-row__pct {
+  font-weight: 700;
+  font-size: var(--rf-size-title);
+}
+
+.rule-row__ctl {
+  display: flex;
+  align-items: center;
+  gap: var(--rf-space-2);
+  margin-top: var(--rf-space-2);
+}
+
+.rule-row__ctl input[type='range'] {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  accent-color: var(--seg);
+}
+
+.step-btn {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: var(--rf-radius-full);
+  background: var(--rf-surface-container-high);
+  font-weight: 700;
+  font-size: var(--rf-size-title);
+}
+
+.total-line .chip {
+  align-self: center;
+}
+
+.badge--btn {
+  border: 0;
+}
+
+.chip--idle {
+  background: var(--rf-surface-container-high);
+}
+
+.chip--idle .icon {
+  color: var(--rf-on-surface-variant);
+}
+
+.empty-card {
+  text-align: center;
+  margin-top: var(--rf-space-3);
+}
+
+.empty-card__title {
+  margin: 0;
+  font-weight: 700;
+  font-size: var(--rf-size-title);
+}
+
+.empty-card .list-row__sub {
+  margin: var(--rf-space-1) 0 0;
+}
