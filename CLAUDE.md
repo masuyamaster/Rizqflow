@@ -21,6 +21,15 @@ Aplikasi finansial berbasis "hak": rezeki yang masuk dialirkan ke ruang-ruang (M
 - **Tenang, bukan panik**: peringatan lembut, tidak pernah memblokir; status selalu ikon plus teks, bukan hanya warna.
 - Asumsi fikih ditampilkan di layar beserta disclaimer: aplikasi adalah bantuan hitung, bukan fatwa.
 
+## Proyek Android
+
+- Application ID: `com.roziqrizal.rizqflow`. Tetap setelah terbit di Play Store (diputuskan 2026-09-20).
+- Modul Gradle: `:domain` (Kotlin/JVM murni, tanpa Android), `:data` (Room; masih kerangka), `:app` (Compose). `:app` dan `:data` boleh bergantung pada `:domain`, tidak sebaliknya.
+- Versi: Gradle 9.7.1, AGP 9.4.1 (Kotlin bawaan AGP, tanpa plugin `kotlin-android`), Kotlin 2.4.20, compileSdk dan targetSdk 37, min SDK 26. Semua versi ada di `gradle/libs.versions.toml`.
+- Build dari terminal butuh **JDK 17** lewat `JAVA_HOME` (bukan Java 8 yang ada di PATH). Path Android SDK ada di `local.properties`, yang tidak di-commit. Perintah: `./gradlew :domain:test` dan `./gradlew :app:assembleDebug`.
+- Android Studio harus versi terbaru: Chipmunk (2021.2) tidak bisa membuka proyek dengan AGP 9.4.
+- Tes `:domain`: JUnit Jupiter + kotlin.test, dengan `allWarningsAsErrors` menyala. Kalkulasi murni diuji dengan golden test tanpa mock, mengikuti `docs/strategi-unit-test.md` di alkaukabaandroid.
+
 ## Status dan tracking
 
 - Notion: hub **Rizqflow** di dalam Ruang Finansial, berisi database "🧩 Tahap Rizqflow" (bagian-bagian besar) dan "🚀 Pengembangan Rizqflow" (tugas dan log). Hub: https://app.notion.com/p/3e0edbb47c0b8184a091ddcf591766fd

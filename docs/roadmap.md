@@ -59,19 +59,20 @@ Spesifikasi teks sudah ada di [ui-flow.md](ui-flow.md); tahap ini mengubahnya me
 - [ ] Prototipe klik untuk flow F1–F5 (sebagian: F2, F3, dan F5 jalur ke kartu haul sudah; F1 dan F4 belum; F6, F8, dan F9 sudah)
 - [ ] Uji prototipe dengan data nyata dari Transaksi Harian di Ruang Finansial
 
-## Tahap 2 — Inti domain, tanpa UI (Backlog)
+## Tahap 2 — Inti domain, tanpa UI (In Progress)
 
 Logika bisnis yang benar dan teruji sebelum ada layar.
 
 - [ ] Rancang model data dan skema penyimpanan lokal
-- [ ] Value object Money (bilangan bulat) dan aturan pembulatan alokasi
+- [x] Value object Money (bilangan bulat, aritmetika eksak) (2026-09-20)
+- [ ] Aturan pembulatan alokasi
 - [ ] Rule engine alokasi persentase
 - [x] Definisikan arti "terpenuhi" per tipe ruang, ambang 85% untuk Mencukupi (2026-09-20, lihat [konsep.md](konsep.md))
 - [ ] Strategi modul Memberi: `zakat-haul-hijri` dan `percentage`
 - [ ] Kalkulator nisab dan haul Hijriyah
 - [ ] Strategi unit test domain (ikuti `docs/strategi-unit-test.md` di alkaukabaandroid)
 - [ ] Stub lapisan entitlement
-- [ ] Setup proyek Android: modul domain terpisah, unit test, CI dasar
+- [x] Setup proyek Android: modul domain terpisah, unit test, CI dasar (2026-09-20; CI baru berjalan setelah push)
 
 **Selesai bila:** unit test hijau untuk alokasi, nisab, dan haul (termasuk kasus tepi); tidak ada floating point untuk uang; skema penyimpanan punya jalur migrasi.
 

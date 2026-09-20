@@ -6,7 +6,7 @@ Aplikasi finansial berbasis **hak**: rezeki yang masuk dibagi ke ruang-ruang keh
 
 Inti aplikasinya universal (role-based budgeting). Modul Islami, yaitu tracker zakat mal dengan nisab dan haul kalender Hijriyah, bersifat opsional dan menjadi pembeda utama.
 
-**Status:** tahap perencanaan (belum ada kode). Platform: Android, dirilis di Google Play Store.
+**Status:** Tahap 0 dan 1 hampir selesai, Tahap 2 dimulai: kerangka proyek Android sudah bisa dibangun dan `Money` sudah ada. Platform: Android, dirilis di Google Play Store.
 
 ## Dokumen
 
@@ -19,3 +19,12 @@ Inti aplikasinya universal (role-based budgeting). Modul Islami, yaitu tracker z
 | [docs/design/](docs/design/README.md) | Design tokens dan prototipe klik (buka `prototype.html`) |
 
 Progres dan tugas dilacak di Notion (hub Rizqflow di Ruang Finansial); lihat [CLAUDE.md](CLAUDE.md).
+
+## Membangun
+
+Butuh JDK 17, Android SDK, dan Android Studio versi terbaru (proyek memakai AGP 9.4). Path SDK ditulis di `local.properties` (tidak masuk git), misalnya `sdk.dir=C:/Users/<nama>/AppData/Local/Android/Sdk`.
+
+```
+./gradlew :domain:test          # tes logika inti di JVM
+./gradlew :app:assembleDebug    # APK debug
+```
