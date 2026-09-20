@@ -1,0 +1,4 @@
+# Skrip Gradle harus tetap LF (gradlew) dan CRLF (gradlew.bat), apa pun pengaturan git di PC.
+gradlew text eol=lf
+*.bat text eol=crlf
+*.jar binary
