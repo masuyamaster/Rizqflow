@@ -317,11 +317,11 @@ T -.-> F
 - Saldo sebenarnya lebih kecil dari catatan: selisih dicatat sebagai pengeluaran "Tak terlacak" (kategori sistem) di akun itu. Lebih besar: tawarkan pemasukan yang belum tercatat, bukan pengeluaran negatif. Sama: "Catatan cocok dengan saldo" dengan ikon centang.
 - Nada netral ("Rp 47.000 belum tercatat"), tanpa kata yang menghakimi. Tombol tidak wajib; **Cari sendiri dulu** membuka S08 yang difilter ke akun itu.
 - Jalan masuk: S18 Lainnya, atau butir "Perlu perhatian" di S05. Tidak punya notifikasi sendiri.
-- Ruang tempat selisih dicatat masih keputusan terbuka (lihat [konsep.md](konsep.md)).
+- Ruang tempat selisih dicatat: ruang dari pengeluaran terakhir di akun itu, dan bisa diubah di kolom Ruang. Bila akun belum punya pengeluaran, usulannya ruang bertipe Mencukupi. Selisih adalah transaksi biasa, jadi ikut dihitung dalam jatah ruang itu.
 
 ### S26 Pengingat harian
 
-Pengaturan sederhana: aktif atau tidak, jam pengingat malam, dan pratinjau teks notifikasi. Bila izin notifikasi ditolak, layar ini menjelaskan singkat dan tidak meminta ulang berulang.
+Pengaturan sederhana: pengingat malam **aktif secara bawaan** dan bisa dimatikan, jam pengingat, dan pratinjau teks notifikasi. Usulan: izin notifikasi Android 13+ diminta setelah transaksi pertama disimpan, bukan di awal onboarding. Bila izin notifikasi ditolak, layar ini menjelaskan singkat dan tidak meminta ulang berulang.
 
 ## Flow
 

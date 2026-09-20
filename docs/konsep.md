@@ -120,6 +120,9 @@ Semua nominal disimpan sebagai **bilangan bulat dalam satuan terkecil** (value o
 - Platform: **Android saja**, dirilis di Google Play Store (2026-09-19). Web tidak dibuat; landing page dan case study tetap di roziqrizal.com. Pembelian lewat Google Play Billing.
 - Stack: **Kotlin + Jetpack Compose + Room** (2026-09-19). Compose dipilih untuk kartu ruang, cincin progres, dan animasi aliran; alkaukabaandroid memakai Views/XML, jadi ada kurva belajar yang diterima.
 - Arah visual: **opsi A**, pakai ulang identitas homepage roziqrizal.com (palet sage Material 3, Manrope, Libre Caslon Text), dengan warna dan font disimpan sebagai design tokens (2026-09-19). Detail di [ui-flow.md](ui-flow.md).
+- Widget, termasuk widget catat kilat, masuk **Pro** (2026-09-20). Pintasan ikon, tile Quick Settings, dan balasan notifikasi tetap gratis, karena mencatat dengan cepat adalah janji utama.
+- Selisih Koreksi saldo dicatat di **ruang dari pengeluaran terakhir di akun itu** (2026-09-20). Bila akun belum punya pengeluaran, usulannya ruang bertipe Mencukupi. Selisih adalah transaksi biasa, jadi ikut dihitung dalam jatah ruang itu.
+- Pengingat malam **aktif secara bawaan** dan bisa dimatikan (2026-09-20).
 
 ## Keputusan yang masih terbuka
 
@@ -136,7 +139,5 @@ Semua nominal disimpan sebagai **bilangan bulat dalam satuan terkecil** (value o
 - **Arti "terpenuhi" per tipe ruang** (lihat bagian Tipe ruang).
 - **Pengingat haul:** tetap gratis untuk satu profil atau masuk Pro.
 - **Harga final** Pro dan Sync, berdasarkan uji minat.
-- **Widget catat kilat:** gratis atau Pro. `monetisasi.md` menaruh "widget" di Pro, sementara mencatat dengan cepat adalah janji utama. Usulan: pintasan ikon, tile, dan balasan notifikasi gratis; widget bertema tetap Pro.
-- **Ruang untuk selisih Koreksi saldo** (usulan: ruang dari pengeluaran terakhir di akun itu, atau ruang bertipe Mencukupi) dan apakah selisih ikut memengaruhi status ruang.
-- **Pengingat malam:** jam bawaan, aktif sejak awal atau tidak, dan kapan izin notifikasi Android 13+ diminta.
+- **Pengingat malam:** jam bawaan dan kapan izin notifikasi Android 13+ diminta. Usulan: pukul 21.00, dan izin diminta setelah transaksi pertama disimpan, bukan di awal onboarding.
 - **Tangkap otomatis dari notifikasi bank/e-wallet:** dikerjakan setelah rilis atau tidak sama sekali.
