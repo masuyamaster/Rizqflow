@@ -17,7 +17,7 @@ Dokumen ini mencatat model bisnis yang sudah disepakati (2026-09-19). Angka harg
 | Tingkat | Isi | Harga indikatif |
 |---|---|---|
 | **Gratis** | Tiga ruang inti (Memberi, Diri, Keluarga) plus beberapa ruang peran; transaksi tak terbatas; aturan alokasi persentase dasar; dashboard Denah; nisab dan haul untuk satu profil harta (harga emas input manual); mode donasi persentase; PIN/biometrik; ekspor CSV; backup lokal terenkripsi | Rp 0 |
-| **Pro** (sekali bayar) | Ruang peran tak terbatas dengan sistem khusus per peran (Trader: batas risiko per trade, Investor: jadwal DCA); aturan alokasi lanjutan (prioritas, batas atas, sisa mengalir ke ruang lain); multi-profil haul dengan pengingat; harga emas otomatis; laporan dan insight bulanan/tahunan (PDF); multi-mata uang; widget dan tema | Rp 99–149 ribu |
+| **Pro** (sekali bayar) | Ruang peran tak terbatas dengan sistem khusus per peran (Trader: batas risiko per trade, Investor: jadwal DCA); aturan alokasi lanjutan (prioritas, batas atas, sisa mengalir ke ruang lain); multi-profil haul dengan pengingat; harga emas otomatis; laporan dan insight bulanan/tahunan (PDF); multi-mata uang; widget dan tema; tangkap otomatis dari notifikasi (v1.1) | Rp 99–149 ribu |
 | **Sync** (langganan, fase 2) | Backup dan sinkron antar-perangkat terenkripsi; ruang keluarga bersama (suami-istri) | Rp 15–25 ribu per bulan atau Rp 149 ribu per tahun |
 
 Yang **sengaja tidak** dipaywall:
@@ -65,6 +65,7 @@ Aplikasi niche seperti ini kemungkinan menghasilkan uang kecil. Anggap monetisas
 | Profil harta zakat | Satu profil | Multi-profil (emas, tabungan, usaha, anggota keluarga) |
 | Harga emas | Input manual | Otomatis |
 | Laporan | Ringkasan bulanan di aplikasi | Laporan dan insight bulanan/tahunan, PDF |
+| Menangkap pembayaran digital | Catat kilat dan Koreksi saldo | Tangkap otomatis dari notifikasi (v1.1) |
 | Lainnya | – | Multi-mata uang, widget, tema |
 
 Alur saat pengguna menyentuh fitur terkunci ada di [ui-flow.md](ui-flow.md) (flow F6 dan layar S21).

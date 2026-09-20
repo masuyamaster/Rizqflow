@@ -4,7 +4,7 @@ Spesifikasi teks tampilan dan alur pengguna. **Belum desain visual**; ini bahan 
 
 - Platform: **Android** (diputuskan 2026-09-19). Pola di bawah mengikuti konvensi Android: bottom navigation, FAB, bottom sheet, snackbar.
 - Semua angka pada wireframe hanya **contoh**, bukan saran keuangan.
-- Kode layar (S01–S26) dan flow (F1–F8) dipakai bersama di Notion dan dokumen ini.
+- Kode layar (S01–S28) dan flow (F1–F9) dipakai bersama di Notion dan dokumen ini.
 
 ## Prinsip UI
 
@@ -75,6 +75,8 @@ T -.-> F
 | S24 | Catat kilat | Bottom sheet: nominal dan favorit, dari pintasan, tile, atau notifikasi | 3 |
 | S25 | Koreksi saldo | Saldo sebenarnya per akun; selisih dicatat | 6 |
 | S26 | Pengingat harian | Jam dan nada pengingat malam | 6 |
+| S27 | Draf dari notifikasi | Setujui, ubah, atau abaikan draf transaksi | v1.1 |
+| S28 | Tangkap otomatis | Penjelasan izin, aplikasi yang didukung, pemetaan ke akun (Pro) | v1.1 |
 
 ## Wireframe layar kunci
 
@@ -323,6 +325,24 @@ T -.-> F
 
 Pengaturan sederhana: pengingat malam **aktif secara bawaan** dan bisa dimatikan, jam pengingat, dan pratinjau teks notifikasi. Usulan: izin notifikasi Android 13+ diminta setelah transaksi pertama disimpan, bukan di awal onboarding. Bila izin notifikasi ditolak, layar ini menjelaskan singkat dan tidak meminta ulang berulang.
 
+### S27 Draf dari notifikasi
+
+Fitur v1.1 (Pro). Draf tampil sebagai baris "3 draf menunggu" di atas S08, dan sebagai daftar penuh di S27.
+
+- Tiap draf menampilkan nominal, nama tujuan, waktu, aplikasi sumber, akun hasil pemetaan, dan ruang serta kategori usulan (mengikuti tujuan yang pernah dicatat, atau kategori terakhir).
+- Tiga aksi: **Setujui** (satu ketukan, lalu snackbar Urungkan), **Ubah** (membuka S09 dengan isi draf), **Abaikan**.
+- **Setujui semua** hanya untuk draf yang tidak bertanda "Mungkin sudah dicatat".
+- Empty state: "Belum ada draf. Pembayaran digital berikutnya akan muncul di sini."
+
+### S28 Tangkap otomatis
+
+Fitur v1.1 (Pro), dibuka dari S18 Lainnya.
+
+- Penjelasan singkat sebelum izin diminta: apa yang dibaca (hanya notifikasi dari aplikasi keuangan yang didukung), apa yang disimpan (nominal, tujuan, waktu, aplikasi), dan bahwa semuanya diproses di perangkat.
+- Tombol menuju pengaturan sistem untuk akses notifikasi (Android tidak memakai dialog biasa untuk izin ini).
+- Daftar aplikasi yang didukung dengan saklar per aplikasi dan pemetaan ke Akun (misalnya GoPay ke akun GoPay).
+- Izin bisa dicabut kapan saja; draf dan transaksi yang sudah ada tidak berubah.
+
 ## Flow
 
 ### F1 Pertama kali membuka aplikasi
@@ -442,6 +462,25 @@ F -->|"Cari sendiri dulu"| H["S08 difilter ke akun"]
 - **Koreksi saldo** tidak punya notifikasi sendiri; ia muncul di "Perlu perhatian" supaya notifikasi tetap satu per hari.
 - Kasus tunai, QRIS, dan e-wallet ditangani sama: tiga jenis itu semuanya berujung pada saldo sebuah akun yang bisa dicocokkan di S25.
 
+### F9 Tangkap otomatis (v1.1, Pro)
+
+```mermaid
+flowchart TD
+A["Pembayaran lewat aplikasi bank atau e-wallet"] --> B["Notifikasi muncul di ponsel"]
+B --> C{"Aplikasi ada di daftar dukungan?"}
+C -->|"Tidak"| D["Diabaikan, tidak dibaca lebih jauh"]
+C -->|"Ya"| E["Nominal, tujuan, waktu diurai; teks asli dibuang"]
+E --> F["Draf di S27, akun dan ruang diusulkan"]
+F -->|"Setujui"| G["Transaksi tersimpan, snackbar Urungkan"]
+F -->|"Ubah"| H["S09 berisi draf, lalu simpan"]
+F -->|"Abaikan"| I["Draf dihapus"]
+```
+
+- Pengguna gratis yang membuka S28 melihat bottom sheet S21 (flow F6) dengan manfaat "Catat pembayaran digital otomatis".
+- Draf tidak memunculkan notifikasi sendiri. Ringkasannya ("3 draf menunggu") ikut di notifikasi malam, sehingga tetap satu notifikasi per hari.
+- Draf yang mirip transaksi manual ditandai "Mungkin sudah dicatat" supaya tidak tercatat dua kali.
+- Mode demo: fitur ini tidak aktif.
+
 ## Tipe ruang dan status
 
 Status di Denah bergantung pada **tipe ruang** (Menunaikan, Menumbuhkan, Mencukupi). Definisi dan usulannya ada di [konsep.md](konsep.md); ini keputusan yang perlu dikonfirmasi sebelum logika status dibuat.
@@ -463,6 +502,8 @@ Status di Denah bergantung pada **tipe ruang** (Menunaikan, Menumbuhkan, Mencuku
 | Notifikasi dimatikan atau izin ditolak | Aplikasi tetap berfungsi penuh; izin tidak diminta ulang berulang |
 | Koreksi saldo: selisih nol | Pesan "Catatan cocok dengan saldo" dengan ikon centang |
 | Koreksi saldo: saldo sebenarnya lebih besar | Tawarkan pemasukan yang belum tercatat, bukan pengeluaran negatif |
+| Akses notifikasi dicabut | Draf dan transaksi yang ada tetap; tidak ada draf baru; tidak ada peringatan mendesak |
+| Notifikasi tidak bisa diurai | Diabaikan tanpa pesan; Koreksi saldo tetap menangkap selisihnya |
 
 ## Arah visual (diputuskan: opsi A)
 

@@ -15,7 +15,7 @@ Inti aplikasinya universal (role-based budgeting). Modul Islami, yaitu tracker z
 | [docs/konsep.md](docs/konsep.md) | Masalah, posisi produk, cakupan MVP, arsitektur, model data, keputusan |
 | [docs/monetisasi.md](docs/monetisasi.md) | Model bisnis: Gratis / Pro (sekali bayar) / Sync (langganan) |
 | [docs/roadmap.md](docs/roadmap.md) | 10 tahap pengerjaan |
-| [docs/ui-flow.md](docs/ui-flow.md) | Layar S01–S26 dan flow F1–F8 |
+| [docs/ui-flow.md](docs/ui-flow.md) | Layar S01–S28 dan flow F1–F9 |
 | [docs/design/](docs/design/README.md) | Design tokens dan prototipe klik (buka `prototype.html`) |
 
 Progres dan tugas dilacak di Notion (hub Rizqflow di Ruang Finansial); lihat [CLAUDE.md](CLAUDE.md).

@@ -7,7 +7,7 @@ Aplikasi finansial berbasis "hak": rezeki yang masuk dialirkan ke ruang-ruang (M
 - [docs/konsep.md](docs/konsep.md) — posisi produk, MVP, arsitektur, model data, keputusan (sudah dan terbuka)
 - [docs/monetisasi.md](docs/monetisasi.md) — pembagian Gratis / Pro / Sync
 - [docs/roadmap.md](docs/roadmap.md) — 10 tahap pengerjaan
-- [docs/ui-flow.md](docs/ui-flow.md) — layar S01–S26 dan flow F1–F8
+- [docs/ui-flow.md](docs/ui-flow.md) — layar S01–S28 dan flow F1–F9
 - [docs/design/README.md](docs/design/README.md) — design tokens (`tokens.css`) dan prototipe klik; sumber tunggal warna, font, dan jarak
 
 ## Prinsip yang tidak boleh dilanggar

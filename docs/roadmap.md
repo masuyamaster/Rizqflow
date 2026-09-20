@@ -150,6 +150,12 @@ Pembeda utama produk.
 
 Jangan dimulai sebelum Pro terbit dan ada sinyal bahwa pengguna memang butuh berbagi data antar-perangkat atau antar-anggota keluarga.
 
-## Kandidat setelah rilis (belum ditahapkan)
+## Versi 1.1 setelah rilis: tangkap otomatis (Pro)
 
-- Tangkap transaksi digital dari notifikasi bank dan e-wallet sebagai draf yang perlu disetujui. Tidak menjangkau tunai, dan izin akses notifikasi sensitif bagi Play Store; putuskan setelah ada data pemakaian nyata dari Koreksi saldo (lihat "Disiplin mencatat" di [konsep.md](konsep.md)).
+Disetujui 2026-09-20; rancangan dan batasannya ada di "Disiplin mencatat" di [konsep.md](konsep.md). Tidak masuk 10 tahap di atas dan tidak menunda rilis pertama.
+
+- [ ] Riset kebijakan Play Store untuk akses notifikasi (deklarasi, data safety, kebijakan data pengguna)
+- [ ] Parser notifikasi per aplikasi, dimulai dari aplikasi yang paling sering dipakai, dengan unit test memakai contoh teks
+- [ ] Layar Draf dan Tangkap otomatis (S27, S28)
+- [ ] Deteksi transaksi ganda ("Mungkin sudah dicatat")
+- [ ] Penguncian lewat lapisan entitlement (Pro)

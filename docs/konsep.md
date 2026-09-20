@@ -63,7 +63,15 @@ Masalah nyata dari pemilik proyek, dan alasan aplikasi ini layak dipakai sendiri
 
 Karena kasusnya bercampur (tunai, QRIS, e-wallet), tidak ada mekanisme yang boleh bergantung pada satu jenis pembayaran. Koreksi saldo bekerja per akun untuk semua jenis: tunai, e-wallet, dan bank (QRIS memotong saldo akun yang dipakai membayar). Inilah jaring pengaman universalnya.
 
-Sengaja ditunda: menangkap transaksi otomatis dari notifikasi bank atau e-wallet. Cara itu hanya menjangkau yang digital, bukan tunai; izin akses notifikasi sensitif bagi Play Store; dan cakupannya melebar (sinkronisasi rekening bank sudah dikeluarkan dari MVP). Kandidat setelah rilis.
+**Tangkap otomatis** (disetujui 2026-09-20; dikerjakan di versi 1.1 setelah rilis; masuk Pro): aplikasi membaca notifikasi pembayaran dari aplikasi bank dan e-wallet di perangkat, lalu menyiapkan **draf** transaksi yang tinggal disetujui. Ini bukan sinkronisasi rekening bank (yang tetap tidak dibuat). Keterbatasannya: hanya menjangkau yang digital, bukan tunai (Koreksi saldo tetap jaring pengamannya), izin akses notifikasi itu sensitif, dan parser tiap aplikasi perlu dirawat. Karena itu rancangannya berhati-hati (usulan, dimatangkan saat tahapnya tiba):
+
+- Selalu berupa draf; tidak pernah menyimpan transaksi tanpa persetujuan pengguna.
+- Hanya notifikasi dari daftar aplikasi keuangan yang didukung yang diproses; notifikasi lain diabaikan dan tidak dibaca lebih jauh.
+- Yang disimpan hanya nominal, nama tujuan, waktu, dan aplikasi sumber; teks notifikasi asli dibuang.
+- Diproses di perangkat, tidak dikirim ke mana pun.
+- Versi pertama hanya pengeluaran; pemasukan tetap lewat S06 dan S07 karena harus dialirkan.
+- Draf yang mirip transaksi manual (nominal dan akun sama dalam rentang waktu dekat) ditandai "Mungkin sudah dicatat".
+- Izin dijelaskan dulu sebelum diminta, dan bisa dicabut kapan saja tanpa merusak data.
 
 Semua mekanisme mengikuti prinsip "tenang, bukan panik": tanpa streak, tanpa warna merah, dan bisa dimatikan.
 
@@ -83,6 +91,7 @@ Semua mekanisme mengikuti prinsip "tenang, bukan panik": tanpa streak, tanpa war
 - **Transaction** — pemasukan/pengeluaran/transfer, terkait ke Account, Category, dan Room
 - **QuickEntry** — favorit untuk catat kilat (nama, nominal, Category, Room, Account, urutan pemakaian)
 - **BalanceCheck** — hasil koreksi saldo (Account, saldo menurut catatan, saldo sebenarnya, selisih, Transaction yang dihasilkan bila ada)
+- **CaptureDraft** — draf dari notifikasi, fitur v1.1 (aplikasi sumber, nominal, nama tujuan, waktu, Account usulan, status menunggu/disetujui/diabaikan)
 - **AssetProfile** — profil harta yang dihitung zakatnya (emas, tabungan, investasi, piutang, pengurang)
 - **HaulRecord** — pelacakan nisab dan haul (tanggal mulai Hijriyah, nisab saat itu, status)
 
@@ -102,7 +111,7 @@ Semua nominal disimpan sebagai **bilangan bulat dalam satuan terkecil** (value o
 
 - [monetisasi.md](monetisasi.md) — model bisnis Gratis / Pro / Sync
 - [roadmap.md](roadmap.md) — 10 tahap pengerjaan
-- [ui-flow.md](ui-flow.md) — layar S01–S26 dan flow F1–F8
+- [ui-flow.md](ui-flow.md) — layar S01–S28 dan flow F1–F9
 
 ## Risiko
 
@@ -123,6 +132,7 @@ Semua nominal disimpan sebagai **bilangan bulat dalam satuan terkecil** (value o
 - Widget, termasuk widget catat kilat, masuk **Pro** (2026-09-20). Pintasan ikon, tile Quick Settings, dan balasan notifikasi tetap gratis, karena mencatat dengan cepat adalah janji utama.
 - Selisih Koreksi saldo dicatat di **ruang dari pengeluaran terakhir di akun itu** (2026-09-20). Bila akun belum punya pengeluaran, usulannya ruang bertipe Mencukupi. Selisih adalah transaksi biasa, jadi ikut dihitung dalam jatah ruang itu.
 - Pengingat malam **aktif secara bawaan** dan bisa dimatikan (2026-09-20).
+- **Tangkap otomatis dari notifikasi** disetujui: dikerjakan di versi 1.1 setelah rilis, dan masuk **Pro** (2026-09-20).
 
 ## Keputusan yang masih terbuka
 
@@ -140,4 +150,4 @@ Semua nominal disimpan sebagai **bilangan bulat dalam satuan terkecil** (value o
 - **Pengingat haul:** tetap gratis untuk satu profil atau masuk Pro.
 - **Harga final** Pro dan Sync, berdasarkan uji minat.
 - **Pengingat malam:** jam bawaan dan kapan izin notifikasi Android 13+ diminta. Usulan: pukul 21.00, dan izin diminta setelah transaksi pertama disimpan, bukan di awal onboarding.
-- **Tangkap otomatis dari notifikasi bank/e-wallet:** dikerjakan setelah rilis atau tidak sama sekali.
+- **Aplikasi bank dan e-wallet yang didukung lebih dulu** untuk tangkap otomatis. Usulan: yang paling sering dipakai, dilihat dari Transaksi Harian di Ruang Finansial.
