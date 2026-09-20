@@ -4,7 +4,7 @@ Spesifikasi teks tampilan dan alur pengguna. **Belum desain visual**; ini bahan 
 
 - Platform: **Android** (diputuskan 2026-09-19). Pola di bawah mengikuti konvensi Android: bottom navigation, FAB, bottom sheet, snackbar.
 - Semua angka pada wireframe hanya **contoh**, bukan saran keuangan.
-- Kode layar (S01–S23) dan flow (F1–F7) dipakai bersama di Notion dan dokumen ini.
+- Kode layar (S01–S26) dan flow (F1–F8) dipakai bersama di Notion dan dokumen ini.
 
 ## Prinsip UI
 
@@ -42,6 +42,8 @@ T -.-> F
 | Snackbar Urungkan | S06, S08 | Setelah simpan atau hapus |
 | Banner lembut | S06 | Untuk jatah terlampaui; tidak menghalangi simpan |
 | Empty state | semua daftar | Satu kalimat dan satu ajakan bertindak |
+| Chip favorit | S24, S06 | Nama dan nominal; satu ketukan menyimpan |
+| Balasan notifikasi | Notifikasi malam | Kolom balasan dan tindakan "Tidak ada" |
 
 ## Inventaris layar
 
@@ -59,7 +61,7 @@ T -.-> F
 | S10 | Daftar ruang | Tambah, urutkan, arsipkan | 3 |
 | S11 | Detail ruang | Jatah vs terpakai, pos, transaksi terbaru | 4 |
 | S12 | Aturan alokasi | Ubah persentase | 3 |
-| S13 | Kelola akun dan kategori | CRUD sederhana | 3 |
+| S13 | Kelola akun, kategori, dan favorit | CRUD sederhana | 3 |
 | S14 | Beranda Zakat | Status nisab dan haul, riwayat | 5 |
 | S15 | Profil harta | Harta dan pengurang | 5 |
 | S16 | Kartu haul dan rincian | Progres haul, perhitungan, asumsi | 5 |
@@ -70,6 +72,9 @@ T -.-> F
 | S21 | Rizqflow Pro (paywall) | Bottom sheet pembelian | 7 |
 | S22 | Mode demo dan tampilan | Data contoh, tema | 3 dan 6 |
 | S23 | Tentang dan disclaimer | Versi, privasi, asumsi fikih | 6 |
+| S24 | Catat kilat | Bottom sheet: nominal dan favorit, dari pintasan, tile, atau notifikasi | 3 |
+| S25 | Koreksi saldo | Saldo sebenarnya per akun; selisih dicatat | 6 |
+| S26 | Pengingat harian | Jam dan nada pengingat malam | 6 |
 
 ## Wireframe layar kunci
 
@@ -109,7 +114,7 @@ T -.-> F
 
 - Kartu ringkasan: total rezeki bulan ini dan nominal yang belum dialirkan.
 - Grid ruang 2 kolom. Kesan denah datang dari tata letak ruang, bukan ilustrasi denah harfiah (lebih mudah dipakai saat ruangnya banyak).
-- "Perlu perhatian" maksimal 3 butir: haul mendekati, ruang hampir melewati jatah, pemasukan belum dialirkan.
+- "Perlu perhatian" maksimal 3 butir: haul mendekati, ruang hampir melewati jatah, pemasukan belum dialirkan, saldo akun belum dicocokkan lebih dari 7 hari (menuju S25).
 - Tanggal Hijriyah kecil di header bila modul Memberi aktif.
 
 ### S06 Catat transaksi (tab Pengeluaran)
@@ -142,6 +147,7 @@ T -.-> F
 - Tab **Pemasukan**: field Ruang diganti Sumber (Gaji, Usaha, Lainnya) dan Akun tujuan; tombol utama menuju S07, bukan langsung simpan.
 - Ruang default mengikuti ruang dari kategori yang terakhir dipakai.
 - Numpad memakai tombol `000` sebagai ganti koma, karena rupiah tidak memakai desimal.
+- Pengeluaran yang sering berulang bisa ditandai **Jadikan favorit** (nominal, kategori, ruang, dan akun ikut tersimpan); favorit tampil sebagai chip di S24.
 - Melewati jatah ruang: banner lembut di atas tombol Simpan, tombol tetap aktif.
 
 ### S07 Pratinjau alokasi
@@ -253,6 +259,70 @@ T -.-> F
 - Bottom sheet, bukan layar penuh. Tiga manfaat yang tampil dipilih sesuai aksi yang memicu.
 - Harga pada contoh hanya placeholder dalam kisaran uji (lihat [monetisasi.md](monetisasi.md)).
 
+### S24 Catat kilat
+
+```
++--------------------------------+
+|   (layar di belakang, redup)   |
++================================+
+|  Catat kilat                   |
+|                                |
+|            Rp 25.000           |
+|                                |
+|  Favorit                       |
+|  (Kopi 15rb)  (Parkir 3rb)     |
+|  (Jajan 20rb) (Bensin 30rb)    |
+|                                |
+|  Akun  [Tunai            v]    |
+|                                |
+|  [ 1 ] [ 2 ] [ 3 ]             |
+|  [ 4 ] [ 5 ] [ 6 ]             |
+|  [ 7 ] [ 8 ] [ 9 ]             |
+|  [000] [ 0 ] [ < ]             |
+|                                |
+|  [          Simpan          ]  |
++================================+
+```
+
+- Bottom sheet yang langsung terbuka dari pintasan ikon (tekan lama), tile Quick Settings, atau tindakan di notifikasi malam, tanpa melewati Denah.
+- **Ketuk favorit langsung menyimpan** dengan nominal, kategori, ruang, dan akun favorit itu, lalu snackbar Urungkan. Satu ketukan.
+- Nominal diketik manual: kategori dan ruang mengikuti yang terakhir dipakai, akun mengikuti akun terakhir.
+- Hanya pengeluaran. Pemasukan tetap lewat S06 karena harus melewati S07.
+- Paling banyak 6 favorit tampil, urut dari yang paling sering dipakai. Favorit dibuat dari S06 dan dikelola di S13.
+
+### S25 Koreksi saldo
+
+```
++--------------------------------+
+| <  Koreksi saldo               |
+|                                |
+| Akun          [Tunai        v] |
+| Menurut catatan  Rp   312.000  |
+| Saldo sebenarnya Rp [ 265.000 ]|
+|                                |
+| Selisih          Rp    47.000  |
+| Belum tercatat sebagai         |
+| pengeluaran.                   |
+|                                |
+| Catat sebagai                  |
+| Kategori [Tak terlacak     v]  |
+| Ruang    [Keluarga         v]  |
+|                                |
+| [       Catat selisih       ]  |
+|   Cari sendiri dulu            |
++--------------------------------+
+```
+
+- Berlaku untuk semua jenis akun: tunai, e-wallet, bank. QRIS memotong saldo akun yang dipakai membayar, jadi ikut tercocokkan.
+- Saldo sebenarnya lebih kecil dari catatan: selisih dicatat sebagai pengeluaran "Tak terlacak" (kategori sistem) di akun itu. Lebih besar: tawarkan pemasukan yang belum tercatat, bukan pengeluaran negatif. Sama: "Catatan cocok dengan saldo" dengan ikon centang.
+- Nada netral ("Rp 47.000 belum tercatat"), tanpa kata yang menghakimi. Tombol tidak wajib; **Cari sendiri dulu** membuka S08 yang difilter ke akun itu.
+- Jalan masuk: S18 Lainnya, atau butir "Perlu perhatian" di S05. Tidak punya notifikasi sendiri.
+- Ruang tempat selisih dicatat masih keputusan terbuka (lihat [konsep.md](konsep.md)).
+
+### S26 Pengingat harian
+
+Pengaturan sederhana: aktif atau tidak, jam pengingat malam, dan pratinjau teks notifikasi. Bila izin notifikasi ditolak, layar ini menjelaskan singkat dan tidak meminta ulang berulang.
+
 ## Flow
 
 ### F1 Pertama kali membuka aplikasi
@@ -353,6 +423,25 @@ G --> H["Data dipulihkan"]
 - Pulihkan selalu meminta konfirmasi eksplisit bahwa data sekarang akan tertimpa.
 - Sandi salah atau berkas rusak: pesan jelas, data sekarang tidak disentuh.
 
+### F8 Mengejar yang terlewat
+
+```mermaid
+flowchart TD
+A["Pintasan, tile, atau notifikasi malam"] --> B["S24 Catat kilat"]
+B -->|"Tap favorit"| C["Tersimpan, snackbar Urungkan"]
+B -->|"Ketik nominal"| C
+N["Notifikasi malam"] -->|"Balasan: kopi 25000"| C
+N -->|"Tidak ada"| D["Hari ditandai sudah dicek"]
+E["S05 Perlu perhatian: saldo belum dicocokkan"] --> F["S25 Koreksi saldo"]
+F -->|"Catat selisih"| G["Transaksi Tak terlacak di akun itu"]
+F -->|"Cari sendiri dulu"| H["S08 difilter ke akun"]
+```
+
+- **Notifikasi malam:** satu per hari pada jam pilihan pengguna (S26), tanpa nada mendesak, bisa dimatikan sepenuhnya. Balasan `kopi 25000` diurai menjadi catatan dan nominal; kategori mengikuti favorit atau kategori terakhir yang cocok, dan bisa disunting di S09. Tindakan **Tidak ada** menandai hari itu sudah dicek.
+- **Petunjuk hari kosong:** di S08 muncul banner lembut "Kemarin belum ada catatan pengeluaran. Catat sekarang?" bila kemarin tidak ada pengeluaran dan hari itu belum ditandai "Tidak ada". Tanpa streak, tanpa merah.
+- **Koreksi saldo** tidak punya notifikasi sendiri; ia muncul di "Perlu perhatian" supaya notifikasi tetap satu per hari.
+- Kasus tunai, QRIS, dan e-wallet ditangani sama: tiga jenis itu semuanya berujung pada saldo sebuah akun yang bisa dicocokkan di S25.
+
 ## Tipe ruang dan status
 
 Status di Denah bergantung pada **tipe ruang** (Menunaikan, Menumbuhkan, Mencukupi). Definisi dan usulannya ada di [konsep.md](konsep.md); ini keputusan yang perlu dikonfirmasi sebelum logika status dibuat.
@@ -370,6 +459,10 @@ Status di Denah bergantung pada **tipe ruang** (Menunaikan, Menumbuhkan, Mencuku
 | Sandi restore salah | Pesan jelas, tidak menyentuh data |
 | Pembelian gagal atau batal | Kembali ke layar asal, tidak ada perubahan data |
 | Mode demo aktif | Penanda jelas di header; data demo tidak tercampur dengan data asli |
+| Hari tanpa catatan | Banner lembut di S08; tidak ada streak dan tidak ada peringatan merah |
+| Notifikasi dimatikan atau izin ditolak | Aplikasi tetap berfungsi penuh; izin tidak diminta ulang berulang |
+| Koreksi saldo: selisih nol | Pesan "Catatan cocok dengan saldo" dengan ikon centang |
+| Koreksi saldo: saldo sebenarnya lebih besar | Tawarkan pemasukan yang belum tercatat, bukan pengeluaran negatif |
 
 ## Arah visual (diputuskan: opsi A)
 

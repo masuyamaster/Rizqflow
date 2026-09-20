@@ -80,7 +80,8 @@ Logika bisnis yang benar dan teruji sebelum ada layar.
 - [ ] Catat transaksi (S06)
 - [ ] Pratinjau alokasi (S07)
 - [ ] Daftar transaksi dan detail/edit (S08–S09)
-- [ ] Daftar ruang, aturan alokasi, kelola akun dan kategori (S10, S12, S13)
+- [ ] Daftar ruang, aturan alokasi, kelola akun, kategori, dan favorit (S10, S12, S13)
+- [ ] Catat kilat dan favorit (S24): pintasan ikon dan tile Quick Settings
 - [ ] Mode demo dengan data contoh (S22)
 
 **Selesai bila:** flow F1–F4 berjalan end-to-end tanpa jaringan; data bertahan; setiap layar punya empty state.
@@ -116,8 +117,10 @@ Pembeda utama produk.
 - [ ] Impor CSV dari Transaksi Harian Notion
 - [ ] Mode gelap, skala font, aksesibilitas
 - [ ] Lokalisasi Indonesia dan Inggris
+- [ ] Pengingat malam dengan balasan langsung dan tindakan "Tidak ada" (S26)
+- [ ] Koreksi saldo (S25) dan petunjuk hari kosong di daftar transaksi
 
-**Selesai bila:** PIN/biometrik tidak bisa dilewati; backup lalu restore di perangkat lain menghasilkan data identik.
+**Selesai bila:** PIN/biometrik tidak bisa dilewati; backup lalu restore di perangkat lain menghasilkan data identik; koreksi saldo mencatat selisih dengan benar untuk akun tunai, e-wallet, dan bank.
 
 ## Tahap 7 — Monetisasi dan Pro (Backlog)
 
@@ -146,3 +149,7 @@ Pembeda utama produk.
 - [ ] Langganan Sync dan backend minimal
 
 Jangan dimulai sebelum Pro terbit dan ada sinyal bahwa pengguna memang butuh berbagi data antar-perangkat atau antar-anggota keluarga.
+
+## Kandidat setelah rilis (belum ditahapkan)
+
+- Tangkap transaksi digital dari notifikasi bank dan e-wallet sebagai draf yang perlu disetujui. Tidak menjangkau tunai, dan izin akses notifikasi sensitif bagi Play Store; putuskan setelah ada data pemakaian nyata dari Koreksi saldo (lihat "Disiplin mencatat" di [konsep.md](konsep.md)).
