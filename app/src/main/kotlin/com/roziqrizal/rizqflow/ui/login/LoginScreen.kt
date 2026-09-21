@@ -1,6 +1,10 @@
 package com.roziqrizal.rizqflow.ui.login
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,17 +18,21 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
@@ -98,14 +106,9 @@ fun LoginScreen(
         }
         Spacer(Modifier.height(spacing.s5))
 
-        Button(
-            onClick = onGoogle,
-            enabled = idle,
-            modifier = Modifier.fillMaxWidth().height(52.dp),
-        ) {
-            if (busy == AuthBusy.GOOGLE) Progress() else Text(stringResource(R.string.login_google))
-        }
-        Spacer(Modifier.height(spacing.s2))
+        // Cukup simbol G (varian ikon resmi Google); namanya dibacakan pembaca layar.
+        GoogleIconButton(onClick = onGoogle, enabled = idle, busy = busy == AuthBusy.GOOGLE)
+        Spacer(Modifier.height(spacing.s4))
         FilledTonalButton(
             onClick = onGoogleWithGmail,
             enabled = idle,
@@ -163,6 +166,30 @@ private fun RoomTile(icon: ImageVector, color: androidx.compose.ui.graphics.Colo
         contentAlignment = Alignment.Center,
     ) {
         Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(28.dp))
+    }
+}
+
+@Composable
+private fun GoogleIconButton(onClick: () -> Unit, enabled: Boolean, busy: Boolean) {
+    // Pedoman Google: latar putih (gelap #131314 di mode gelap) dengan garis tepi tipis.
+    val dark = isSystemInDarkTheme()
+    val name = stringResource(R.string.login_google)
+    Surface(
+        onClick = onClick,
+        enabled = enabled,
+        shape = CircleShape,
+        color = if (dark) Color(0xFF131314) else Color.White,
+        border = BorderStroke(1.dp, if (dark) Color(0xFF8E918F) else Color(0xFF747775)),
+        modifier = Modifier
+            .size(64.dp)
+            .semantics {
+                contentDescription = name
+                role = Role.Button
+            },
+    ) {
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+            if (busy) Progress() else Image(GoogleGLogo, contentDescription = null, modifier = Modifier.size(28.dp))
+        }
     }
 }
 
