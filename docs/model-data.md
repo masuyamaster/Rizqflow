@@ -185,10 +185,18 @@ Enam butir ini sudah tertanam di skema versi 1 dan di lapisan data. Pemilik belu
 5. Mata uang v1 hanya IDR; kolom `currency` sudah ada supaya multi-mata uang (Pro) tidak memerlukan migrasi bentuk.
 6. Hapus transaksi berarti hapus fisik (Urungkan hidup di memori beberapa detik). Bila sync fase 2 dibuat, ditambah penanda hapus lewat migrasi.
 
+## Lapisan data (2026-09-21)
+
+- **Domain** (`:domain`, paket `ledger`): model (`Account`, `Room`, `Category`, `MoneyTransaction`, `AllocationEntry`), antarmuka repositori, dan layanan: `WorkspaceSetup` (onboarding S02 sampai S04), `LedgerService` (pemasukan, pengeluaran, transfer, ubah nominal pemasukan, hapus), `RuleService` (aturan alokasi harus tepat 100%, tambah ruang dengan batas paket).
+- **Data** (`:data`): DAO tambahan, pemeta entity, repositori Room (`LocalWorkspaceRepository`, `LocalAccountRepository`, `LocalRoomRepository`, `LocalTransactionRepository`), dan `LocalLedger.open(context, accountId)` yang membuka database milik akun itu. Fungsi yang menulis banyak baris berjalan dalam satu transaksi database.
+- **Potret alokasi** menyimpan satu baris untuk **setiap ruang yang persentasenya lebih dari nol**, termasuk yang jumlahnya 0 karena nominal kecil (Rp 1 dengan 10/30/60 menghasilkan 0, 0, 1). Persentasenya harus tersimpan supaya ubah nominal ke angka yang lebih besar bisa dihitung ulang benar.
+- **Kategori sistem** dibuat saat onboarding: `Tak terlacak` di setiap ruang (Koreksi saldo mencatat selisih di ruang mana pun) dan `Zakat mal` di ruang Memberi. Ruang Memberi memakai mode `percentage` sebagai bawaan; modul zakat opsional.
+- **Mengganti aturan** hanya menyentuh ruang aktif; persentase ruang terarsip dipertahankan supaya bisa dipulihkan.
+
 ## Yang belum ditulis
 
-- Repositori dan antarmukanya di `:domain`, serta pemetaan entity ke model domain.
-- Tes DAO (butuh Robolectric atau emulator) dan tes migrasi; migrasi pertama baru ada saat skema naik ke versi 2.
+- Manajemen akun, kategori, favorit, dan arsip ruang (S10, S13); layanan untuk Koreksi saldo (S25) dan tunaikan zakat (S17).
+- Tes migrasi (`MigrationTestHelper`); migrasi pertama baru ada saat skema naik ke versi 2.
 - Tabel `capture_draft` (v1.1) dan aturan alokasi lanjutan (Pro), lewat migrasi.
 
 ## Status implementasi

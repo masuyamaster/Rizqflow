@@ -18,7 +18,7 @@ Ditulis dari nol untuk Rizqflow (2026-09-21). Tujuan: logika yang menyangkut uan
 | Lapisan | Alat | Isi | Status |
 |---|---|---|---|
 | `:domain` | JUnit Jupiter + kotlin.test, JVM | Golden test, kasus tepi, sifat umum dengan `Random` bersemai tetap | Berjalan (82 tes) |
-| `:data` | Room in-memory, uji migrasi (`MigrationTestHelper`) | DAO, kueri agregat per bulan, migrasi antarversi skema | Belum; mulai saat skema Room dibuat |
+| `:data` | Robolectric (JUnit 4) dengan Room in-memory dan berkas; uji migrasi (`MigrationTestHelper`) | DAO, kueri, kunci asing, transaksi database, pemetaan, satu database per akun, migrasi antarversi skema | DAO, repositori, dan per-akun: 29 tes (2026-09-21). Tes migrasi belum (baru perlu saat skema naik ke versi 2) |
 | `:app` ViewModel | JUnit + repositori palsu | Perubahan state, alur F1 sampai F9 tanpa layar | Belum; Tahap 3 |
 | `:app` UI | Compose UI test | Alur utama, empty state, font 200%, mode gelap | Belum; Tahap 3 dan 4 |
 | Instrumentasi | Emulator di CI atau lokal | Notifikasi, izin, PIN dan biometrik | Belum; Tahap 6 |

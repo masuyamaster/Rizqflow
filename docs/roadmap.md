@@ -73,6 +73,7 @@ Logika bisnis yang benar dan teruji sebelum ada layar.
 - [x] Strategi unit test domain: [strategi-unit-test.md](strategi-unit-test.md), ditulis dari nol (2026-09-21)
 - [x] Stub lapisan entitlement: `Entitlements`, `Feature`, `Plan`, `PlanEntitlements` (2026-09-21)
 - [x] Setup proyek Android: modul domain terpisah, unit test, CI dasar (2026-09-20; CI pertama di GitHub hijau, 2026-09-20)
+- [x] Lapisan buku kas: layanan onboarding, pencatatan, dan aturan alokasi di `:domain`; repositori Room dan satu database per akun di `:data`; 268 tes hijau (2026-09-21, lihat [model-data.md](model-data.md))
 
 **Selesai bila:** unit test hijau untuk alokasi, nisab, dan haul (termasuk kasus tepi); tidak ada floating point untuk uang; skema penyimpanan punya jalur migrasi.
 
