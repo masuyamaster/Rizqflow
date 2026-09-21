@@ -1,24 +1,36 @@
 package com.roziqrizal.rizqflow.domain.auth
 
-/** Cara pengguna masuk. [DEBUG] hanya ada di build debug untuk menguji alur tanpa akun Google. */
-enum class AuthProviderType { GOOGLE, DEBUG }
+/**
+ * Cara pengguna masuk. [PASSWORD] adalah akun lokal (nama pengguna dan sandi) yang hanya ada di ponsel ini.
+ * [DEBUG] hanya ada di build debug untuk menguji alur tanpa akun Google.
+ */
+enum class AuthProviderType { GOOGLE, PASSWORD, DEBUG }
 
 /**
  * Riwayat masuk yang disimpan di ponsel. Tidak menyimpan token atau sandi: sesi hanya penanda
  * bahwa pengguna sudah pernah masuk, supaya berikutnya langsung ke menu utama.
  * [gmailConnected] menandai izin baca Gmail sudah diberikan; aplikasi belum membaca email apa pun.
+ * Akun Google punya [email]; akun lokal ([AuthProviderType.PASSWORD]) punya [username] dan tanpa email.
  */
 data class AuthSession(
     val accountId: String,
-    val email: String,
+    val email: String?,
     val displayName: String?,
     val provider: AuthProviderType,
     val gmailConnected: Boolean = false,
+    val username: String? = null,
 ) {
     init {
         require(accountId.isNotBlank()) { "Pengenal akun tidak boleh kosong" }
-        require(email.isNotBlank()) { "Email tidak boleh kosong" }
+        when (provider) {
+            AuthProviderType.GOOGLE -> require(!email.isNullOrBlank()) { "Email tidak boleh kosong" }
+            AuthProviderType.PASSWORD -> require(!username.isNullOrBlank()) { "Nama pengguna tidak boleh kosong" }
+            AuthProviderType.DEBUG -> Unit
+        }
     }
+
+    /** Yang ditampilkan sebagai identitas akun: email, atau nama pengguna untuk akun lokal. */
+    val identifier: String get() = email?.takeIf { it.isNotBlank() } ?: username ?: accountId
 }
 
 /** Penyimpanan sesi. Implementasinya di lapisan aplikasi (SharedPreferences). */

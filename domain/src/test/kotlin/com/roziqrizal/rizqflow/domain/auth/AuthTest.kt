@@ -31,6 +31,26 @@ class AuthTest {
     }
 
     @Test
+    fun `akun lokal wajib punya nama pengguna dan tidak wajib email`() {
+        val lokal = AuthSession("id", null, null, AuthProviderType.PASSWORD, username = "roziq")
+        assertEquals("roziq", lokal.identifier)
+        assertFailsWith<IllegalArgumentException> { AuthSession("id", null, null, AuthProviderType.PASSWORD) }
+        assertFailsWith<IllegalArgumentException> { AuthSession("id", null, null, AuthProviderType.PASSWORD, username = " ") }
+    }
+
+    @Test
+    fun `akun Google wajib punya email`() {
+        assertFailsWith<IllegalArgumentException> { AuthSession("id", null, null, AuthProviderType.GOOGLE) }
+        assertEquals("roziq@example.com", sesi.identifier)
+    }
+
+    @Test
+    fun `akun lokal dengan riwayat masuk langsung ke menu utama`() {
+        val lokal = AuthSession("id", null, null, AuthProviderType.PASSWORD, username = "roziq")
+        assertEquals(StartDestination.MAIN, StartRouter.decide(lokal))
+    }
+
+    @Test
     fun `nama tampilan boleh kosong`() {
         assertEquals(null, AuthSession("id", "a@b.c", null, AuthProviderType.DEBUG).displayName)
     }
