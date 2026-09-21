@@ -73,4 +73,45 @@
     <string name="account_local">Akun lokal, hanya ada di ponsel ini</string>
     <string name="account_gmail_on">Gmail terhubung (izin baca)</string>
     <string name="account_gmail_off">Gmail belum terhubung</string>
+
+    <!-- Onboarding S02 sampai S04 -->
+    <string name="onb_back">Kembali</string>
+    <string name="onb_step">Langkah %1$d dari %2$d</string>
+    <string name="onb_next">Lanjut</string>
+    <string name="onb_pola_title">Pilih pola ruang</string>
+    <string name="onb_pola_subtitle">Ruang adalah tempat rezeki dialirkan. Pilihan ini bisa diubah kapan saja.</string>
+    <string name="onb_tiga_title">Tiga hak</string>
+    <string name="onb_tiga_body">Cara paling mudah untuk mulai. Rezeki dibagi ke tiga ruang:</string>
+    <string name="onb_kosong_title">Mulai kosong</string>
+    <string name="onb_kosong_body">Susun ruangmu sendiri nanti di tab Ruang. Rezeki yang masuk menunggu sampai ada ruang.</string>
+    <string name="onb_room_memberi">Sedekah, infak, dan zakat</string>
+    <string name="onb_room_diri">Dana darurat, investasi, belajar</string>
+    <string name="onb_room_keluarga">Belanja, listrik dan air, sekolah</string>
+    <string name="onb_persen_title">Atur pembagian</string>
+    <string name="onb_persen_subtitle">Setiap rezeki yang masuk dialirkan ke ruang-ruang ini. Bisa diubah kapan saja di Ruang, Aturan alokasi.</string>
+    <string name="onb_persen_sample">Contoh untuk %1$s</string>
+    <string name="onb_persen_auto">Otomatis: menerima sisa</string>
+    <string name="onb_persen_slider">Persentase %1$s</string>
+    <string name="onb_persen_less">Kurangi 1 persen untuk</string>
+    <string name="onb_persen_more">Tambah 1 persen untuk</string>
+    <string name="onb_persen_total">Total</string>
+    <string name="onb_akun_title">Akun pertama</string>
+    <string name="onb_akun_subtitle">Tempat uangmu berada: dompet, rekening, atau dompet digital. Akun lain bisa ditambah nanti.</string>
+    <string name="onb_akun_kind">Jenis akun</string>
+    <string name="onb_kind_cash">Tunai</string>
+    <string name="onb_kind_bank">Bank</string>
+    <string name="onb_kind_ewallet">Dompet digital</string>
+    <string name="onb_akun_name">Nama akun</string>
+    <string name="onb_hint_cash">Contoh: Dompet</string>
+    <string name="onb_hint_bank">Contoh: Bank Jago</string>
+    <string name="onb_hint_ewallet">Contoh: GoPay</string>
+    <string name="onb_akun_balance">Saldo awal</string>
+    <string name="onb_akun_balance_note">Saldo yang ada sekarang. Ini bukan rezeki, jadi tidak dialirkan ke ruang.</string>
+    <string name="onb_failed">Belum bisa menyimpan. Data tidak berubah; coba lagi.</string>
+    <string name="onb_finish">Mulai memakai</string>
+    <string name="onb_saving">Menyimpan…</string>
+    <string name="keypad_delete">Hapus satu angka</string>
+    <plurals name="onb_percent_state">
+        <item quantity="other">%d persen</item>
+    </plurals>
 </resources>

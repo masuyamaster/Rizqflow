@@ -67,19 +67,22 @@ fun AppRoot(controller: AuthController, showDebugLogin: Boolean) {
                 )
             }
 
-            is AuthUiState.SignedIn -> RizqflowApp(
-                account = AccountUi(
-                    identifier = s.session.identifier,
-                    local = s.session.provider == AuthProviderType.PASSWORD,
-                    displayName = s.session.displayName,
-                    gmailConnected = s.session.gmailConnected,
-                    busy = s.busy,
-                    notice = s.notice,
-                ),
-                onConnectGmail = controller::connectGmail,
-                onSignOut = controller::signOut,
-                onDismissNotice = controller::dismissNotice,
-            )
+            // Setiap akun membuka database sendiri; akun baru melewati onboarding dulu.
+            is AuthUiState.SignedIn -> WorkspaceHost(accountId = s.session.accountId) {
+                RizqflowApp(
+                    account = AccountUi(
+                        identifier = s.session.identifier,
+                        local = s.session.provider == AuthProviderType.PASSWORD,
+                        displayName = s.session.displayName,
+                        gmailConnected = s.session.gmailConnected,
+                        busy = s.busy,
+                        notice = s.notice,
+                    ),
+                    onConnectGmail = controller::connectGmail,
+                    onSignOut = controller::signOut,
+                    onDismissNotice = controller::dismissNotice,
+                )
+            }
         }
     }
 }
