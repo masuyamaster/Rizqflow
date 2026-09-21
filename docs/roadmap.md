@@ -88,7 +88,8 @@ Logika bisnis yang benar dan teruji sebelum ada layar.
 - [x] Catat transaksi (S06): tab Pemasukan, Pengeluaran, Transfer; ruang, kategori, akun, tanggal, catatan; banner lembut bila jatah bulan itu terlampaui; snackbar Urungkan (2026-09-21). Chip "Terakhir" dan "Jadikan favorit" menunggu S24
 - [x] Pratinjau alokasi (S07): rezeki terlihat mengalir sebelum disimpan, "Ubah sekali ini" (aturan tidak berubah), bagian belum dialirkan (2026-09-21)
 - [x] Daftar transaksi dan detail/edit (S08–S09): per bulan dan tanggal, cari catatan dan nominal, filter jenis, sheet saringan akun/ruang/kategori; detail memakai layar Catat (ubah semua kolom; nominal pemasukan dihitung ulang dengan potret alokasi), hapus dengan konfirmasi, Urungkan setelah ubah dan hapus (2026-09-21). Banner hari kosong dan baris draf menunggu Tahap 6 dan v1.1
-- [ ] Daftar ruang, aturan alokasi, kelola akun, kategori, dan favorit (S10, S12, S13)
+- [x] Daftar ruang dan aturan alokasi (S10, S12): urutan naik/turun (= prioritas sisa pembulatan), arsipkan dan pulihkan (persen kembali 0%), tambah ruang (batas 5 ruang gratis; kategori awal Lain-lain dan Tak terlacak), pola Tiga hak untuk akun kosong, banner bila total bukan 100%; Aturan alokasi dengan slider dan +/- 1% untuk semua ruang, simpan hanya bila pas 100%, Buang perubahan?, Urungkan (2026-09-21). Aturan lanjutan (Pro) baru berupa pesan; status per ruang menunggu Tahap 4
+- [ ] Kelola akun, kategori, dan favorit (S13)
 - [ ] Catat kilat dan favorit (S24): pintasan ikon dan tile Quick Settings
 - [ ] Mode demo dengan data contoh (S22)
 
