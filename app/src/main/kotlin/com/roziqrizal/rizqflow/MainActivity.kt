@@ -9,9 +9,13 @@ import androidx.lifecycle.lifecycleScope
 import com.roziqrizal.rizqflow.auth.AuthController
 import com.roziqrizal.rizqflow.auth.AuthUiState
 import com.roziqrizal.rizqflow.auth.GoogleAuthProvider
+import com.roziqrizal.rizqflow.auth.SharedPrefsAccountStore
 import com.roziqrizal.rizqflow.auth.SharedPrefsSessionStore
+import com.roziqrizal.rizqflow.domain.auth.LocalAccountService
+import com.roziqrizal.rizqflow.domain.auth.Pbkdf2PasswordHasher
 import com.roziqrizal.rizqflow.ui.AppRoot
 import com.roziqrizal.rizqflow.ui.theme.RizqflowTheme
+import java.util.UUID
 
 /**
  * Titik masuk. Alur: splash sistem, lalu halaman masuk (bila belum pernah masuk) atau langsung
@@ -30,6 +34,11 @@ class MainActivity : ComponentActivity() {
         val controller = AuthController(
             store = SharedPrefsSessionStore(this),
             provider = GoogleAuthProvider(this, getString(R.string.google_web_client_id)),
+            accounts = LocalAccountService(
+                store = SharedPrefsAccountStore(this),
+                hasher = Pbkdf2PasswordHasher(),
+                newAccountId = { UUID.randomUUID().toString() },
+            ),
             scope = lifecycleScope,
         )
         // Splash tetap tampil sampai riwayat masuk terbaca, supaya tidak ada kedipan halaman masuk.

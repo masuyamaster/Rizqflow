@@ -2,16 +2,23 @@ package com.roziqrizal.rizqflow.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.roziqrizal.rizqflow.auth.AuthController
 import com.roziqrizal.rizqflow.auth.AuthUiState
+import com.roziqrizal.rizqflow.domain.auth.AuthProviderType
 import com.roziqrizal.rizqflow.ui.login.LoginScreen
+import com.roziqrizal.rizqflow.ui.login.RegisterScreen
 
 /**
  * Akar tampilan: splash (sistem) lalu halaman masuk, atau langsung menu utama bila sudah punya
@@ -20,6 +27,15 @@ import com.roziqrizal.rizqflow.ui.login.LoginScreen
 @Composable
 fun AppRoot(controller: AuthController, showDebugLogin: Boolean) {
     val state by controller.state.collectAsState()
+    var registering by rememberSaveable { mutableStateOf(false) }
+    fun openRegister(open: Boolean) {
+        controller.clearMessage()
+        registering = open
+    }
+    // Setelah masuk, halaman daftar ditutup; kalau tidak, Keluar akan kembali ke halaman daftar.
+    LaunchedEffect(state is AuthUiState.SignedIn) {
+        if (state is AuthUiState.SignedIn) registering = false
+    }
     // Surface menentukan warna teks bawaan (onBackground). Tanpanya teks tanpa warna eksplisit
     // memakai hitam dan tak terbaca di mode gelap.
     Surface(
@@ -30,18 +46,31 @@ fun AppRoot(controller: AuthController, showDebugLogin: Boolean) {
         when (val s = state) {
             AuthUiState.Loading -> Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
 
-            is AuthUiState.SignedOut -> LoginScreen(
-                busy = s.busy,
-                message = s.message,
-                showDebugLogin = showDebugLogin,
-                onGoogle = { controller.signInWithGoogle(alsoConnectGmail = false) },
-                onGoogleWithGmail = { controller.signInWithGoogle(alsoConnectGmail = true) },
-                onDebug = controller::signInDebug,
-            )
+            is AuthUiState.SignedOut -> if (registering) {
+                BackHandler(enabled = s.busy == null) { openRegister(false) }
+                RegisterScreen(
+                    busy = s.busy,
+                    message = s.message,
+                    onRegister = controller::register,
+                    onBackToLogin = { openRegister(false) },
+                )
+            } else {
+                LoginScreen(
+                    busy = s.busy,
+                    message = s.message,
+                    showDebugLogin = showDebugLogin,
+                    onGoogle = { controller.signInWithGoogle(alsoConnectGmail = false) },
+                    onGoogleWithGmail = { controller.signInWithGoogle(alsoConnectGmail = true) },
+                    onPasswordSignIn = controller::signInWithPassword,
+                    onOpenRegister = { openRegister(true) },
+                    onDebug = controller::signInDebug,
+                )
+            }
 
             is AuthUiState.SignedIn -> RizqflowApp(
                 account = AccountUi(
-                    email = s.session.email,
+                    identifier = s.session.identifier,
+                    local = s.session.provider == AuthProviderType.PASSWORD,
                     displayName = s.session.displayName,
                     gmailConnected = s.session.gmailConnected,
                     busy = s.busy,

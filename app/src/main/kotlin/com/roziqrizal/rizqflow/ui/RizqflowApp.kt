@@ -153,7 +153,9 @@ private fun PlaceholderScreen(title: String, note: String) {
 
 /** Data akun untuk tab Lainnya. */
 data class AccountUi(
-    val email: String,
+    /** Email (akun Google) atau nama pengguna (akun lokal). */
+    val identifier: String,
+    val local: Boolean,
     val displayName: String?,
     val gmailConnected: Boolean,
     val busy: AuthBusy? = null,
@@ -187,9 +189,16 @@ private fun LainnyaScreen(
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(top = spacing.s5, bottom = spacing.s2),
         )
-        Text(account.displayName ?: account.email, style = MaterialTheme.typography.titleMedium)
+        Text(account.displayName ?: account.identifier, style = MaterialTheme.typography.titleMedium)
         if (account.displayName != null) {
-            Text(account.email, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(account.identifier, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        if (account.local) {
+            Text(
+                stringResource(R.string.account_local),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
         Text(
             text = stringResource(if (account.gmailConnected) R.string.account_gmail_on else R.string.account_gmail_off),

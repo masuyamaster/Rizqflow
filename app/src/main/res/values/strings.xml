@@ -26,6 +26,37 @@
     <string name="login_gmail">Hubungkan Gmail</string>
     <string name="login_gmail_note">Opsional. Izin baca Gmail untuk fitur berikutnya. Rizqflow belum membaca email apa pun dan kamu bisa menghubungkannya nanti.</string>
     <string name="login_debug">Masuk uji (khusus debug)</string>
+    <string name="login_submit">Masuk</string>
+    <string name="login_or">atau</string>
+    <string name="login_register_prompt">Belum punya akun?</string>
+    <string name="login_register_action">Daftar</string>
+    <string name="login_fill_username">Isi nama pengguna</string>
+    <string name="login_fill_password">Isi sandi</string>
+    <string name="field_username">Nama pengguna</string>
+    <string name="field_password">Sandi</string>
+    <string name="password_show">Tampilkan</string>
+    <string name="password_hide">Sembunyikan</string>
+
+    <!-- S31 Daftar -->
+    <string name="register_title">Buat akun</string>
+    <string name="register_subtitle">Akun ini hanya ada di ponsel ini. Data keuanganmu tidak dikirim ke server.</string>
+    <string name="register_back">Kembali</string>
+    <string name="register_name">Nama panggilan (opsional)</string>
+    <string name="register_username_hint">3 sampai 32 karakter: huruf, angka, titik, garis bawah, strip</string>
+    <string name="register_password_hint">Minimal 8 karakter</string>
+    <string name="register_confirm">Ulangi sandi</string>
+    <string name="register_no_recovery">Sandi tidak bisa dipulihkan karena tidak ada server. Catat di tempat yang aman.</string>
+    <string name="register_submit">Daftar</string>
+    <string name="register_have_account">Sudah punya akun?</string>
+
+    <!-- Masalah isian pendaftaran -->
+    <string name="issue_username_short">Nama pengguna minimal 3 karakter</string>
+    <string name="issue_username_long">Nama pengguna maksimal 32 karakter</string>
+    <string name="issue_username_chars">Hanya huruf a sampai z, angka, titik, garis bawah, dan strip; mulai dengan huruf atau angka</string>
+    <string name="issue_password_short">Sandi minimal 8 karakter</string>
+    <string name="issue_password_long">Sandi maksimal 128 karakter</string>
+    <string name="issue_password_same">Sandi tidak boleh sama dengan nama pengguna</string>
+    <string name="issue_password_mismatch">Sandi dan pengulangannya tidak sama</string>
 
     <!-- Pesan lembut -->
     <string name="msg_not_configured">Masuk dengan Google belum disiapkan di versi ini. Pemilik perlu mengisi client ID Google (lihat docs/auth-google.md).</string>
@@ -33,8 +64,13 @@
     <string name="msg_gmail_denied">Izin Gmail tidak diberikan. Aplikasi tetap bisa dipakai; kamu bisa menghubungkannya nanti di menu Lainnya.</string>
     <string name="msg_gmail_unavailable">Gmail belum bisa dihubungkan sekarang. Coba lagi nanti di menu Lainnya.</string>
 
+    <string name="msg_wrong_credentials">Nama pengguna atau sandi salah.</string>
+    <string name="msg_username_taken">Nama pengguna itu sudah dipakai di ponsel ini. Pilih yang lain.</string>
+    <string name="msg_invalid_input">Periksa kembali isian pendaftaran.</string>
+
     <!-- Akun di tab Lainnya -->
     <string name="account_title">Akun</string>
+    <string name="account_local">Akun lokal, hanya ada di ponsel ini</string>
     <string name="account_gmail_on">Gmail terhubung (izin baca)</string>
     <string name="account_gmail_off">Gmail belum terhubung</string>
 </resources>
