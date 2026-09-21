@@ -1748,3 +1748,35 @@ details.card[open] summary {
   flex: 1 0 100%;
   text-align: right;
 }
+
+/* ---------- Splash (S29) ---------- */
+
+.splash {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+.splash__icon {
+  width: 140px;
+  height: 140px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--rf-radius-full);
+  background: var(--rf-primary);
+}
+
+.splash__pill {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  width: 92px;
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 23px;
+  background: var(--rf-background);
+}
+
+.splash__pill i {
+  height: 12px;
+}

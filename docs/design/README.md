@@ -30,6 +30,7 @@ Langsung ke layar tertentu lewat parameter URL: `prototype.html?screen=denah&the
 | `pengingat` | S26 Pengingat harian |
 | `notif` | Notifikasi malam (F8) |
 | `draf`, `tangkap` | S27 Draf dan S28 Tangkap otomatis (otomatis dalam mode Pro; `&pro=1` membuka mode Pro di layar mana pun) |
+| `splash`, `masuk` | S29 Splash (beralih sendiri setelah 1,4 detik), S30 Masuk. Riwayat masuk disimulasikan di penyimpanan browser (`rf-login`); tombol *Mulai dari splash* di panel kiri dan Lainnya, *Akun Google* mengosongkannya |
 | `sambutan`, `pola`, `persen`, `akun` | S01–S04 Onboarding (tambah `&template=kosong` untuk pola Mulai kosong). Tombol *Mulai dari awal* di panel kiri menjalankan seluruh F1 |
 | `kosong`, `kosong-tanpa-ruang` | S05 Denah pengguna baru: dengan pola Tiga hak, atau tanpa ruang sama sekali |
 | `aturan` (opsional `&focus=diri`) | S12 Aturan alokasi |
@@ -47,6 +48,7 @@ Langsung ke layar tertentu lewat parameter URL: `prototype.html?screen=denah&the
 **Ditambah 2026-09-20 (kemudahan mencatat):** S24 Catat kilat, S25 Koreksi saldo, S26 Pengingat harian, notifikasi malam dengan balasan langsung, petunjuk hari kosong di S08, saklar Jadikan favorit di S06, serta S27 Draf dari notifikasi dan S28 Tangkap otomatis (keduanya v1.1, Pro).
 
 **Flow yang bisa dicoba:**
+- **F0** splash lalu masuk (2026-09-21, permintaan pemilik): S29 Splash, S30 Masuk dengan Google dan Gmail (simulasi), lalu pola ruang (F1). Yang sudah pernah masuk langsung ke Denah. S30 menggantikan S01 Sambutan; alur awal default prototipe tetap Denah data contoh supaya tes lama tidak berubah, dan F0 dijalankan lewat `?screen=splash` atau tombol di panel.
 - **F5** dari harta sampai zakat ditunaikan: kartu Zakat di ruang Memberi atau Lainnya, Zakat; isi harta (S15); di bawah nisab dipantau, mencapai nisab memulai haul; kartu *Hanya di prototipe* mempercepat haul supaya Tunaikan zakat (S17) bisa dicoba.
 - **F7** backup dan restore: buat cadangan, ubah data, pulihkan; sandi salah dan berkas rusak menampilkan pesan tanpa menyentuh data.
 - **F1** pertama kali membuka aplikasi: S01 Sambutan, S02 pola (Tiga hak atau Mulai kosong), S03 persentase (slider, Keluarga otomatis menerima sisa sehingga total selalu 100%), S04 akun pertama dan saldo awal, lalu Denah kosong dengan dua jalan (catat rezeki pertama, atau coba data contoh). Pola Mulai kosong berakhir di Denah tanpa ruang dengan tombol Pakai pola Tiga hak.
@@ -63,6 +65,8 @@ Langsung ke layar tertentu lewat parameter URL: `prototype.html?screen=denah&the
 **Ditambah 2026-09-21 (melengkapi seluruh layar):** S09 detail dan edit transaksi (ubah, hapus, Urungkan; pemasukan menghitung ulang alokasi dari persentase saat itu), tab Transfer di S06, pencarian dan filter di S08, tambah dan arsipkan ruang (S10, S11; ruang ke-6 memicu paywall; ruang ke-4 dan seterusnya berwarna netral), S13 akun, kategori, dan favorit, S14 sampai S17 zakat (harga emas dan harta bisa diubah, status nisab dan haul dihitung, Tunaikan zakat membuat transaksi dan memulai haul baru; tanggal Hijriyah dari kalender Umm al-Qura milik browser), S19 keamanan (buat PIN dua kali, kunci simulasi, salah lima kali menahan sementara), S20 backup dan restore (sandi, sandi salah, berkas rusak, konfirmasi timpa, ekspor CSV, pratinjau impor), S22 tampilan, S23 tentang. Pembulatan alokasi kini sisa terbesar, sama dengan `AllocationEngine` di `:domain`.
 
 **Belum ada:** tidak ada layar S01–S28 yang belum dibuat. Yang masih disimulasikan: pembayaran, izin, notifikasi, berbagi berkas, pilih berkas CSV, sidik jari, dan harga emas otomatis. Wireframe teks ada di [../wireframe.md](../wireframe.md).
+
+**Diuji splash dan masuk (F0) 2026-09-21:** 17 pemeriksaan klik otomatis (splash beralih sendiri, masuk simulasi, riwayat di penyimpanan browser, langsung ke Denah bila sudah pernah masuk, Keluar, dan tanpa overflow di mode gelap dan teks 200%). Regresi 82 dan 116 pemeriksaan sebelumnya tetap lulus.
 
 **Diuji layar lengkap 2026-09-21:** 116 pemeriksaan klik otomatis (Chrome headless, tidak disimpan di repo) untuk tab Transfer, S08 sampai S10, S13 sampai S15, S17, S19, S20, S22, dan S23, ditambah pemeriksaan overflow 15 layar di mode gelap dan teks 200%; tanpa galat konsol. Bersama 82 pemeriksaan layar awal, seluruhnya lulus.
 

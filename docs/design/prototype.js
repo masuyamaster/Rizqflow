@@ -1445,6 +1445,8 @@
     return `<header class="topbar"><div><h1 tabindex="-1">Lainnya</h1></div></header>
       <ul class="list"><li><button type="button" class="list-row" data-action="pro"><span class="attn-icon" style="color:var(--rf-primary)">${icon('star')}</span>
         <span class="list-row__main"><p class="list-row__title">Rizqflow Pro${S.pro ? ' (aktif)' : ''}</p><p class="list-row__sub">Sekali bayar, tanpa langganan</p></span>${icon('chevron')}</button></li></ul>
+      <h2 class="section-title">Akun</h2>
+      <ul class="list">${act('Akun Google', 'Simulasi · keluar dan kembali ke splash dan masuk', 'logout', '', 'lock')}</ul>
       <h2 class="section-title">Catat dan pantau</h2>
       <ul class="list">
         ${act('Koreksi saldo', 'Cocokkan saldo akun dengan catatan', 'open-koreksi', stale ? stale.id : '', 'balance')}
@@ -1695,6 +1697,41 @@
     );
   }
 
+  /* ------------------------------ S29 Splash dan S30 Masuk (flow F0) */
+
+  let splashTimer = null;
+
+  /** S29 Splash: ikon aplikasi di tengah; beralih sendiri ke S30, atau ke Denah bila sudah pernah masuk. */
+  function splashScreen() {
+    return `<div class="splash" role="img" aria-label="Rizqflow">
+      <span class="splash__icon"><span class="splash__pill"><i style="background:var(--rf-room-1);flex:8"></i><i style="background:var(--rf-room-2);flex:12"></i><i style="background:var(--rf-room-3);flex:20"></i></span></span></div>`;
+  }
+
+  /** S30 Masuk: Google connect dan Gmail (opsional). Menggantikan S01 Sambutan. Semua disimulasikan. */
+  function masukScreen() {
+    const marks = TEMPLATE_IDS.map((id) => `<span class="room-icon" style="--seg:${color(TEMPLATE[id])}">${icon(TEMPLATE[id].icon)}</span>`).join('');
+    const point = (t) => `<li>${icon('check')}<span>${t}</span></li>`;
+    return `<div class="welcome">
+      <div class="welcome__mark" aria-hidden="true">${marks}</div>
+      <h1 class="welcome__brand" tabindex="-1">Rizqflow</h1>
+      <p class="welcome__tag">Rezeki mengalir, setiap hak terpenuhi.</p>
+      <ul class="welcome__points">${point('Datamu tetap di ponselmu, tidak dikirim ke server')}${point('Jalan tanpa internet setelah masuk')}${point('Tanpa iklan')}</ul>
+      <div class="actions welcome__actions">
+        <button type="button" class="btn btn--primary btn--block" data-action="login-google">Lanjutkan dengan Google</button>
+        <button type="button" class="btn btn--tonal btn--block" data-action="login-gmail">Hubungkan Gmail</button>
+        <p class="list-row__sub" style="margin:0">Opsional. Izin baca Gmail untuk fitur berikutnya. Rizqflow belum membaca email apa pun dan kamu bisa menghubungkannya nanti.</p>
+      </div></div>`;
+  }
+
+  function finishLogin(withGmail) {
+    store('rf-login', withGmail ? 'google+gmail' : 'google');
+    startOnboarding();
+    stack = [{ name: 'masuk' }];
+    route = { name: 'pola' };
+    render();
+    toast(withGmail ? 'Simulasi: masuk dengan Google dan izin Gmail diberikan.' : 'Simulasi: masuk dengan Google.');
+  }
+
   const SCREENS = {
     denah: denahScreen, catat: catatScreen, alokasi: alokasiScreen, detail: detailScreen,
     haul: haulScreen, transaksi: transaksiScreen, ruang: ruangScreen, lainnya: lainnyaScreen,
@@ -1702,11 +1739,12 @@
     sambutan: sambutanScreen, pola: polaScreen, persen: persenScreen, akun: akunScreen, aturan: aturanScreen,
     txdetail: txdetailScreen, kelola: kelolaScreen, zakat: zakatScreen, harta: hartaScreen, tunai: tunaiScreen,
     keamanan: keamananScreen, pin: pinScreen, kunci: kunciScreen, cadangan: cadanganScreen, impor: imporScreen,
-    tampilan: tampilanScreen, tentang: tentangScreen,
+    tampilan: tampilanScreen, tentang: tentangScreen, splash: splashScreen, masuk: masukScreen,
   };
   const NO_NAV = [
     'catat', 'alokasi', 'haul', 'koreksi', 'sambutan', 'pola', 'persen', 'akun', 'aturan',
     'txdetail', 'kelola', 'zakat', 'harta', 'tunai', 'keamanan', 'pin', 'kunci', 'cadangan', 'impor', 'tampilan', 'tentang',
+    'splash', 'masuk',
   ];
   const TABS = ['denah', 'transaksi', 'ruang', 'lainnya'];
 
@@ -1782,6 +1820,14 @@
     if (route.name === 'harta') updateHarta();
     if (route.name === 'tunai') updateTunai();
     if (route.name === 'txdetail') updateTxDetail();
+    clearTimeout(splashTimer);
+    if (route.name === 'splash') {
+      splashTimer = setTimeout(() => {
+        if (route.name !== 'splash') return;
+        route = load('rf-login') ? { name: 'denah' } : { name: 'masuk' };
+        render();
+      }, 1400);
+    }
     if (R && (route.name === 'persen' || route.name === 'aturan')) updateRules();
     const h1 = $('h1', screenEl);
     if (h1) h1.focus({ preventScroll: true });
@@ -2904,6 +2950,18 @@
       if (S.demo) ACTIONS['exit-demo']();
       else ACTIONS['enter-demo']();
     },
+    /* --- F0 splash dan masuk (S29, S30) */
+    'login-google': () => finishLogin(false),
+    'login-gmail': () => finishLogin(true),
+    logout: () => {
+      store('rf-login', '');
+      hideNotif();
+      closeSheet();
+      stack = [];
+      route = { name: 'splash' };
+      render();
+    },
+
     /* --- F1 onboarding (S01-S04) */
     'ob-start': () => go('pola'),
     'ob-template': (arg) => {
