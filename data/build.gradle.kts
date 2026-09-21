@@ -19,6 +19,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
+    // Robolectric butuh sumber daya Android agar Room bisa berjalan di JVM.
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
 }
 
 // Berkas skema JSON masuk git supaya setiap versi skema bisa diuji migrasinya.
@@ -29,5 +34,13 @@ room {
 dependencies {
     implementation(project(":domain"))
     implementation(libs.androidx.room.runtime)
+    implementation(libs.kotlinx.coroutines.core)
     ksp(libs.androidx.room.compiler)
+
+    // Tes DAO dan repositori berjalan di JVM lewat Robolectric (JUnit 4), tanpa emulator, jadi ikut CI.
+    testImplementation(libs.junit4)
+    testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.androidx.test.core)
+    testImplementation(libs.kotlinx.coroutines.core)
 }

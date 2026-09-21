@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import androidx.room.Upsert
 
 /** Jumlah per ruang, hasil agregat bulanan. */
@@ -17,6 +18,15 @@ data class RoomTotal(
 interface AccountDao {
     @Upsert
     suspend fun upsert(account: AccountEntity)
+
+    @Upsert
+    suspend fun upsertAll(accounts: List<AccountEntity>)
+
+    @Query("SELECT * FROM account WHERE id = :id")
+    suspend fun find(id: String): AccountEntity?
+
+    @Query("SELECT COUNT(*) FROM account")
+    suspend fun count(): Int
 
     @Query("SELECT * FROM account WHERE archived = 0 ORDER BY sort_order")
     suspend fun active(): List<AccountEntity>
@@ -40,17 +50,36 @@ interface RoomDao {
     @Upsert
     suspend fun upsert(room: RoomEntity)
 
+    @Query("SELECT COUNT(*) FROM room")
+    suspend fun count(): Int
+
+    @Query("SELECT * FROM room WHERE id = :id")
+    suspend fun find(id: String): RoomEntity?
+
     @Query("SELECT * FROM room WHERE archived = 0 ORDER BY sort_order")
     suspend fun active(): List<RoomEntity>
 
     @Upsert
     suspend fun upsertRule(rule: AllocationRuleEntity)
 
+    @Upsert
+    suspend fun upsertRules(rules: List<AllocationRuleEntity>)
+
+    /** Aturan ruang aktif saja; aturan ruang terarsip tidak disentuh supaya persentase lamanya tidak hilang. */
+    @Query("DELETE FROM allocation_rule WHERE room_id IN (SELECT id FROM room WHERE archived = 0)")
+    suspend fun clearActiveRules()
+
     @Query("SELECT r.* FROM allocation_rule r JOIN room ON room.id = r.room_id WHERE room.archived = 0 ORDER BY room.sort_order")
     suspend fun rules(): List<AllocationRuleEntity>
 
     @Upsert
     suspend fun upsertCategory(category: CategoryEntity)
+
+    @Upsert
+    suspend fun upsertCategories(categories: List<CategoryEntity>)
+
+    @Query("SELECT * FROM category WHERE id = :id")
+    suspend fun findCategory(id: String): CategoryEntity?
 
     @Query("SELECT * FROM category WHERE room_id = :roomId AND archived = 0 ORDER BY sort_order")
     suspend fun categories(roomId: String): List<CategoryEntity>
@@ -61,13 +90,33 @@ interface TransactionDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(transaction: TransactionEntity)
 
+    @Update
+    suspend fun update(transaction: TransactionEntity)
+
+    @Query("SELECT * FROM money_transaction WHERE id = :id")
+    suspend fun find(id: String): TransactionEntity?
+
+    /** Alokasi ikut terhapus lewat ON DELETE CASCADE. */
+    @Query("DELETE FROM money_transaction WHERE id = :id")
+    suspend fun delete(id: String)
+
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertEntries(entries: List<AllocationEntryEntity>)
+
+    @Query("DELETE FROM allocation_entry WHERE income_id = :incomeId")
+    suspend fun deleteEntries(incomeId: String)
 
     @Query("SELECT * FROM money_transaction WHERE occurred_on BETWEEN :fromDay AND :toDay ORDER BY occurred_on DESC, created_at DESC")
     suspend fun between(fromDay: Long, toDay: Long): List<TransactionEntity>
 
-    @Query("SELECT * FROM allocation_entry WHERE income_id = :incomeId")
+    /** Berurutan menurut prioritas ruang, supaya hitung ulang memakai pemutus seri yang sama. */
+    @Query(
+        """
+        SELECT e.* FROM allocation_entry e JOIN room ON room.id = e.room_id
+        WHERE e.income_id = :incomeId
+        ORDER BY room.sort_order
+        """,
+    )
     suspend fun entriesOf(incomeId: String): List<AllocationEntryEntity>
 
     /** Jatah per ruang: jumlah alokasi dari pemasukan yang terjadi antara dua hari (inklusif). */

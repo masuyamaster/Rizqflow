@@ -28,6 +28,8 @@ data class Account(
     val openingBalance: Money,
     val archived: Boolean = false,
     val sortOrder: Int = 0,
+    /** Terakhir kali saldo dicocokkan lewat Koreksi saldo (S25); null bila belum pernah. */
+    val lastReconciledOn: LocalDate? = null,
 ) {
     init {
         require(name.isNotBlank() && name.length <= NAME_MAX) { "Nama akun 1 sampai $NAME_MAX karakter" }
