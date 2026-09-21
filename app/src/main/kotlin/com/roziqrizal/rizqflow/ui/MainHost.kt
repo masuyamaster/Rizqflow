@@ -1,6 +1,14 @@
 package com.roziqrizal.rizqflow.ui
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
+import com.roziqrizal.rizqflow.domain.allocation.AllocationRule
+import com.roziqrizal.rizqflow.ui.ruang.AturanScreen
+import com.roziqrizal.rizqflow.ui.ruang.RuangScreen
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
@@ -42,11 +50,33 @@ fun MainHost(
     val context = LocalContext.current
     var catat by rememberSaveable { mutableStateOf(false) }
     var editId by rememberSaveable { mutableStateOf<String?>(null) }
+    var aturan by rememberSaveable { mutableStateOf(false) }
     // Berubah setiap ada transaksi yang disimpan, diubah, dihapus, atau diurungkan: daftar memuat ulang.
     var version by rememberSaveable { mutableIntStateOf(0) }
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val undoLabel = context.getString(R.string.action_undo)
+
+    // Snackbar untuk layar mana pun; hasilnya true bila tombol aksinya ditekan.
+    val notifier = remember(snackbar) {
+        object : Notifier {
+            override suspend fun show(message: String, actionLabel: String?): Boolean {
+                snackbar.currentSnackbarData?.dismiss()
+                return snackbar.showSnackbar(message, actionLabel = actionLabel, duration = SnackbarDuration.Long) == SnackbarResult.ActionPerformed
+            }
+        }
+    }
+
+    // Berjalan di scope MainHost supaya tetap hidup setelah layar Aturan ditutup.
+    fun announceRules(previous: List<AllocationRule>) {
+        version++
+        scope.launch {
+            if (notifier.show(context.getString(R.string.rules_saved), undoLabel)) {
+                workspace.rules.restoreRules(previous)
+                version++
+            }
+        }
+    }
 
     fun announceEdit(previous: TransactionSnapshot) {
         version++
@@ -101,6 +131,10 @@ fun MainHost(
         onDismissNotice = onDismissNotice,
         snackbarHostState = snackbar,
         transaksiContent = { TransaksiScreen(workspace, refreshKey = version, onOpen = { editId = it.value }) },
+        ruangContent = {
+            RuangScreen(workspace, refreshKey = version, notifier = notifier, onOpenRules = { aturan = true }, onChanged = { version++ })
+        },
+        onOpenRules = { aturan = true },
     )
     val editing = editId
     if (editing != null) {
@@ -117,6 +151,20 @@ fun MainHost(
         // Surface menangkap sentuhan supaya tidak tembus ke menu utama di bawahnya.
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             CatatFlow(workspace, onClose = { catat = false }, onSaved = ::announce)
+        }
+    } else if (aturan) {
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            Box {
+                AturanScreen(
+                    workspace = workspace,
+                    notifier = notifier,
+                    onClose = { aturan = false },
+                    onSaved = ::announceRules,
+                    onTemplateApplied = { version++ },
+                )
+                // Layar ini menutupi Scaffold beserta snackbar-nya, jadi ia membawa SnackbarHost sendiri.
+                SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 80.dp))
+            }
         }
     }
 }

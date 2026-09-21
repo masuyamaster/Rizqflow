@@ -68,6 +68,8 @@ object RizqflowIcons {
 
     val PanahAtas: ImageVector = strokeIcon("PanahAtas", "M12 19V5", "M6 11l6-6 6 6")
 
+    val PanahBawah: ImageVector = strokeIcon("PanahBawah", "M12 5v14", "M6 13l6 6 6-6")
+
     val Transfer: ImageVector = strokeIcon("Transfer", "M4 8h14", "M14 4l4 4-4 4", "M20 16H6", "M10 12l-4 4 4 4")
 
     val Cari: ImageVector = strokeIcon("Cari", "M11 4a7 7 0 1 0 0 14a7 7 0 1 0 0-14z", "M20 20l-4-4")
@@ -86,6 +88,10 @@ object RizqflowIcons {
         "M12 13c0-4.2-3-6.5-7-6.5 0 4.2 3 6.5 7 6.5z",
         "M12 11c0-3.4 2.4-5.4 6-5.4 0 3.4-2.4 5.4-6 5.4z",
     )
+
+    val Bintang: ImageVector = strokeIcon("Bintang", "m12 3.5 2.5 5.2 5.7.8-4.1 4 1 5.7L12 16.5l-5.1 2.7 1-5.7-4.1-4 5.7-.8z")
+
+    val Petir: ImageVector = strokeIcon("Petir", "M13 3 5 13.5h6L10 21l8-10.5h-6z")
 
     val Rumah: ImageVector = strokeIcon(
         "Rumah",

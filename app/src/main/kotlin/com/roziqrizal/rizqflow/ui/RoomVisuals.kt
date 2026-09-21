@@ -13,11 +13,16 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.roziqrizal.rizqflow.ui.theme.rizqflow
 
+/** Pilihan ikon untuk ruang baru (S10); kunci disimpan di database. */
+internal val ROOM_ICON_CHOICES = listOf("heart", "sprout", "home", "star", "bolt")
+
 /** Ikon ruang menurut kunci yang disimpan di database; kunci tak dikenal memakai ikon Ruang umum. */
 internal fun roomIcon(key: String): ImageVector = when (key) {
     "heart" -> RizqflowIcons.Hati
     "sprout" -> RizqflowIcons.Tunas
     "home" -> RizqflowIcons.Rumah
+    "star" -> RizqflowIcons.Bintang
+    "bolt" -> RizqflowIcons.Petir
     else -> RizqflowIcons.Ruang
 }
 

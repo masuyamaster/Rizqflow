@@ -1,7 +1,11 @@
 package com.roziqrizal.rizqflow.ui
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -74,6 +78,8 @@ fun RizqflowApp(
     onDismissNotice: () -> Unit = {},
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     transaksiContent: (@Composable () -> Unit)? = null,
+    ruangContent: (@Composable () -> Unit)? = null,
+    onOpenRules: (() -> Unit)? = null,
 ) {
     val nav = rememberNavController()
     val backStack by nav.currentBackStackEntryAsState()
@@ -129,9 +135,11 @@ fun RizqflowApp(
             TopTab.entries.forEach { tab ->
                 composable(tab.route) {
                     if (tab == TopTab.Lainnya && account != null) {
-                        LainnyaScreen(account, onConnectGmail, onSignOut, onDismissNotice)
+                        LainnyaScreen(account, onConnectGmail, onSignOut, onDismissNotice, onOpenRules)
                     } else if (tab == TopTab.Transaksi && transaksiContent != null) {
                         transaksiContent()
+                    } else if (tab == TopTab.Ruang && ruangContent != null) {
+                        ruangContent()
                     } else {
                         PlaceholderScreen(title = stringResource(tab.label), note = stringResource(tab.placeholder))
                     }
@@ -177,6 +185,7 @@ private fun LainnyaScreen(
     onConnectGmail: () -> Unit,
     onSignOut: () -> Unit,
     onDismissNotice: () -> Unit,
+    onOpenRules: (() -> Unit)? = null,
 ) {
     val spacing = MaterialTheme.spacing
     Column(
@@ -192,6 +201,22 @@ private fun LainnyaScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = spacing.s2),
         )
+        if (onOpenRules != null) {
+            Row(
+                modifier = Modifier
+                    .padding(top = spacing.s4)
+                    .fillMaxWidth()
+                    .clickable(role = Role.Button, onClick = onOpenRules)
+                    .padding(vertical = spacing.s2),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(stringResource(R.string.menu_rules), style = MaterialTheme.typography.titleSmall)
+                    Text(stringResource(R.string.menu_rules_sub), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                Icon(RizqflowIcons.PanahKanan, contentDescription = null)
+            }
+        }
         Text(
             stringResource(R.string.account_title),
             style = MaterialTheme.typography.titleLarge,
