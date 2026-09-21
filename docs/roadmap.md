@@ -95,11 +95,11 @@ Logika bisnis yang benar dan teruji sebelum ada layar.
 
 **Selesai bila:** flow F1–F4 berjalan end-to-end tanpa jaringan; data bertahan; setiap layar punya empty state.
 
-## Tahap 4 — Dashboard Denah (Backlog)
+## Tahap 4 — Dashboard Denah (In Progress)
 
 - [ ] Denah: ringkasan, grid ruang, perlu perhatian (S05)
 - [ ] Detail ruang (S11)
-- [ ] Logika status ruang per tipe dan tesnya
+- [x] Logika status ruang per tipe dan tesnya: `RoomStatusRules` (ambang 85% Mencukupi, batas inklusif) dan `DenahLoader` (rezeki bulan itu, belum dialirkan, kartu per ruang, butir Perlu perhatian maksimal 3), 18 tes (2026-09-21). Menunggu konfirmasi: penilaian Mencukupi di akhir bulan dan label bulan lalu yang belum tercapai
 - [ ] State tepi: bulan kosong, banyak ruang, font besar, mode gelap
 
 **Selesai bila:** status benar untuk ketiga tipe ruang; semua state punya tampilan; terbaca di font 200% dan mode gelap.
