@@ -170,7 +170,13 @@ Pola dari 239 baris Transaksi Harian (27 Juni sampai 4 September 2026), sudah me
 - PIN tidak disimpan sebagai teks: hanya hash berkunci (PBKDF2 dengan salt) di penyimpanan aman Android (Keystore).
 - `allowBackup=false`; database tanpa SQLCipher untuk v1 (lihat konsep.md).
 
-## Keputusan yang saya usulkan (perlu konfirmasi)
+## Data per akun (diputuskan 2026-09-21)
+
+Satu database per akun. Nama berkas: `rizqflow-<32 hex pertama SHA-256 dari pengenal akun>.db`, jadi email tidak muncul di nama berkas dan pengenal apa pun (email, UUID, `debug`) menghasilkan nama yang aman. Berganti akun membuka berkas lain; akun yang sama selalu kembali ke berkas yang sama. Keluar tidak menghapus berkas. Skema di dalamnya sama untuk semua akun, jadi tidak ada kolom pemilik.
+
+## Keputusan yang saya usulkan (dipakai sebagai default kerja)
+
+Enam butir ini sudah tertanam di skema versi 1 dan di lapisan data. Pemilik belum menjawab satu per satu; bila ada yang diubah, lakukan sebelum ada data pengguna nyata (tanpa migrasi).
 
 1. UUID teks sebagai pengenal (bukan angka berurut).
 2. Tanggal transaksi sebagai `epochDay` tanpa zona waktu; bulan mengikuti kalender Masehi.

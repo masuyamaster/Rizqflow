@@ -259,7 +259,7 @@ Wireframe teks untuk **semua** layar S01–S28 (kecuali yang sudah ada di [ui-fl
 ```
 
 - Dikelompokkan per tanggal; pemasukan diberi ikon panah naik dan tanda plus, pengeluaran memakai ikon ruang.
-- Filter cepat: Semua, Masuk, Keluar, dan Akun (memilih akun lewat sheet). **Usulan:** filter Ruang dan Kategori ada di ikon filter di sisi kolom cari.
+- Filter cepat: Semua, Masuk, Keluar, dan Akun (memilih akun lewat sheet). **Diputuskan 2026-09-21:** filter Ruang dan Kategori ada di ikon filter di sisi kolom cari.
 - Ketuk baris membuka S09. Geser baris tidak dipakai (hapus ada di S09) supaya tidak terhapus tidak sengaja.
 - Banner hari kosong dan baris draf hanya muncul bila berlaku (lihat F8 dan F9). Hasil filter Akun dari S25 menampilkan chip "Akun: Tunai" yang bisa dilepas.
 - **Keadaan kosong:** "Belum ada transaksi. Rezeki dan pengeluaran yang kamu catat akan muncul di sini." **Hasil cari kosong:** "Tidak ada yang cocok dengan pencarianmu."
@@ -316,7 +316,7 @@ Pemasukan:
 ```
 
 - Pengeluaran bisa diubah penuh. Layar yang sama dipakai saat **Ubah** pada draf (S27): kolom terisi dari draf.
-- **Usulan:** rincian alokasi pemasukan tersimpan sebagai potret saat pemasukan dicatat, jadi mengubah aturan alokasi (S12) tidak mengubah riwayat. Mengubah nominal pemasukan menghitung ulang alokasinya dengan persentase potret itu; ruang dan persentasenya tidak bisa diedit dari sini.
+- **Diputuskan 2026-09-21:** rincian alokasi pemasukan tersimpan sebagai potret saat pemasukan dicatat, jadi mengubah aturan alokasi (S12) tidak mengubah riwayat. Mengubah nominal pemasukan menghitung ulang alokasinya dengan persentase potret itu; ruang dan persentasenya tidak bisa diedit dari sini.
 - Hapus meminta konfirmasi singkat lalu tampil snackbar Urungkan. Transaksi hasil Koreksi saldo (kategori Tak terlacak) diperlakukan sama dengan transaksi biasa.
 - Tanggal yang dipilih berada di bulan lain memindahkan transaksi ke bulan itu, dan jatah ruang bulan itu ikut berubah.
 
@@ -364,9 +364,9 @@ Tambah ruang (bottom sheet):
 +================================+
 ```
 
-- `=` di ujung baris adalah pegangan urutan (seret untuk mengubah). **Usulan:** urutan menentukan prioritas: ruang pertama menerima sisa pembulatan, dan urutan tampil di Denah. Keputusan aturan pembulatan masih terbuka (lihat roadmap Tahap 2).
+- `=` di ujung baris adalah pegangan urutan (seret untuk mengubah). **Diputuskan 2026-09-21:** urutan menentukan prioritas: ruang pertama menerima sisa pembulatan (metode sisa terbesar, pemutus seri), dan urutan tampil di Denah.
 - Ketuk baris membuka S11. Tipe menentukan arti "terpenuhi" (lihat konsep.md); ada teks bantu satu kalimat per tipe.
-- Batas gratis 5 ruang: ruang ke-6 memicu S21 (Pro: ruang tak terbatas).
+- Batas gratis 5 ruang (diputuskan 2026-09-21): ruang ke-6 memicu S21 (Pro: ruang tak terbatas).
 - Arsipkan lewat menu di S11: ruang tidak muncul di Denah dan tidak menerima alokasi baru, riwayat tetap. Menampilkan **Diarsipkan** hanya bila ada.
 - Persentase ruang baru dimulai 0%; setelah menambah, layar menawarkan menuju S12 untuk mengaturnya. Ruang baru tanpa jatah tampil netral.
 

@@ -43,7 +43,7 @@ Batas yang perlu dipahami:
 2. **Orang yang bisa membaca berkas data aplikasi** (misalnya ponsel yang di-root) bisa mengambil hash dan mencoba menebak sandi secara luring; PBKDF2 memperlambat itu tetapi tidak mencegahnya. Sandi yang panjang membantu.
 3. **Tanpa pembatasan percobaan.** Belum ada penundaan setelah beberapa kali salah sandi. Orang yang memegang ponsel bisa menebak berulang kali; hash yang lambat (sekitar sepersekian detik per tebakan) adalah satu-satunya rem. Usulan: jeda bertahap setelah 5 kali salah.
 4. **Hanya di ponsel ini.** Akun tidak ikut pindah ponsel. Pindah ponsel memakai cadangan terenkripsi (S19) atau masuk dengan Google. Bila Sync (fase 2) dibuat, akun lokal perlu dihubungkan ke akun sungguhan lewat backend yang memverifikasi.
-5. **Satu ponsel bisa punya beberapa akun lokal.** Data keuangan belum dipisah per akun; itu perlu diputuskan sebelum Tahap 3 memakai akun sebagai pemilik data (usulan: satu database per akun).
+5. **Satu ponsel bisa punya beberapa akun lokal.** Data keuangan belum dipisah per akun; itu perlu diputuskan sebelum Tahap 3 memakai akun sebagai pemilik data (diputuskan 2026-09-21: satu database per akun, lihat [model-data.md](model-data.md)).
 
 ## Status penyiapan (2026-09-21)
 
