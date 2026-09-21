@@ -50,7 +50,8 @@ Aplikasi niche seperti ini kemungkinan menghasilkan uang kecil. Anggap monetisas
 ## Yang masih perlu diputuskan
 
 - [ ] **Pengingat haul.** Usulan: untuk satu profil tetap gratis (konsisten dengan prinsip 2), pengingat multi-profil masuk Pro. Di tabel atas, "multi-profil haul dengan pengingat" ada di Pro, jadi butuh konfirmasi.
-- [x] **Batas ruang gratis: 5 ruang** total (3 inti + 2 peran), disetujui pemilik 2026-09-21. Batas gratis akun dan kategori belum ditetapkan.
+- [x] **Batas ruang gratis: 5 ruang** total (3 inti + 2 peran), disetujui pemilik 2026-09-21.
+- [x] **Batas akun gratis: 3 akun** (mis. tunai, bank, dompet digital), disetujui pemilik 2026-09-21. Kategori tidak dibatasi; akun tak terbatas masuk Pro.
 - [x] **Widget catat kilat**: masuk Pro (2026-09-20). Pintasan ikon, tile Quick Settings, dan balasan notifikasi tetap gratis karena mencatat dengan cepat adalah janji utama (lihat "Disiplin mencatat" di [konsep.md](konsep.md)).
 - [ ] **Harga final Pro dan Sync**, sebaiknya berdasarkan uji minat (landing page atau daftar tunggu) sebelum banyak kode ditulis.
 - [x] **Platform**: Android saja (2026-09-19), jadi pembelian lewat Google Play Billing: produk in-app sekali beli untuk Pro, langganan untuk Sync di fase 2.

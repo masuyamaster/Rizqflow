@@ -10,6 +10,7 @@ enum class Plan { PRO, SYNC }
  */
 enum class Feature(val requiredPlan: Plan) {
     UNLIMITED_ROOMS(Plan.PRO),
+    UNLIMITED_ACCOUNTS(Plan.PRO),
     ADVANCED_ALLOCATION_RULES(Plan.PRO),
     MULTI_ZAKAT_PROFILE(Plan.PRO),
     AUTOMATIC_GOLD_PRICE(Plan.PRO),
@@ -33,23 +34,32 @@ interface Entitlements {
     val roomLimit: Int?
 
     fun canAddRoom(currentRoomCount: Int): Boolean = roomLimit?.let { currentRoomCount < it } ?: true
+
+    /** Jumlah akun aktif maksimum, atau null bila tak terbatas. Kategori tidak dibatasi. */
+    val accountLimit: Int?
+
+    fun canAddAccount(currentAccountCount: Int): Boolean = accountLimit?.let { currentAccountCount < it } ?: true
 }
 
 /**
  * Implementasi awal (stub): paket yang dimiliki diberikan dari luar. Di Tahap 7 sumbernya
  * menjadi status pembelian Google Play Billing tanpa mengubah antarmuka [Entitlements].
- * Batas ruang gratis 5 masih tebakan (docs/monetisasi.md).
+ * Batas gratis: 5 ruang dan 3 akun, keduanya disetujui pemilik 2026-09-21 (docs/monetisasi.md).
  */
 class PlanEntitlements(
     private val plans: Set<Plan> = emptySet(),
     private val freeRoomLimit: Int = FREE_ROOM_LIMIT,
+    private val freeAccountLimit: Int = FREE_ACCOUNT_LIMIT,
 ) : Entitlements {
 
     override fun isEnabled(feature: Feature): Boolean = feature.requiredPlan in plans
 
     override val roomLimit: Int? get() = if (isEnabled(Feature.UNLIMITED_ROOMS)) null else freeRoomLimit
 
+    override val accountLimit: Int? get() = if (isEnabled(Feature.UNLIMITED_ACCOUNTS)) null else freeAccountLimit
+
     companion object {
         const val FREE_ROOM_LIMIT = 5
+        const val FREE_ACCOUNT_LIMIT = 3
     }
 }

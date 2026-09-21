@@ -482,7 +482,7 @@ Tab Favorit:
 - Akun: nama, jenis (tunai, bank, dompet digital), saldo menurut catatan. Ketuk membuka sheet ubah nama, arsipkan, dan **Cocokkan saldo** (menuju S25). Akun yang punya transaksi tidak bisa dihapus, hanya diarsipkan.
 - Kategori (pos) dikelompokkan per ruang. Kategori sistem **Zakat mal** dan **Tak terlacak** tidak bisa dihapus atau diganti nama.
 - Favorit: ubah nama dan nominal, hapus, urutkan (seret). Tanpa favorit: "Belum ada favorit. Jadikan favorit dari layar Catat."
-- **Usulan:** batas gratis jumlah akun dan kategori belum ditetapkan; bahas bersama tier di monetisasi.md.
+- Batas gratis: **3 akun** aktif (disetujui pemilik 2026-09-21); akun ke-4 memicu S21. Kategori tidak dibatasi.
 
 ## S14 Beranda Zakat
 
