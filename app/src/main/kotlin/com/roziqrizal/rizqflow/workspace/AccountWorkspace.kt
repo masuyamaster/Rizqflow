@@ -3,6 +3,7 @@ package com.roziqrizal.rizqflow.workspace
 import android.content.Context
 import com.roziqrizal.rizqflow.data.LocalLedger
 import com.roziqrizal.rizqflow.domain.entitlement.PlanEntitlements
+import com.roziqrizal.rizqflow.domain.ledger.DemoData
 import com.roziqrizal.rizqflow.domain.ledger.FavoriteService
 import com.roziqrizal.rizqflow.domain.ledger.LedgerService
 import com.roziqrizal.rizqflow.domain.ledger.ManagementService
@@ -27,6 +28,7 @@ class AccountWorkspace private constructor(private val local: LocalLedger) : Aut
     val rules = RuleService(local.rooms, entitlements, newId)
     val management = ManagementService(local.accounts, local.rooms, entitlements, newId)
     val favorites = FavoriteService(local.favorites, local.accounts, local.rooms, ledger, newId, System::currentTimeMillis)
+    val demo = DemoData(setup, ledger, management, favorites, local.rooms)
 
     override fun close() = local.close()
 

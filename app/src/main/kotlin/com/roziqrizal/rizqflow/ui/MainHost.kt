@@ -32,6 +32,13 @@ import com.roziqrizal.rizqflow.domain.ledger.TransactionSnapshot
 import com.roziqrizal.rizqflow.domain.model.TransactionId
 import com.roziqrizal.rizqflow.domain.model.TransactionKind
 import com.roziqrizal.rizqflow.ui.catat.CatatFlow
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.res.stringResource
 import com.roziqrizal.rizqflow.ui.catat.QuickCatatSheet
 import com.roziqrizal.rizqflow.domain.ledger.FavoriteUse
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -58,6 +65,10 @@ fun MainHost(
     onDismissNotice: () -> Unit,
     /** Bertambah setiap ada permintaan Catat kilat dari luar (pintasan ikon, tile). */
     quickCatatRequest: Int = 0,
+    /** Mode demo (S22): memakai data contoh yang terpisah dari data pengguna. */
+    demo: Boolean = false,
+    onEnterDemo: () -> Unit = {},
+    onExitDemo: () -> Unit = {},
 ) {
     val context = LocalContext.current
     var catat by rememberSaveable { mutableStateOf(false) }
@@ -65,6 +76,7 @@ fun MainHost(
     var aturan by rememberSaveable { mutableStateOf(false) }
     var kelola by rememberSaveable { mutableStateOf(false) }
     var quick by rememberSaveable { mutableStateOf(false) }
+    var demoSheet by rememberSaveable { mutableStateOf(false) }
     var handledQuick by rememberSaveable { mutableIntStateOf(0) }
     LaunchedEffect(quickCatatRequest) {
         if (quickCatatRequest > handledQuick) {
@@ -170,14 +182,40 @@ fun MainHost(
         snackbarHostState = snackbar,
         transaksiContent = { TransaksiScreen(workspace, refreshKey = version, onOpen = { editId = it.value }) },
         denahContent = {
-            DenahScreen(workspace, refreshKey = version, onCatat = { catat = true }, onOpenRules = { aturan = true }, onChanged = { version++ })
+            DenahScreen(
+                workspace, refreshKey = version, onCatat = { catat = true }, onOpenRules = { aturan = true }, onChanged = { version++ },
+                demo = demo, onDemoClick = { demoSheet = true }, onTryDemo = onEnterDemo,
+            )
         },
         ruangContent = {
             RuangScreen(workspace, refreshKey = version, notifier = notifier, onOpenRules = { aturan = true }, onChanged = { version++ })
         },
         onOpenRules = { aturan = true },
         onOpenManage = { kelola = true },
+        demo = demo,
+        onToggleDemo = { if (demo) demoSheet = true else onEnterDemo() },
     )
+    if (demoSheet && demo) {
+        ModalBottomSheet(onDismissRequest = { demoSheet = false }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+            Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp).padding(bottom = 24.dp)) {
+                Text(stringResource(R.string.demo_sheet_title), style = MaterialTheme.typography.titleLarge)
+                Text(
+                    stringResource(R.string.demo_sheet_body),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(top = 8.dp),
+                )
+                Button(
+                    onClick = {
+                        demoSheet = false
+                        onExitDemo()
+                    },
+                    modifier = Modifier.padding(top = 16.dp).fillMaxWidth().height(52.dp),
+                ) { Text(stringResource(R.string.demo_exit)) }
+                TextButton(onClick = { demoSheet = false }, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.demo_stay)) }
+            }
+        }
+    }
     if (quick) {
         ModalBottomSheet(onDismissRequest = { quick = false }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
             QuickCatatSheet(workspace = workspace, onClose = { quick = false }, onSaved = ::announce, onFavoriteUsed = ::announceFavorite)

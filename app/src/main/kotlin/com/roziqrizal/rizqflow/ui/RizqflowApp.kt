@@ -82,6 +82,8 @@ fun RizqflowApp(
     denahContent: (@Composable () -> Unit)? = null,
     onOpenRules: (() -> Unit)? = null,
     onOpenManage: (() -> Unit)? = null,
+    demo: Boolean = false,
+    onToggleDemo: (() -> Unit)? = null,
 ) {
     val nav = rememberNavController()
     val backStack by nav.currentBackStackEntryAsState()
@@ -137,7 +139,7 @@ fun RizqflowApp(
             TopTab.entries.forEach { tab ->
                 composable(tab.route) {
                     if (tab == TopTab.Lainnya && account != null) {
-                        LainnyaScreen(account, onConnectGmail, onSignOut, onDismissNotice, onOpenRules, onOpenManage)
+                        LainnyaScreen(account, onConnectGmail, onSignOut, onDismissNotice, onOpenRules, onOpenManage, demo, onToggleDemo)
                     } else if (tab == TopTab.Transaksi && transaksiContent != null) {
                         transaksiContent()
                     } else if (tab == TopTab.Ruang && ruangContent != null) {
@@ -210,6 +212,8 @@ private fun LainnyaScreen(
     onDismissNotice: () -> Unit,
     onOpenRules: (() -> Unit)? = null,
     onOpenManage: (() -> Unit)? = null,
+    demo: Boolean = false,
+    onToggleDemo: (() -> Unit)? = null,
 ) {
     val spacing = MaterialTheme.spacing
     Column(
@@ -227,6 +231,13 @@ private fun LainnyaScreen(
         )
         if (onOpenRules != null) MenuRow(stringResource(R.string.menu_rules), stringResource(R.string.menu_rules_sub), onOpenRules)
         if (onOpenManage != null) MenuRow(stringResource(R.string.menu_manage), stringResource(R.string.menu_manage_sub), onOpenManage)
+        if (onToggleDemo != null) {
+            MenuRow(
+                stringResource(R.string.menu_demo),
+                stringResource(if (demo) R.string.menu_demo_on else R.string.menu_demo_sub),
+                onToggleDemo,
+            )
+        }
         Text(
             stringResource(R.string.account_title),
             style = MaterialTheme.typography.titleLarge,

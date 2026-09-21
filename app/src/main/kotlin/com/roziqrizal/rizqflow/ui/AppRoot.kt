@@ -8,6 +8,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
+import com.roziqrizal.rizqflow.domain.auth.AccountStorage
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,13 +30,14 @@ import com.roziqrizal.rizqflow.ui.login.RegisterScreen
 fun AppRoot(controller: AuthController, showDebugLogin: Boolean, quickCatatRequest: Int = 0) {
     val state by controller.state.collectAsState()
     var registering by rememberSaveable { mutableStateOf(false) }
+    var demo by rememberSaveable { mutableStateOf(false) }
     fun openRegister(open: Boolean) {
         controller.clearMessage()
         registering = open
     }
     // Setelah masuk, halaman daftar ditutup; kalau tidak, Keluar akan kembali ke halaman daftar.
     LaunchedEffect(state is AuthUiState.SignedIn) {
-        if (state is AuthUiState.SignedIn) registering = false
+        if (state is AuthUiState.SignedIn) registering = false else demo = false
     }
     // Surface menentukan warna teks bawaan (onBackground). Tanpanya teks tanpa warna eksplisit
     // memakai hitam dan tak terbaca di mode gelap.
@@ -68,7 +71,12 @@ fun AppRoot(controller: AuthController, showDebugLogin: Boolean, quickCatatReque
             }
 
             // Setiap akun membuka database sendiri; akun baru melewati onboarding dulu.
-            is AuthUiState.SignedIn -> WorkspaceHost(accountId = s.session.accountId) { workspace ->
+            is AuthUiState.SignedIn -> WorkspaceHost(
+                accountId = if (demo) AccountStorage.DEMO_ACCOUNT_ID else s.session.accountId,
+                onDemoFailed = { demo = false },
+            ) { workspace ->
+                // Berganti antara data asli dan demo memulai menu utama dari awal (tab, layar terbuka).
+                key(workspace) {
                 MainHost(
                     workspace = workspace,
                     account = AccountUi(
@@ -80,10 +88,17 @@ fun AppRoot(controller: AuthController, showDebugLogin: Boolean, quickCatatReque
                         notice = s.notice,
                     ),
                     onConnectGmail = controller::connectGmail,
-                    onSignOut = controller::signOut,
+                    onSignOut = {
+                        demo = false
+                        controller.signOut()
+                    },
                     onDismissNotice = controller::dismissNotice,
                     quickCatatRequest = quickCatatRequest,
+                    demo = demo,
+                    onEnterDemo = { demo = true },
+                    onExitDemo = { demo = false },
                 )
+                }
             }
         }
     }

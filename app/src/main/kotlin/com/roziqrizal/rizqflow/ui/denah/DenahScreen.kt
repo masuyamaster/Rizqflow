@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
@@ -84,6 +86,10 @@ fun DenahScreen(
     onCatat: () -> Unit,
     onOpenRules: () -> Unit,
     onChanged: () -> Unit,
+    /** Mode demo aktif: header memberi penanda yang membuka sheet keluar. */
+    demo: Boolean = false,
+    onDemoClick: () -> Unit = {},
+    onTryDemo: () -> Unit = {},
 ) {
     val today = remember { LocalDate.now() }
     val currentMonth = remember(today) { YearMonth.from(today) }
@@ -107,6 +113,9 @@ fun DenahScreen(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(R.string.tab_denah), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.weight(1f))
+            if (demo) {
+                AssistChip(onClick = onDemoClick, label = { Text(stringResource(R.string.demo_badge)) })
+            }
             IconButton(onClick = { month = month.minusMonths(1) }) {
                 Icon(RizqflowIcons.PanahKiri, contentDescription = stringResource(R.string.tx_month_prev))
             }
@@ -122,7 +131,7 @@ fun DenahScreen(
             return@Column
         }
 
-        IncomeCard(data, isCurrent = month == currentMonth, onCatat = onCatat)
+        IncomeCard(data, isCurrent = month == currentMonth, onCatat = onCatat, onTryDemo = if (demo) null else onTryDemo)
 
         Text(stringResource(R.string.denah_rooms), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = spacing.s5, bottom = spacing.s2))
         if (!data.hasRooms) {
@@ -154,7 +163,7 @@ fun DenahScreen(
 // ---------------------------------------------------------------------------------- rezeki bulan ini
 
 @Composable
-private fun IncomeCard(data: DenahOverview, isCurrent: Boolean, onCatat: () -> Unit) {
+private fun IncomeCard(data: DenahOverview, isCurrent: Boolean, onCatat: () -> Unit, onTryDemo: (() -> Unit)?) {
     val spacing = MaterialTheme.spacing
     Column(
         modifier = Modifier
@@ -185,6 +194,7 @@ private fun IncomeCard(data: DenahOverview, isCurrent: Boolean, onCatat: () -> U
             if (isCurrent) {
                 Text(stringResource(R.string.denah_empty_body), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Button(onClick = onCatat, modifier = Modifier.padding(top = spacing.s3).fillMaxWidth().height(48.dp)) { Text(stringResource(R.string.denah_empty_action)) }
+                if (onTryDemo != null) TextButton(onClick = onTryDemo, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.demo_try)) }
             }
         }
     }
