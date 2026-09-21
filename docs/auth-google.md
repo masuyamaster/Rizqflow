@@ -1,10 +1,10 @@
-# Rizqflow — Masuk dengan Google dan Gmail
+# Rizqflow — Masuk: akun lokal, Google, dan Gmail
 
 Ditulis 2026-09-21. Berkas ini menjelaskan apa yang sudah dibangun untuk halaman masuk, apa yang **harus Anda siapkan** di Google Cloud supaya tombol Google bekerja, dan risiko yang perlu diketahui sebelum rilis.
 
 ## Keputusan
 
-Pemilik meminta alur: **splash, lalu halaman masuk dengan Google connect dan Gmail; yang sudah punya riwayat masuk langsung ke menu utama** (2026-09-21). Ini **mengubah keputusan sebelumnya** "tanpa akun" ([konsep.md](konsep.md)). Yang tetap berlaku: data keuangan disimpan di ponsel dan tidak dikirim ke server; tidak ada backend Rizqflow.
+Pemilik meminta alur: **splash, lalu halaman masuk dengan Google connect dan Gmail; yang sudah punya riwayat masuk langsung ke menu utama** (2026-09-21). Sesudahnya pemilik menambah **masuk dengan nama pengguna dan sandi serta halaman Daftar** (2026-09-21), untuk yang tidak mau memakai Google. Ini **mengubah keputusan sebelumnya** "tanpa akun" ([konsep.md](konsep.md)). Yang tetap berlaku: data keuangan disimpan di ponsel dan tidak dikirim ke server; tidak ada backend Rizqflow.
 
 ## Yang sudah dibangun
 
@@ -13,12 +13,37 @@ Pemilik meminta alur: **splash, lalu halaman masuk dengan Google connect dan Gma
 | Splash | Splash sistem Android dengan ikon aplikasi dan latar token; tetap tampil sampai riwayat masuk terbaca, jadi tidak ada kedipan halaman masuk |
 | S30 Masuk | Logo tiga ruang, tagline, tiga jaminan, tombol Google **berupa simbol G saja** (nama "Lanjutkan dengan Google" untuk pembaca layar), tombol **Hubungkan Gmail** (opsional), pesan lembut bila gagal |
 | Alur | Tanpa riwayat: halaman masuk. Ada riwayat: langsung menu utama. **Keluar** di tab Lainnya menghapus riwayat |
+| Akun lokal (S30, S31) | Kolom nama pengguna dan sandi di S30, halaman Daftar S31. Daftar membuat akun di ponsel ini lalu langsung masuk. Lihat bagian "Akun lokal" di bawah |
 | Riwayat masuk | Profil singkat di SharedPreferences privat (pengenal, email, nama, penanda Gmail). **Tidak ada token atau sandi yang disimpan** |
 | Gmail | Izin `gmail.readonly` diminta lewat AuthorizationClient, bisa sekalian saat masuk atau belakangan dari tab Lainnya. **Aplikasi belum membaca email apa pun**; fitur ini baru menyiapkan izinnya |
 | Masuk uji | Tombol khusus **build debug** untuk melewati Google saat pengembangan. Tidak ada di build rilis |
-| Tes | `AuthController` 16 tes, `StartRouter` dan sesi 5 tes |
+| Tes | `AuthController` 28 tes; domain: sesi dan `StartRouter` 8 tes, `CredentialPolicy` 13, `Pbkdf2PasswordHasher` 10, `LocalAccountService` 14 |
 
 Kode: `app/src/main/kotlin/.../auth/` (logika, penyimpanan, Google) dan `ui/login/` (layar); logika murni (`AuthSession`, `StartRouter`) di `:domain`.
+
+## Akun lokal: nama pengguna dan sandi
+
+Tanpa server, jadi ini **pintu masuk lokal**, bukan sistem akun sungguhan. Keputusan rancangan dan batasannya:
+
+| Hal | Keputusan |
+|---|---|
+| Penyimpanan | SharedPreferences privat (`accounts`), terpisah dari riwayat masuk (`session`). `allowBackup` mati, jadi tidak ikut cadangan otomatis dan tidak berpindah ke ponsel lain |
+| Sandi | **Tidak pernah disimpan.** Yang disimpan hash PBKDF2-HMAC-SHA256, 600.000 putaran (anjuran OWASP), garam acak 16 byte per akun, format `pbkdf2-sha256$putaran$garam$hash`. Jumlah putaran ikut tersimpan sehingga bisa dinaikkan tanpa merusak akun lama |
+| Unicode | Sandi dinormalkan NFKC sebelum di-hash, supaya sandi yang sama dari papan ketik berbeda tetap cocok |
+| Nama pengguna | 3 sampai 32 karakter, a-z, angka, titik, garis bawah, strip; diawali huruf atau angka; tidak membedakan huruf besar-kecil |
+| Sandi (aturan) | Minimal 8, maksimal 128 karakter, tidak boleh sama dengan nama pengguna. Tanpa aturan wajib simbol; panjang lebih berguna |
+| Salah sandi | Nama pengguna tak dikenal dan sandi salah **memberi pesan yang sama**, dan yang tak dikenal tetap menjalankan satu pengecekan hash supaya waktu balasnya tidak membocorkan |
+| Layar | Sandi tidak masuk penyimpanan state instance (hilang bila layar diputar atau proses dimatikan) |
+| Keluar | Menghapus riwayat masuk saja; akun tetap ada dan bisa dipakai masuk lagi |
+| Lupa sandi | **Tidak bisa dipulihkan.** Tidak ada server untuk mengirim tautan reset. Peringatan tampil di S31 sebelum tombol Daftar |
+
+Batas yang perlu dipahami:
+
+1. **Ini bukan enkripsi data.** Nama pengguna dan sandi hanya menjadi pintu masuk aplikasi. Isi database keuangan tidak terenkripsi oleh sandi ini. Pengunci sebenarnya (PIN, biometrik, enkripsi database) adalah pekerjaan Tahap 6 (S17, S18).
+2. **Orang yang bisa membaca berkas data aplikasi** (misalnya ponsel yang di-root) bisa mengambil hash dan mencoba menebak sandi secara luring; PBKDF2 memperlambat itu tetapi tidak mencegahnya. Sandi yang panjang membantu.
+3. **Tanpa pembatasan percobaan.** Belum ada penundaan setelah beberapa kali salah sandi. Orang yang memegang ponsel bisa menebak berulang kali; hash yang lambat (sekitar sepersekian detik per tebakan) adalah satu-satunya rem. Usulan: jeda bertahap setelah 5 kali salah.
+4. **Hanya di ponsel ini.** Akun tidak ikut pindah ponsel. Pindah ponsel memakai cadangan terenkripsi (S19) atau masuk dengan Google. Bila Sync (fase 2) dibuat, akun lokal perlu dihubungkan ke akun sungguhan lewat backend yang memverifikasi.
+5. **Satu ponsel bisa punya beberapa akun lokal.** Data keuangan belum dipisah per akun; itu perlu diputuskan sebelum Tahap 3 memakai akun sebagai pemilik data (usulan: satu database per akun).
 
 ## Yang harus Anda siapkan di Google Cloud
 
@@ -52,5 +77,6 @@ Client ID adalah pengenal publik, bukan rahasia, jadi aman masuk ke git.
 ## Yang belum dibangun
 
 - Membaca email (parser email bank, draf transaksi dari email), dan cara mencabut izin Gmail dari dalam aplikasi.
-- Hapus akun dan data saat keluar (sekarang Keluar hanya menghapus riwayat masuk; data keuangan tidak disentuh).
+- Hapus akun dan data saat keluar (sekarang Keluar hanya menghapus riwayat masuk; akun lokal dan data keuangan tidak disentuh).
+- Ganti sandi, hapus akun lokal, jeda setelah salah sandi berulang, dan memisahkan data keuangan per akun.
 - Menyambungkan akun ke Sync (fase 2).

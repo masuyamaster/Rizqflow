@@ -1446,7 +1446,7 @@
       <ul class="list"><li><button type="button" class="list-row" data-action="pro"><span class="attn-icon" style="color:var(--rf-primary)">${icon('star')}</span>
         <span class="list-row__main"><p class="list-row__title">Rizqflow Pro${S.pro ? ' (aktif)' : ''}</p><p class="list-row__sub">Sekali bayar, tanpa langganan</p></span>${icon('chevron')}</button></li></ul>
       <h2 class="section-title">Akun</h2>
-      <ul class="list">${act('Akun Google', 'Simulasi · keluar dan kembali ke splash dan masuk', 'logout', '', 'lock')}</ul>
+      <ul class="list">${(load('rf-login') || '').startsWith('local:') ? act('Akun lokal', 'Simulasi · ' + (load('rf-login') || '').slice(6) + ' · keluar dan kembali ke splash dan masuk', 'logout', '', 'lock') : act('Akun Google', 'Simulasi · keluar dan kembali ke splash dan masuk', 'logout', '', 'lock')}</ul>
       <h2 class="section-title">Catat dan pantau</h2>
       <ul class="list">
         ${act('Koreksi saldo', 'Cocokkan saldo akun dengan catatan', 'open-koreksi', stale ? stale.id : '', 'balance')}
@@ -1707,7 +1707,7 @@
       <span class="splash__icon"><span class="splash__pill"><i style="background:var(--rf-room-1);flex:8"></i><i style="background:var(--rf-room-2);flex:12"></i><i style="background:var(--rf-room-3);flex:20"></i></span></span></div>`;
   }
 
-  /** S30 Masuk: Google connect dan Gmail (opsional). Menggantikan S01 Sambutan. Semua disimulasikan. */
+  /** S30 Masuk: nama pengguna dan sandi (akun lokal), Google, dan Gmail (opsional). Semua disimulasikan. */
   function masukScreen() {
     const marks = TEMPLATE_IDS.map((id) => `<span class="room-icon" style="--seg:${color(TEMPLATE[id])}">${icon(TEMPLATE[id].icon)}</span>`).join('');
     const point = (t) => `<li>${icon('check')}<span>${t}</span></li>`;
@@ -1715,12 +1715,130 @@
       <div class="welcome__mark" aria-hidden="true">${marks}</div>
       <h1 class="welcome__brand" tabindex="-1">Rizqflow</h1>
       <p class="welcome__tag">Rezeki mengalir, setiap hak terpenuhi.</p>
-      <ul class="welcome__points">${point('Datamu tetap di ponselmu, tidak dikirim ke server')}${point('Jalan tanpa internet setelah masuk')}${point('Tanpa iklan')}</ul>
-      <div class="actions welcome__actions">
+      <form class="auth-form" data-form="login" novalidate>
+        ${authField('lg-user', 'Nama pengguna', { autocomplete: 'username' })}
+        ${authField('lg-pass', 'Sandi', { password: true, autocomplete: 'current-password' })}
+        <button type="submit" class="btn btn--primary btn--block" data-action="login-pass">Masuk</button>
+        <div class="banner" id="lg-msg" role="alert" hidden></div>
+      </form>
+      <p class="auth-or" aria-hidden="true"><span>atau</span></p>
+      <div class="actions welcome__actions" style="margin-top:0">
         <button type="button" class="google-btn" data-action="login-google" aria-label="Lanjutkan dengan Google"><svg viewBox="0 0 48 48" width="28" height="28" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg></button>
         <button type="button" class="btn btn--tonal btn--block" data-action="login-gmail">Hubungkan Gmail</button>
         <p class="list-row__sub" style="margin:0">Opsional. Izin baca Gmail untuk fitur berikutnya. Rizqflow belum membaca email apa pun dan kamu bisa menghubungkannya nanti.</p>
-      </div></div>`;
+      </div>
+      <p class="auth-switch">Belum punya akun? <button type="button" class="btn btn--text" data-action="go-daftar">Daftar</button></p>
+      <ul class="welcome__points">${point('Datamu tetap di ponselmu, tidak dikirim ke server')}${point('Jalan tanpa internet setelah masuk')}${point('Tanpa iklan')}</ul>
+    </div>`;
+  }
+
+  /** Kolom isian S30 dan S31: label, kolom, tombol tampilkan untuk sandi, dan tempat pesan galat. */
+  function authField(id, label, o = {}) {
+    const input = `<input id="${id}" class="field-input" type="${o.password ? 'password' : 'text'}" autocomplete="${o.autocomplete || 'off'}" autocapitalize="none" spellcheck="false" aria-describedby="${id}-note" />`;
+    const body = o.password
+      ? `<div class="auth-pass">${input}<button type="button" class="btn btn--text" data-action="toggle-pass" data-arg="${id}" aria-pressed="false">Tampilkan</button></div>`
+      : input;
+    return `<div class="auth-field"><p class="field-label"><label for="${id}">${label}</label></p>${body}<p class="auth-note" id="${id}-note">${o.hint || ''}</p></div>`;
+  }
+
+  /* Simulasi akun lokal: hanya nama pengguna dan sidik sederhana di localStorage. Di aplikasi asli sandi
+     di-hash PBKDF2 (lihat docs/auth-google.md); sidik ini BUKAN keamanan, hanya supaya alurnya bisa dicoba. */
+  const fauxHash = (s) => {
+    let h = 5381;
+    for (const c of s) h = ((h << 5) + h + c.codePointAt(0)) | 0;
+    return (h >>> 0).toString(16);
+  };
+  const loadAccounts = () => {
+    try {
+      return JSON.parse(load('rf-accounts') || '{}');
+    } catch (_) {
+      return {};
+    }
+  };
+  const normUser = (s) => s.trim().toLowerCase();
+
+  /** Aturan yang sama dengan aplikasi (CredentialPolicy): kembalikan pesan per kolom. */
+  function validateRegistration(userRaw, pass, pass2) {
+    const u = normUser(userRaw);
+    const e = {};
+    if (u.length < 3) e.user = 'Nama pengguna minimal 3 karakter';
+    else if (u.length > 32) e.user = 'Nama pengguna maksimal 32 karakter';
+    else if (!/^[a-z0-9][a-z0-9._-]*$/.test(u)) e.user = 'Hanya huruf a sampai z, angka, titik, garis bawah, dan strip; mulai dengan huruf atau angka';
+    if (pass.trim() === '' || pass.length < 8) e.pass = 'Sandi minimal 8 karakter';
+    else if (pass.length > 128) e.pass = 'Sandi maksimal 128 karakter';
+    else if (u && pass.toLowerCase() === u) e.pass = 'Sandi tidak boleh sama dengan nama pengguna';
+    if (pass !== pass2) e.pass2 = 'Sandi dan pengulangannya tidak sama';
+    return e;
+  }
+
+  /** S31 Daftar: membuat akun lokal. Langsung masuk setelah berhasil. */
+  function daftarScreen() {
+    return `${topbarNav('Buat akun')}
+      <p class="list-row__sub" style="margin:var(--rf-space-2) 0 var(--rf-space-3)">Akun ini hanya ada di ponsel ini. Data keuanganmu tidak dikirim ke server.</p>
+      <form class="auth-form" data-form="daftar" novalidate>
+        ${authField('dr-name', 'Nama panggilan (opsional)', { autocomplete: 'given-name' })}
+        ${authField('dr-user', 'Nama pengguna', { autocomplete: 'username', hint: '3 sampai 32 karakter: huruf, angka, titik, garis bawah, strip' })}
+        ${authField('dr-pass', 'Sandi', { password: true, autocomplete: 'new-password', hint: 'Minimal 8 karakter' })}
+        ${authField('dr-pass2', 'Ulangi sandi', { password: true, autocomplete: 'new-password' })}
+        <div class="banner banner--info">${icon('alert')}<span>Sandi tidak bisa dipulihkan karena tidak ada server. Catat di tempat yang aman.</span></div>
+        <button type="submit" class="btn btn--primary btn--block" data-action="register">Daftar</button>
+        <div class="banner" id="dr-msg" role="alert" hidden></div>
+      </form>
+      <p class="auth-switch">Sudah punya akun? <button type="button" class="btn btn--text" data-action="back">Masuk</button></p>`;
+  }
+
+  function setFieldNote(id, msg, hint) {
+    const note = $('#' + id + '-note');
+    const input = $('#' + id);
+    if (!note || !input) return;
+    note.textContent = msg || hint || '';
+    note.classList.toggle('is-error', !!msg);
+    input.setAttribute('aria-invalid', msg ? 'true' : 'false');
+  }
+
+  function showAuthMsg(id, msg) {
+    const el = $('#' + id);
+    if (!el) return;
+    el.hidden = !msg;
+    el.innerHTML = msg ? `${icon('alert')}<span>${msg}</span>` : '';
+  }
+
+  /** Masuk dengan akun lokal: akun yang sudah ada langsung ke Denah (punya riwayat). */
+  function loginPassword() {
+    const user = normUser($('#lg-user').value);
+    const pass = $('#lg-pass').value;
+    setFieldNote('lg-user', user ? '' : 'Isi nama pengguna');
+    setFieldNote('lg-pass', pass ? '' : 'Isi sandi');
+    if (!user || !pass) return showAuthMsg('lg-msg', '');
+    const acct = loadAccounts()[user];
+    if (!acct || acct.h !== fauxHash(pass)) return showAuthMsg('lg-msg', 'Nama pengguna atau sandi salah.');
+    store('rf-login', 'local:' + user);
+    stack = [];
+    route = { name: 'denah' };
+    render();
+    toast('Simulasi: masuk sebagai ' + (acct.name || user) + '.');
+  }
+
+  function registerLocal() {
+    const name = $('#dr-name').value.trim();
+    const userRaw = $('#dr-user').value;
+    const e = validateRegistration(userRaw, $('#dr-pass').value, $('#dr-pass2').value);
+    setFieldNote('dr-user', e.user, '3 sampai 32 karakter: huruf, angka, titik, garis bawah, strip');
+    setFieldNote('dr-pass', e.pass, 'Minimal 8 karakter');
+    setFieldNote('dr-pass2', e.pass2, '');
+    showAuthMsg('dr-msg', '');
+    if (e.user || e.pass || e.pass2) return;
+    const user = normUser(userRaw);
+    const all = loadAccounts();
+    if (all[user]) return showAuthMsg('dr-msg', 'Nama pengguna itu sudah dipakai di ponsel ini. Pilih yang lain.');
+    all[user] = { name, h: fauxHash($('#dr-pass').value) };
+    store('rf-accounts', JSON.stringify(all));
+    store('rf-login', 'local:' + user);
+    startOnboarding();
+    stack = [{ name: 'masuk' }];
+    route = { name: 'pola' };
+    render();
+    toast('Simulasi: akun dibuat. Masuk sebagai ' + (name || user) + '.');
   }
 
   function finishLogin(withGmail) {
@@ -1739,12 +1857,12 @@
     sambutan: sambutanScreen, pola: polaScreen, persen: persenScreen, akun: akunScreen, aturan: aturanScreen,
     txdetail: txdetailScreen, kelola: kelolaScreen, zakat: zakatScreen, harta: hartaScreen, tunai: tunaiScreen,
     keamanan: keamananScreen, pin: pinScreen, kunci: kunciScreen, cadangan: cadanganScreen, impor: imporScreen,
-    tampilan: tampilanScreen, tentang: tentangScreen, splash: splashScreen, masuk: masukScreen,
+    tampilan: tampilanScreen, tentang: tentangScreen, splash: splashScreen, masuk: masukScreen, daftar: daftarScreen,
   };
   const NO_NAV = [
     'catat', 'alokasi', 'haul', 'koreksi', 'sambutan', 'pola', 'persen', 'akun', 'aturan',
     'txdetail', 'kelola', 'zakat', 'harta', 'tunai', 'keamanan', 'pin', 'kunci', 'cadangan', 'impor', 'tampilan', 'tentang',
-    'splash', 'masuk',
+    'splash', 'masuk', 'daftar',
   ];
   const TABS = ['denah', 'transaksi', 'ruang', 'lainnya'];
 
@@ -2952,6 +3070,17 @@
     },
     /* --- F0 splash dan masuk (S29, S30) */
     'login-google': () => finishLogin(false),
+    'login-pass': loginPassword,
+    register: registerLocal,
+    'go-daftar': () => go('daftar'),
+    'toggle-pass': (arg) => {
+      const input = $('#' + arg);
+      const btn = $('[data-action="toggle-pass"][data-arg="' + arg + '"]');
+      const show = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      btn.textContent = show ? 'Sembunyikan' : 'Tampilkan';
+      btn.setAttribute('aria-pressed', String(show));
+    },
     'login-gmail': () => finishLogin(true),
     logout: () => {
       store('rf-login', '');
@@ -3121,6 +3250,9 @@
       else if (!$('#sheet').hidden) closeSheet();
     }
   });
+
+  // Formulir masuk dan daftar ditangani lewat data-action; cegah halaman dimuat ulang saat dikirim (Enter).
+  document.addEventListener('submit', (e) => e.preventDefault());
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && e.target && e.target.id === 'notif-input') ACTIONS['notif-send']();

@@ -82,6 +82,7 @@ Logika bisnis yang benar dan teruji sebelum ada layar.
 
 - [x] Tema Compose dari design tokens (warna terang dan gelap, font Manrope dan Libre Caslon Text, warna ruang dan status) dan kerangka navigasi (bottom nav empat tab, tombol Catat) (2026-09-21)
 - [x] Splash dan halaman masuk dengan Google dan Gmail (S29, S30), riwayat masuk, dan ikon aplikasi (2026-09-21); tombol Google butuh client ID dari Google Cloud milik pemilik ([auth-google.md](auth-google.md))
+- [x] Masuk dengan nama pengguna dan sandi serta halaman Daftar (S30, S31): akun lokal dengan hash PBKDF2, tanpa server (2026-09-21)
 - [ ] Onboarding (S01–S04; S01 digantikan S30)
 - [ ] Catat transaksi (S06)
 - [ ] Pratinjau alokasi (S07)

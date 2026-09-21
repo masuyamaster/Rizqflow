@@ -1781,6 +1781,68 @@ details.card[open] summary {
   height: 12px;
 }
 
+.auth-form {
+  display: grid;
+  gap: var(--rf-space-2);
+  width: 100%;
+  margin-top: var(--rf-space-4);
+  text-align: left;
+}
+
+.auth-field .field-label {
+  margin: 0 0 var(--rf-space-1);
+}
+
+.auth-note {
+  min-height: 1.2em;
+  margin: var(--rf-space-1) 0 0;
+  font-size: var(--rf-size-label);
+  color: var(--rf-on-surface-variant);
+}
+
+.auth-note.is-error {
+  color: var(--rf-error);
+}
+
+.field-input[aria-invalid='true'] {
+  border-color: var(--rf-error);
+}
+
+.auth-pass {
+  display: flex;
+  align-items: center;
+  gap: var(--rf-space-1);
+}
+
+.auth-pass .field-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.auth-or {
+  display: flex;
+  align-items: center;
+  gap: var(--rf-space-3);
+  width: 100%;
+  margin: var(--rf-space-4) 0 var(--rf-space-3);
+  font-size: var(--rf-size-label);
+  color: var(--rf-on-surface-variant);
+}
+
+.auth-or::before,
+.auth-or::after {
+  content: '';
+  flex: 1;
+  border-top: var(--rf-border);
+}
+
+.auth-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: var(--rf-space-3) 0 0;
+}
+
 /* ---------- Tombol Google (varian ikon): latar putih, garis tepi tipis, logo G empat warna ---------- */
 
 .google-btn {

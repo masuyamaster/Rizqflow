@@ -34,7 +34,7 @@ Wireframe teks untuk **semua** layar S01–S28 (kecuali yang sudah ada di [ui-fl
 | S25 | Koreksi saldo | [ui-flow.md](ui-flow.md) | Ada |
 | S26 | Pengingat harian | Di sini | Ada |
 | S27–S28 | Draf, Tangkap otomatis (v1.1) | Di sini | Ada |
-| S29–S30 | Splash, Masuk (menggantikan S01) | Di sini | Ada (`?screen=splash`) |
+| S29–S31 | Splash, Masuk (menggantikan S01), Daftar | Di sini | Ada (`?screen=splash`, `?screen=masuk`, `?screen=daftar`) |
 
 ## S01 Sambutan
 
@@ -936,37 +936,85 @@ Notifikasi malam (di luar aplikasi):
 
 ```
 +--------------------------------+
-|                                |
 |         (h)  (s)  (r)          |
-|                                |
 |            Rizqflow            |
 |  Rezeki mengalir, setiap hak   |
 |  terpenuhi.                    |
+|                                |
+|  Nama pengguna                 |
+|  [                           ] |
+|  Sandi                         |
+|  [                 ] Tampilkan |
+|  [           Masuk           ] |
+|  ! Nama pengguna atau sandi    |
+|    salah.                      |
+|                                |
+|  ------------ atau ----------- |
+|              ( G )             |
+|  [     Hubungkan Gmail       ] |
+|  Opsional. Izin baca Gmail.    |
+|  Belum membaca email apa pun.  |
+|                                |
+|   Belum punya akun?  Daftar    |
 |                                |
 |  v Datamu tetap di ponselmu,   |
 |    tidak dikirim ke server     |
 |  v Jalan tanpa internet        |
 |    setelah masuk               |
 |  v Tanpa iklan                 |
-|                                |
-|              ( G )             |
-| [     Hubungkan Gmail        ] |
-| Opsional. Izin baca Gmail.     |
-| Belum membaca email apa pun.   |
-|                                |
-| +----------------------------+ |
-| | ! Masuk dengan Google belum| |
-| |   disiapkan di versi ini.  | |
-| +----------------------------+ |
 |      Masuk uji (debug saja)    |
 +--------------------------------+
 ```
 
-- Satu tindakan utama: tombol **Google berupa simbol G saja** (varian ikon resmi, latar putih atau #131314 di mode gelap, garis tepi tipis, 64 dp); namanya "Lanjutkan dengan Google" dibacakan pembaca layar. **Hubungkan Gmail** meminta masuk dan izin baca sekaligus; bisa dilewati dan dihubungkan belakangan dari Lainnya.
-- Pesan lembut, bukan merah, dibacakan pembaca layar: belum disiapkan, gagal masuk, izin Gmail ditolak. Menutup dialog akun tidak menampilkan pesan.
-- Selama proses berjalan kedua tombol nonaktif dan tombol yang ditekan menampilkan indikator.
-- **Masuk uji** hanya ada di build debug.
-- Bagian Akun di **Lainnya**: nama, email, status Gmail, Hubungkan Gmail bila belum, dan **Keluar** (menghapus riwayat masuk saja, data keuangan tidak disentuh).
+- Tiga jalan masuk, berurutan dari yang utama: **nama pengguna dan sandi** (akun lokal), **Google** (tombol simbol G saja: varian ikon resmi, latar putih atau #131314 di mode gelap, garis tepi tipis, 64 dp; namanya "Lanjutkan dengan Google" dibacakan pembaca layar), dan **Hubungkan Gmail** (masuk dan izin baca sekaligus; bisa dilewati dan dihubungkan belakangan dari Lainnya).
+- Kolom sandi disamarkan dengan tombol teks **Tampilkan/Sembunyikan** (bukan ikon mata, supaya jelas bagi pembaca layar). Enter di kolom sandi = Masuk. Kolom memberi petunjuk isi otomatis (username, password) ke pengelola sandi sistem.
+- Kolom kosong: pesan di bawah kolom yang bersangkutan ("Isi nama pengguna", "Isi sandi"), tanpa memanggil pengecekan. Salah sandi dan nama pengguna tak dikenal memberi **pesan yang sama** ("Nama pengguna atau sandi salah.") supaya orang lain tidak bisa menebak siapa saja yang terdaftar di ponsel ini.
+- Pesan lembut, bukan merah, dibacakan pembaca layar: belum disiapkan, gagal masuk, izin Gmail ditolak, sandi salah. Menutup dialog akun Google tidak menampilkan pesan.
+- Selama proses berjalan semua tombol dan kolom nonaktif dan tombol yang ditekan menampilkan indikator.
+- **Daftar** membuka S31. **Masuk uji** hanya ada di build debug.
+- Bagian Akun di **Lainnya**: nama, email atau nama pengguna, "Akun lokal, hanya ada di ponsel ini" untuk akun sandi, status Gmail, Hubungkan Gmail bila belum, dan **Keluar** (menghapus riwayat masuk saja; akun lokal dan data keuangan tidak disentuh).
+
+## S31 Daftar
+
+```
++--------------------------------+
+| <  Buat akun                   |
+|                                |
+| Akun ini hanya ada di ponsel   |
+| ini. Data keuanganmu tidak     |
+| dikirim ke server.             |
+|                                |
+| Nama panggilan (opsional)      |
+| [                            ] |
+| Nama pengguna                  |
+| [                            ] |
+| 3 sampai 32 karakter: huruf,   |
+| angka, titik, garis bawah,     |
+| strip                          |
+| Sandi                          |
+| [                  ] Tampilkan |
+| Minimal 8 karakter             |
+| Ulangi sandi                   |
+| [                  ] Tampilkan |
+|                                |
+| +----------------------------+ |
+| | ! Sandi tidak bisa         | |
+| |   dipulihkan karena tidak  | |
+| |   ada server. Catat di     | |
+| |   tempat yang aman.        | |
+| +----------------------------+ |
+| [           Daftar           ] |
+|                                |
+|    Sudah punya akun?  Masuk    |
++--------------------------------+
+```
+
+- Empat kolom: nama panggilan (opsional, jadi nama sapaan), nama pengguna, sandi, ulangi sandi.
+- **Aturan** (sama di prototipe dan aplikasi, `CredentialPolicy`): nama pengguna 3 sampai 32 karakter, hanya a-z, angka, titik, garis bawah, strip, diawali huruf atau angka, tidak membedakan huruf besar-kecil (disimpan huruf kecil); sandi minimal 8 dan maksimal 128 karakter, spasi dipertahankan, tidak boleh sama dengan nama pengguna. Tidak ada aturan wajib simbol dan huruf besar: panjang lebih berguna daripada komposisi.
+- Kesalahan tampil di bawah kolomnya **setelah Daftar ditekan pertama kali**, bukan selagi mengetik. Nama pengguna yang sudah dipakai di ponsel ini muncul sebagai pesan lembut di bawah tombol.
+- Peringatan **sandi tidak bisa dipulihkan** tampil sebelum tombol Daftar karena tidak ada server untuk mengirim tautan reset. (Lupa sandi sementara berarti akun itu tidak bisa dibuka; masuk dengan Google tetap bisa.)
+- Berhasil: langsung masuk dan lanjut ke S02 Pilih pola ruang, seperti masuk pertama kali dengan Google. Tombol kembali dan tautan **Masuk** kembali ke S30.
+- Sandi tidak ikut tersimpan saat layar diputar atau proses dimatikan; yang tersimpan hanya hash-nya (lihat [auth-google.md](auth-google.md)).
 
 ## Keadaan yang berlaku di semua layar
 

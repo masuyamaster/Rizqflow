@@ -30,7 +30,7 @@ Langsung ke layar tertentu lewat parameter URL: `prototype.html?screen=denah&the
 | `pengingat` | S26 Pengingat harian |
 | `notif` | Notifikasi malam (F8) |
 | `draf`, `tangkap` | S27 Draf dan S28 Tangkap otomatis (otomatis dalam mode Pro; `&pro=1` membuka mode Pro di layar mana pun) |
-| `splash`, `masuk` | S29 Splash (beralih sendiri setelah 1,4 detik), S30 Masuk. Riwayat masuk disimulasikan di penyimpanan browser (`rf-login`); tombol *Mulai dari splash* di panel kiri dan Lainnya, *Akun Google* mengosongkannya |
+| `splash`, `masuk`, `daftar` | S29 Splash (beralih sendiri setelah 1,4 detik), S30 Masuk (kolom nama pengguna dan sandi, Google, Gmail), S31 Daftar. Akun lokal disimulasikan di `rf-accounts` (nama pengguna dan sidik sederhana, bukan keamanan). Riwayat masuk disimulasikan di penyimpanan browser (`rf-login`); tombol *Mulai dari splash* di panel kiri dan Lainnya, *Akun Google* mengosongkannya |
 | `sambutan`, `pola`, `persen`, `akun` | S01–S04 Onboarding (tambah `&template=kosong` untuk pola Mulai kosong). Tombol *Mulai dari awal* di panel kiri menjalankan seluruh F1 |
 | `kosong`, `kosong-tanpa-ruang` | S05 Denah pengguna baru: dengan pola Tiga hak, atau tanpa ruang sama sekali |
 | `aturan` (opsional `&focus=diri`) | S12 Aturan alokasi |

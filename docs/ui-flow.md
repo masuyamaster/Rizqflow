@@ -78,7 +78,8 @@ T -.-> F
 | S27 | Draf dari notifikasi | Setujui, ubah, atau abaikan draf transaksi | v1.1 |
 | S28 | Tangkap otomatis | Penjelasan izin, aplikasi yang didukung, pemetaan ke akun (Pro) | v1.1 |
 | S29 | Splash | Layar pembuka; menahan sampai riwayat masuk terbaca | 3 |
-| S30 | Masuk | Google connect dan Gmail (opsional); menggantikan S01 Sambutan | 3 |
+| S30 | Masuk | Nama pengguna dan sandi, Google connect, Gmail (opsional); menggantikan S01 Sambutan | 3 |
+| S31 | Daftar | Membuat akun lokal (nama pengguna dan sandi), langsung masuk | 3 |
 
 ## Wireframe layar kunci
 
@@ -355,7 +356,10 @@ Fitur v1.1 (Pro), dibuka dari S18 Lainnya.
 flowchart LR
 P["S29 Splash"] --> L["S30 Masuk"]
 P -->|"Sudah punya riwayat masuk"| M["S05 Denah"]
-L -->|"Baru masuk, belum ada data"| B["S02 Pilih pola ruang"]
+L -->|"Belum punya akun"| R["S31 Daftar"]
+R -->|"Akun dibuat"| B["S02 Pilih pola ruang"]
+L -->|"Akun lokal yang sudah ada"| M
+L -->|"Baru masuk dengan Google, belum ada data"| B
 B --> C["S03 Atur persentase"]
 C --> D["S04 Tambah akun pertama"]
 D --> E["S05 Denah kosong"]
@@ -364,6 +368,7 @@ E --> G["Coba data contoh"]
 ```
 
 - S29 Splash lalu S30 Masuk (2026-09-21): splash menahan sampai riwayat masuk terbaca; tanpa riwayat tampil S30, dengan riwayat langsung ke Denah. S30 berisi tagline, tiga jaminan, tombol Google **berupa simbol G saja** (keputusan pemilik 2026-09-21; nama untuk pembaca layar tetap "Lanjutkan dengan Google"), dan tombol **Hubungkan Gmail** (opsional, izin baca). Kegagalan tampil sebagai pesan lembut, tidak memblokir. **S30 menggantikan S01**; teks S01 di bawah dipertahankan sebagai riwayat.
+- Akun lokal (2026-09-21, permintaan pemilik): S30 juga punya kolom **nama pengguna dan sandi** dan tautan **Daftar** ke S31. Akun disimpan di ponsel ini saja (hash sandi, tanpa server); sandi tidak bisa dipulihkan. Salah sandi dan nama pengguna tak dikenal memberi pesan yang sama. Setelah daftar langsung masuk dan lanjut ke S02; masuk dengan akun yang sudah ada langsung ke Denah. Wireframe dan aturan lengkap ada di [wireframe.md](wireframe.md) (S30, S31).
 - S01 (digantikan S30): tagline dan satu tombol Mulai, tanpa slide berlapis. Tautan teks **Pulihkan dari cadangan** untuk yang pindah ponsel (menuju F7).
 - S02: kartu **Tiga hak** (Memberi, Diri, Keluarga) atau **Mulai kosong**; **Mulai kosong** sekaligus cara melewati langkah ini (S03 dilewati), dan pilihan bisa diubah nanti. Layar S02 sampai S04 menampilkan penghitung langkah.
 - S03: slider dengan total selalu 100%: ruang terakhir menerima sisanya dan tidak punya slider; tampilkan hasil untuk contoh Rp 1.000.000 supaya konkret.

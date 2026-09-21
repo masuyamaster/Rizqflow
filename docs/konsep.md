@@ -48,7 +48,7 @@ Masuk:
 Sengaja tidak masuk (agar tidak melebar):
 - Sinkronisasi rekening bank
 - Fitur investasi lengkap / portofolio saham
-- Sinkronisasi server (baru di fase 2, sebagai langganan Sync). Masuk dengan akun Google sudah ada sejak 2026-09-21 tetapi hanya identitas lokal, tanpa server ([auth-google.md](auth-google.md))
+- Sinkronisasi server (baru di fase 2, sebagai langganan Sync). Masuk dengan akun Google dan akun lokal (nama pengguna dan sandi) sudah ada sejak 2026-09-21 tetapi hanya identitas lokal, tanpa server ([auth-google.md](auth-google.md))
 
 ## Disiplin mencatat
 
