@@ -100,6 +100,10 @@ object RizqflowIcons {
         "M10 20v-5.5h4V20",
     )
 
+    val Jam: ImageVector = strokeIcon("Jam", "M3 12a9 9 0 1 0 18 0a9 9 0 1 0-18 0z", "M12 7v5l3 2")
+
+    val Lingkaran: ImageVector = strokeIcon("Lingkaran", "M3 12a9 9 0 1 0 18 0a9 9 0 1 0-18 0z")
+
     val Centang: ImageVector = strokeIcon(
         "Centang",
         "M3 12a9 9 0 1 0 18 0a9 9 0 1 0-18 0z",

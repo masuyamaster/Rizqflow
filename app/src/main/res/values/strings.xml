@@ -195,6 +195,30 @@
     <string name="detail_delete_confirm">Hapus</string>
     <string name="saved_edit">Perubahan tersimpan</string>
     <string name="deleted">Transaksi dihapus</string>
+    <!-- Denah S05 -->
+    <string name="denah_income">Rezeki bulan ini</string>
+    <string name="denah_unallocated">Belum dialirkan: %1$s</string>
+    <string name="denah_empty_title">Belum ada rezeki bulan ini</string>
+    <string name="denah_empty_past">Tidak ada rezeki tercatat di bulan ini</string>
+    <string name="denah_empty_body">Catat rezekimu, lalu lihat ia mengalir ke ruang-ruangnya.</string>
+    <string name="denah_empty_action">Catat rezeki</string>
+    <string name="denah_rooms">Ruang</string>
+    <string name="denah_no_allocation">Belum ada jatah</string>
+    <string name="denah_remaining">Sisa %1$s</string>
+    <string name="denah_over">Lewat %1$s</string>
+    <string name="denah_no_rooms_title">Belum ada ruang</string>
+    <string name="denah_no_rooms_body">Rezeki yang dicatat menunggu sebagai belum dialirkan sampai ada ruang.</string>
+    <string name="denah_attention">Perlu perhatian</string>
+    <string name="denah_attention_none">Tidak ada yang perlu diperhatikan sekarang.</string>
+    <string name="denah_att_over">%1$s sudah lewat jatah: %2$s dari %3$s</string>
+    <string name="denah_att_near">%1$s hampir lewat jatah: %2$s terpakai</string>
+    <string name="denah_att_unallocated">%1$s rezeki belum dialirkan ke ruang mana pun</string>
+    <string name="status_menunggu">Menunggu</string>
+    <string name="status_berjalan">Berjalan</string>
+    <string name="status_terpenuhi">Terpenuhi</string>
+    <string name="status_perhatian">Perlu perhatian</string>
+    <string name="status_belum">Belum tercapai</string>
+
     <!-- Ruang S10 dan Aturan alokasi S12 -->
     <string name="room_title">Ruang</string>
     <string name="room_empty">Belum ada ruang. Pakai pola Tiga hak (Memberi, Diri, Keluarga) atau tambah ruangmu sendiri.</string>

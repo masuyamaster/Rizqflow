@@ -79,6 +79,7 @@ fun RizqflowApp(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
     transaksiContent: (@Composable () -> Unit)? = null,
     ruangContent: (@Composable () -> Unit)? = null,
+    denahContent: (@Composable () -> Unit)? = null,
     onOpenRules: (() -> Unit)? = null,
 ) {
     val nav = rememberNavController()
@@ -140,6 +141,8 @@ fun RizqflowApp(
                         transaksiContent()
                     } else if (tab == TopTab.Ruang && ruangContent != null) {
                         ruangContent()
+                    } else if (tab == TopTab.Denah && denahContent != null) {
+                        denahContent()
                     } else {
                         PlaceholderScreen(title = stringResource(tab.label), note = stringResource(tab.placeholder))
                     }

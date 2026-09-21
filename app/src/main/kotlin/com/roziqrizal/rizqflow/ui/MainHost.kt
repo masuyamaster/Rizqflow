@@ -7,6 +7,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import com.roziqrizal.rizqflow.domain.allocation.AllocationRule
+import com.roziqrizal.rizqflow.ui.denah.DenahScreen
 import com.roziqrizal.rizqflow.ui.ruang.AturanScreen
 import com.roziqrizal.rizqflow.ui.ruang.RuangScreen
 import androidx.compose.material3.MaterialTheme
@@ -131,6 +132,9 @@ fun MainHost(
         onDismissNotice = onDismissNotice,
         snackbarHostState = snackbar,
         transaksiContent = { TransaksiScreen(workspace, refreshKey = version, onOpen = { editId = it.value }) },
+        denahContent = {
+            DenahScreen(workspace, refreshKey = version, onCatat = { catat = true }, onOpenRules = { aturan = true }, onChanged = { version++ })
+        },
         ruangContent = {
             RuangScreen(workspace, refreshKey = version, notifier = notifier, onOpenRules = { aturan = true }, onChanged = { version++ })
         },
