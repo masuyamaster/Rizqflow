@@ -2,6 +2,17 @@ package com.roziqrizal.rizqflow.ui
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.unit.dp
+import com.roziqrizal.rizqflow.auth.AuthBusy
+import com.roziqrizal.rizqflow.auth.AuthMessage
+import com.roziqrizal.rizqflow.ui.login.messageText
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -25,6 +36,7 @@ import androidx.navigation.compose.rememberNavController
 import com.roziqrizal.rizqflow.R
 import com.roziqrizal.rizqflow.ui.theme.CappedFontScale
 import com.roziqrizal.rizqflow.ui.theme.NAV_LABEL_MAX_FONT_SCALE
+import com.roziqrizal.rizqflow.ui.theme.rizqflowTonalButtonColors
 import com.roziqrizal.rizqflow.ui.theme.spacing
 
 /**
@@ -51,7 +63,13 @@ enum class TopTab(
 
 /** Kerangka aplikasi: bottom navigation, tombol Catat, dan isi tiap tab (sementara masih kerangka). */
 @Composable
-fun RizqflowApp(onCatat: () -> Unit = {}) {
+fun RizqflowApp(
+    account: AccountUi? = null,
+    onCatat: () -> Unit = {},
+    onConnectGmail: () -> Unit = {},
+    onSignOut: () -> Unit = {},
+    onDismissNotice: () -> Unit = {},
+) {
     val nav = rememberNavController()
     val backStack by nav.currentBackStackEntryAsState()
     val current = TopTab.fromRoute(backStack?.destination?.route)
@@ -104,7 +122,11 @@ fun RizqflowApp(onCatat: () -> Unit = {}) {
         ) {
             TopTab.entries.forEach { tab ->
                 composable(tab.route) {
-                    PlaceholderScreen(title = stringResource(tab.label), note = stringResource(tab.placeholder))
+                    if (tab == TopTab.Lainnya && account != null) {
+                        LainnyaScreen(account, onConnectGmail, onSignOut, onDismissNotice)
+                    } else {
+                        PlaceholderScreen(title = stringResource(tab.label), note = stringResource(tab.placeholder))
+                    }
                 }
             }
         }
@@ -126,5 +148,76 @@ private fun PlaceholderScreen(title: String, note: String) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = MaterialTheme.spacing.s2),
         )
+    }
+}
+
+/** Data akun untuk tab Lainnya. */
+data class AccountUi(
+    val email: String,
+    val displayName: String?,
+    val gmailConnected: Boolean,
+    val busy: AuthBusy? = null,
+    val notice: AuthMessage? = null,
+)
+
+/** Tab Lainnya sementara: hanya bagian Akun (masuk, Gmail, keluar); menu lain menyusul di Tahap 3 dan 6. */
+@Composable
+private fun LainnyaScreen(
+    account: AccountUi,
+    onConnectGmail: () -> Unit,
+    onSignOut: () -> Unit,
+    onDismissNotice: () -> Unit,
+) {
+    val spacing = MaterialTheme.spacing
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = spacing.s4, vertical = spacing.s5),
+    ) {
+        Text(stringResource(R.string.tab_lainnya), style = MaterialTheme.typography.headlineMedium)
+        Text(
+            text = stringResource(R.string.placeholder_lainnya),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = spacing.s2),
+        )
+        Text(
+            stringResource(R.string.account_title),
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(top = spacing.s5, bottom = spacing.s2),
+        )
+        Text(account.displayName ?: account.email, style = MaterialTheme.typography.titleMedium)
+        if (account.displayName != null) {
+            Text(account.email, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        Text(
+            text = stringResource(if (account.gmailConnected) R.string.account_gmail_on else R.string.account_gmail_off),
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(top = spacing.s3),
+        )
+        if (account.notice != null) {
+            Row(modifier = Modifier.padding(top = spacing.s2)) {
+                Text(stringResource(messageText(account.notice)), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+            }
+            OutlinedButton(onClick = onDismissNotice) { Text(stringResource(R.string.action_ok)) }
+        }
+        if (!account.gmailConnected) {
+            FilledTonalButton(
+                onClick = onConnectGmail,
+                enabled = account.busy == null,
+                colors = rizqflowTonalButtonColors(),
+                modifier = Modifier.padding(top = spacing.s3),
+            ) {
+                if (account.busy == AuthBusy.GMAIL) {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                } else {
+                    Text(stringResource(R.string.login_gmail))
+                }
+            }
+        }
+        OutlinedButton(onClick = onSignOut, modifier = Modifier.padding(top = spacing.s3)) {
+            Text(stringResource(R.string.action_sign_out))
+        }
     }
 }

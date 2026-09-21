@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Web client ID dari proyek Google Cloud pemilik, untuk Masuk dengan Google dan izin Gmail.
+      Kosong = tombol Google menampilkan pesan "belum disiapkan". Ini ID publik (bukan rahasia),
+      tetapi isilah dari pemilik proyek. Langkah lengkap: docs/auth-google.md.
+    -->
+    <string name="google_web_client_id" translatable="false"></string>
+</resources>

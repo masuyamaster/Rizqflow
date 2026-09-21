@@ -59,4 +59,37 @@ object RizqflowIcons {
     val Lainnya: ImageVector = strokeIcon("Lainnya", "M5 12h.01M12 12h.01M19 12h.01")
 
     val Tambah: ImageVector = strokeIcon("Tambah", "M12 5v14M5 12h14")
+
+    // Ikon ruang dan status, sama dengan prototipe HTML.
+    val Hati: ImageVector = strokeIcon(
+        "Hati",
+        "M12 20.5s-7.5-4.6-7.5-10.3A4.2 4.2 0 0 1 12 7.6a4.2 4.2 0 0 1 7.5 2.6c0 5.7-7.5 10.3-7.5 10.3z",
+    )
+
+    val Tunas: ImageVector = strokeIcon(
+        "Tunas",
+        "M12 21v-9",
+        "M12 13c0-4.2-3-6.5-7-6.5 0 4.2 3 6.5 7 6.5z",
+        "M12 11c0-3.4 2.4-5.4 6-5.4 0 3.4-2.4 5.4-6 5.4z",
+    )
+
+    val Rumah: ImageVector = strokeIcon(
+        "Rumah",
+        "M3.5 11.2 12 3.8l8.5 7.4",
+        "M5.5 10v10h13V10",
+        "M10 20v-5.5h4V20",
+    )
+
+    val Centang: ImageVector = strokeIcon(
+        "Centang",
+        "M3 12a9 9 0 1 0 18 0a9 9 0 1 0-18 0z",
+        "m8 12.4 2.8 2.8 5.4-5.6",
+    )
+
+    val Peringatan: ImageVector = strokeIcon(
+        "Peringatan",
+        "M12 3.6 21.4 20H2.6z",
+        "M12 10v4.6",
+        "M12 17.4h.01",
+    )
 }

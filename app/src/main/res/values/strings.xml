@@ -8,10 +8,33 @@
     <string name="tab_ruang">Ruang</string>
     <string name="tab_lainnya">Lainnya</string>
     <string name="action_catat">Catat</string>
+    <string name="action_ok">Mengerti</string>
+    <string name="action_sign_out">Keluar</string>
 
     <!-- Isi sementara tab sampai layarnya dikerjakan -->
     <string name="placeholder_denah">Denah dikerjakan di Tahap 4.</string>
     <string name="placeholder_transaksi">Daftar transaksi dikerjakan di Tahap 3.</string>
     <string name="placeholder_ruang">Daftar ruang dikerjakan di Tahap 3.</string>
-    <string name="placeholder_lainnya">Pengaturan dikerjakan bertahap di Tahap 3 dan 6.</string>
+    <string name="placeholder_lainnya">Menu lain dikerjakan bertahap di Tahap 3 dan 6.</string>
+
+    <!-- S30 Masuk -->
+    <string name="login_tagline">Rezeki mengalir, setiap hak terpenuhi.</string>
+    <string name="login_point_local">Datamu tetap di ponselmu, tidak dikirim ke server</string>
+    <string name="login_point_offline">Jalan tanpa internet setelah masuk</string>
+    <string name="login_point_no_ads">Tanpa iklan</string>
+    <string name="login_google">Lanjutkan dengan Google</string>
+    <string name="login_gmail">Hubungkan Gmail</string>
+    <string name="login_gmail_note">Opsional. Izin baca Gmail untuk fitur berikutnya. Rizqflow belum membaca email apa pun dan kamu bisa menghubungkannya nanti.</string>
+    <string name="login_debug">Masuk uji (khusus debug)</string>
+
+    <!-- Pesan lembut -->
+    <string name="msg_not_configured">Masuk dengan Google belum disiapkan di versi ini. Pemilik perlu mengisi client ID Google (lihat docs/auth-google.md).</string>
+    <string name="msg_sign_in_failed">Belum bisa masuk. Periksa akun Google di ponsel dan coba lagi.</string>
+    <string name="msg_gmail_denied">Izin Gmail tidak diberikan. Aplikasi tetap bisa dipakai; kamu bisa menghubungkannya nanti di menu Lainnya.</string>
+    <string name="msg_gmail_unavailable">Gmail belum bisa dihubungkan sekarang. Coba lagi nanti di menu Lainnya.</string>
+
+    <!-- Akun di tab Lainnya -->
+    <string name="account_title">Akun</string>
+    <string name="account_gmail_on">Gmail terhubung (izin baca)</string>
+    <string name="account_gmail_off">Gmail belum terhubung</string>
 </resources>

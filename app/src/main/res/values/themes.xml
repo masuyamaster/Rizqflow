@@ -4,4 +4,11 @@
     <style name="Theme.Rizqflow" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@color/rf_background</item>
     </style>
+
+    <!-- Splash: latar token, ikon aplikasi; setelah siap beralih ke Theme.Rizqflow. -->
+    <style name="Theme.Rizqflow.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/rf_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/Theme.Rizqflow</item>
+    </style>
 </resources>

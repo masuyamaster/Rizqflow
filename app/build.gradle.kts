@@ -30,6 +30,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true // BuildConfig.DEBUG menampilkan tombol Masuk uji hanya di build debug
     }
 
     testOptions {
@@ -48,6 +49,11 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.credentials)
+    implementation(libs.androidx.credentials.play.services.auth)
+    implementation(libs.googleid)
+    implementation(libs.play.services.auth)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     testImplementation(platform(libs.junit.bom))

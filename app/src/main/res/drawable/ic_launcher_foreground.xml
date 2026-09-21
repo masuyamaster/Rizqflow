@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bar bersegmen Rizqflow: rezeki dialirkan ke tiga ruang. Warna ruang dari design tokens. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FAF9F7"
+        android:pathData="M36,40H72A14,14 0 0 1 72,68H36A14,14 0 0 1 36,40Z" />
+    <path
+        android:fillColor="#3B6FA8"
+        android:pathData="M32,48h8v12h-8z" />
+    <path
+        android:fillColor="#C4653A"
+        android:pathData="M42,48h12v12h-12z" />
+    <path
+        android:fillColor="#2A9A80"
+        android:pathData="M56,48h20v12h-20z" />
+</vector>

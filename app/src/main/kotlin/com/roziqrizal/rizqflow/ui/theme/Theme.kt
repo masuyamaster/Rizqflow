@@ -2,6 +2,8 @@ package com.roziqrizal.rizqflow.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.runtime.Composable
@@ -80,6 +82,13 @@ fun CappedFontScale(max: Float, content: @Composable () -> Unit) {
         content = content,
     )
 }
+
+/** Tombol tonal hijau seperti prototipe (bawaan Material memakai secondaryContainer yang biru). */
+@Composable
+fun rizqflowTonalButtonColors(): ButtonColors = ButtonDefaults.filledTonalButtonColors(
+    containerColor = MaterialTheme.colorScheme.primaryFixed,
+    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+)
 
 const val HERO_MAX_FONT_SCALE = 1.25f
 const val NAV_LABEL_MAX_FONT_SCALE = 1.3f
