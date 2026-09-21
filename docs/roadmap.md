@@ -56,8 +56,8 @@ Spesifikasi teks sudah ada di [ui-flow.md](ui-flow.md); tahap ini mengubahnya me
 - [x] Tetapkan design tokens dan komponen dasar ([design/tokens.css](design/tokens.css))
 - [x] Wireframe seluruh layar (S01–S28), termasuk keadaan kosong ([wireframe.md](wireframe.md), 2026-09-21)
 - [x] Hi-fi layar kunci: Denah, Catat + Pratinjau alokasi, Detail ruang, Kartu haul (prototipe HTML di [design/](design/README.md); disetujui pemilik 2026-09-20)
-- [ ] Prototipe klik untuk flow F1–F5 (F1, F2, F3, dan F4 sudah, 2026-09-21; F5 baru sampai kartu haul, S14, S15, dan S17 belum; F6, F8, dan F9 sudah)
-- [ ] Uji prototipe dengan data nyata dari Transaksi Harian di Ruang Finansial
+- [x] Prototipe klik untuk flow F1–F9 dan seluruh layar S01–S28 (2026-09-21); pembayaran, izin, dan notifikasi tetap disimulasikan
+- [x] Uji prototipe dengan pola data nyata dari Transaksi Harian di Ruang Finansial (2026-09-21): dua perbaikan tata letak di teks 200% dan temuan model data (lihat [design/README.md](design/README.md) dan [model-data.md](model-data.md))
 
 ## Tahap 2 — Inti domain, tanpa UI (In Progress)
 

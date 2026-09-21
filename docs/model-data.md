@@ -149,12 +149,12 @@ Pola dari 239 baris Transaksi Harian (27 Juni sampai 4 September 2026), sudah me
 
 | Temuan | Dampak |
 |---|---|
-| Transfer antar-akun dicatat sebagai **dua baris** ("Transfer to BCA (Out)" pengeluaran dan "(In)" pemasukan) | Ada jenis `TRANSFER` tersendiri (tab Transfer di S06). Pemasukan hasil transfer **tidak boleh** dialirkan ke ruang sebagai rezeki. Impor CSV harus menyatukan pasangannya |
-| Tanda nominal **tidak konsisten**: pengeluaran ada yang positif, ada yang negatif | Jumlah selalu positif, jenis menentukan arah; impor memakai nilai mutlak |
-| Deskripsi berhierarki "Transportation > BBM" dan campur Indonesia atau Inggris | Impor memecah menjadi kategori dan sub; nama kategori bebas |
-| Catatan bisa panjang (referensi bank, jam) | Tidak ada batas pendek untuk `note`; tampilan memotong dengan elipsis |
+| Transfer antar-akun dicatat sebagai **dua baris** ("Transfer to BCA (Out)" pengeluaran dan "(In)" pemasukan): 54 dari 239 baris, setara 27 transfer | Ada jenis `TRANSFER` tersendiri (tab Transfer di S06). Pemasukan hasil transfer **tidak boleh** dialirkan ke ruang sebagai rezeki. Impor CSV harus menyatukan pasangannya |
+| Tanda nominal **tidak konsisten**: dari 209 pengeluaran, 195 bertanda negatif dan 14 positif | Jumlah selalu positif, jenis menentukan arah; impor memakai nilai mutlak |
+| 42 deskripsi berhierarki "Transportation > BBM", dan bahasanya campur Indonesia dan Inggris | Impor memecah menjadi kategori dan sub; nama kategori bebas |
+| 23 baris punya catatan, sebagian panjang (referensi bank, jam) | Tidak ada batas pendek untuk `note`; tampilan memotong dengan elipsis |
 | Nominal dari Rp 490 sampai Rp 25.783.000; gaji tidak bulat (Rp 17.805.137) | Pembulatan alokasi nyata terpakai; tampilan harus muat angka 8 digit di teks 200% |
-| Sekitar 3 pengeluaran kecil per hari (kopi, rokok, makan); ada rentang 9 hari tanpa catatan | Menguatkan Catat kilat dan petunjuk hari kosong |
+| 58 dari 70 hari punya catatan, rata-rata 3 sampai 4 pengeluaran kecil per hari yang tercatat (kopi, rokok, makan); 12 hari kosong, termasuk rentang 3 hari berturut-turut | Menguatkan Catat kilat dan petunjuk hari kosong |
 | Banyak akun (BCA, Bank Mega, tunai) | Akun dan transfer bukan fitur tambahan, melainkan inti |
 
 ## Migrasi dan versi
