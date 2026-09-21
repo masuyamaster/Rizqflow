@@ -109,7 +109,7 @@ Potret alokasi satu pemasukan.
 **Belum dialirkan** = nominal pemasukan − jumlah entrinya; tidak disimpan. Bila kemudian pengguna menekan Alirkan, entri baru ditambahkan dengan aturan pada saat itu. Ini menggantikan daftar `pending` di prototipe.
 
 ### quick_favorite
-`name`, `amount`, `room_id`, `category_id`, `account_id`, `use_count`, `last_used_at`. Paling banyak 6 tampil di S24, urut `use_count`.
+`name`, `amount`, `room_id`, `category_id`, `account_id`, `use_count`, `last_used_at`. Paling banyak 6 tersimpan dan tampil di S24, urut `use_count` (lalu `last_used_at`, lalu nama). Tidak ada kolom urutan manual; menambahnya butuh migrasi.
 
 ### day_check
 `day` (epochDay, kunci utama): hari yang ditandai "Tidak ada" lewat notifikasi malam atau banner hari kosong.

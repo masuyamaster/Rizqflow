@@ -79,7 +79,7 @@ Logika bisnis yang benar dan teruji sebelum ada layar.
 
 **Status 2026-09-21:** semua kriteria terpenuhi (82 tes domain hijau, skema Room versi 1 dengan berkas skema JSON dan larangan migrasi destruktif). Android Studio Quail 4 sudah terpasang dan build dengan JDK bawaannya lulus; image emulator API 37 sudah ada dan aplikasi berjalan di emulator (2026-09-21).
 
-## Tahap 3 — Layar inti: onboarding, catat, transaksi (In Progress)
+## Tahap 3 — Layar inti: onboarding, catat, transaksi (Selesai)
 
 - [x] Tema Compose dari design tokens (warna terang dan gelap, font Manrope dan Libre Caslon Text, warna ruang dan status) dan kerangka navigasi (bottom nav empat tab, tombol Catat) (2026-09-21)
 - [x] Splash dan halaman masuk dengan Google dan Gmail (S29, S30), riwayat masuk, dan ikon aplikasi (2026-09-21); proyek Google Cloud dan client ID sudah dibuat, masuk dengan Google teruji di emulator (2026-09-21); izin Gmail belum disiapkan ([auth-google.md](auth-google.md))
@@ -89,11 +89,13 @@ Logika bisnis yang benar dan teruji sebelum ada layar.
 - [x] Pratinjau alokasi (S07): rezeki terlihat mengalir sebelum disimpan, "Ubah sekali ini" (aturan tidak berubah), bagian belum dialirkan (2026-09-21)
 - [x] Daftar transaksi dan detail/edit (S08–S09): per bulan dan tanggal, cari catatan dan nominal, filter jenis, sheet saringan akun/ruang/kategori; detail memakai layar Catat (ubah semua kolom; nominal pemasukan dihitung ulang dengan potret alokasi), hapus dengan konfirmasi, Urungkan setelah ubah dan hapus (2026-09-21). Banner hari kosong dan baris draf menunggu Tahap 6 dan v1.1
 - [x] Daftar ruang dan aturan alokasi (S10, S12): urutan naik/turun (= prioritas sisa pembulatan), arsipkan dan pulihkan (persen kembali 0%), tambah ruang (batas 5 ruang gratis; kategori awal Lain-lain dan Tak terlacak), pola Tiga hak untuk akun kosong, banner bila total bukan 100%; Aturan alokasi dengan slider dan +/- 1% untuk semua ruang, simpan hanya bila pas 100%, Buang perubahan?, Urungkan (2026-09-21). Aturan lanjutan (Pro) baru berupa pesan; status per ruang menunggu Tahap 4
-- [ ] Kelola akun, kategori, dan favorit (S13)
-- [ ] Catat kilat dan favorit (S24): pintasan ikon dan tile Quick Settings
-- [ ] Mode demo dengan data contoh (S22)
+- [x] Kelola akun, kategori, dan favorit (S13): tab Akun (tambah dengan saldo awal, ubah nama dan jenis, arsipkan, pulihkan, batas 3 akun gratis), tab Kategori per ruang (tambah, ganti nama, arsipkan; kategori sistem terkunci; ruang selalu punya satu kategori biasa), tab Favorit (ubah nama dan nominal, hapus, paling banyak 6); "Jadikan favorit" di Catat untuk pengeluaran baru (2026-09-21). Akun dan kategori hanya diarsipkan, tidak dihapus. Urutan favorit otomatis menurut pemakaian karena skema belum punya kolom urutan (seret untuk mengurutkan ditunda). Cocokkan saldo menunggu S25 (Tahap 6)
+- [x] Catat kilat (S24): bottom sheet pengeluaran cepat dari pintasan ikon (tekan lama) dan tile Quick Settings; ketuk favorit langsung menyimpan dengan Urungkan, atau ketik nominal (ruang dan kategori terakhir, akun bisa dipilih); teruji di emulator (2026-09-21). Widget masuk Pro (Tahap 7); tindakan di notifikasi malam menunggu S26 (Tahap 6); chip favorit di layar Catat penuh ditunda
+- [x] Mode demo dengan data contoh (S22): dari Coba data contoh di Denah kosong atau menu Lainnya; database demo terpisah yang diisi tiga ruang, tiga akun, dua bulan transaksi, dan empat favorit, lalu dihapus saat keluar; penanda Mode demo di header Denah (2026-09-21). Tema dan bahasa (bagian lain S22) menyusul di Tahap 6
 
 **Selesai bila:** flow F1–F4 berjalan end-to-end tanpa jaringan; data bertahan; setiap layar punya empty state.
+
+**Status 2026-09-21:** semua kriteria terpenuhi: onboarding, catat pemasukan dan pengeluaran dan transfer, ubah aturan alokasi, kelola akun dan kategori dan favorit, dan mode demo berjalan di emulator tanpa jaringan; data tersimpan di Room; tiap layar punya keadaan kosong. Yang ditunda ke tahap lain tercatat di butir masing-masing di atas.
 
 ## Tahap 4 — Dashboard Denah (In Progress)
 
