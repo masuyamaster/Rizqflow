@@ -949,7 +949,7 @@ Notifikasi malam (di luar aplikasi):
 |    setelah masuk               |
 |  v Tanpa iklan                 |
 |                                |
-| [  Lanjutkan dengan Google   ] |
+|              ( G )             |
 | [     Hubungkan Gmail        ] |
 | Opsional. Izin baca Gmail.     |
 | Belum membaca email apa pun.   |
@@ -962,7 +962,7 @@ Notifikasi malam (di luar aplikasi):
 +--------------------------------+
 ```
 
-- Satu tindakan utama (Google). **Hubungkan Gmail** meminta masuk dan izin baca sekaligus; bisa dilewati dan dihubungkan belakangan dari Lainnya.
+- Satu tindakan utama: tombol **Google berupa simbol G saja** (varian ikon resmi, latar putih atau #131314 di mode gelap, garis tepi tipis, 64 dp); namanya "Lanjutkan dengan Google" dibacakan pembaca layar. **Hubungkan Gmail** meminta masuk dan izin baca sekaligus; bisa dilewati dan dihubungkan belakangan dari Lainnya.
 - Pesan lembut, bukan merah, dibacakan pembaca layar: belum disiapkan, gagal masuk, izin Gmail ditolak. Menutup dialog akun tidak menampilkan pesan.
 - Selama proses berjalan kedua tombol nonaktif dan tombol yang ditekan menampilkan indikator.
 - **Masuk uji** hanya ada di build debug.

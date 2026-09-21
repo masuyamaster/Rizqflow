@@ -363,7 +363,7 @@ E --> F["Catat rezeki pertama"]
 E --> G["Coba data contoh"]
 ```
 
-- S29 Splash lalu S30 Masuk (2026-09-21): splash menahan sampai riwayat masuk terbaca; tanpa riwayat tampil S30, dengan riwayat langsung ke Denah. S30 berisi tagline, tiga jaminan, tombol **Lanjutkan dengan Google**, dan tombol **Hubungkan Gmail** (opsional, izin baca). Kegagalan tampil sebagai pesan lembut, tidak memblokir. **S30 menggantikan S01**; teks S01 di bawah dipertahankan sebagai riwayat.
+- S29 Splash lalu S30 Masuk (2026-09-21): splash menahan sampai riwayat masuk terbaca; tanpa riwayat tampil S30, dengan riwayat langsung ke Denah. S30 berisi tagline, tiga jaminan, tombol Google **berupa simbol G saja** (keputusan pemilik 2026-09-21; nama untuk pembaca layar tetap "Lanjutkan dengan Google"), dan tombol **Hubungkan Gmail** (opsional, izin baca). Kegagalan tampil sebagai pesan lembut, tidak memblokir. **S30 menggantikan S01**; teks S01 di bawah dipertahankan sebagai riwayat.
 - S01 (digantikan S30): tagline dan satu tombol Mulai, tanpa slide berlapis. Tautan teks **Pulihkan dari cadangan** untuk yang pindah ponsel (menuju F7).
 - S02: kartu **Tiga hak** (Memberi, Diri, Keluarga) atau **Mulai kosong**; **Mulai kosong** sekaligus cara melewati langkah ini (S03 dilewati), dan pilihan bisa diubah nanti. Layar S02 sampai S04 menampilkan penghitung langkah.
 - S03: slider dengan total selalu 100%: ruang terakhir menerima sisanya dan tidak punya slider; tampilkan hasil untuk contoh Rp 1.000.000 supaya konkret.

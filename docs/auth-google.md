@@ -11,7 +11,7 @@ Pemilik meminta alur: **splash, lalu halaman masuk dengan Google connect dan Gma
 | Bagian | Isi |
 |---|---|
 | Splash | Splash sistem Android dengan ikon aplikasi dan latar token; tetap tampil sampai riwayat masuk terbaca, jadi tidak ada kedipan halaman masuk |
-| S30 Masuk | Logo tiga ruang, tagline, tiga jaminan, tombol **Lanjutkan dengan Google**, tombol **Hubungkan Gmail** (opsional), pesan lembut bila gagal |
+| S30 Masuk | Logo tiga ruang, tagline, tiga jaminan, tombol Google **berupa simbol G saja** (nama "Lanjutkan dengan Google" untuk pembaca layar), tombol **Hubungkan Gmail** (opsional), pesan lembut bila gagal |
 | Alur | Tanpa riwayat: halaman masuk. Ada riwayat: langsung menu utama. **Keluar** di tab Lainnya menghapus riwayat |
 | Riwayat masuk | Profil singkat di SharedPreferences privat (pengenal, email, nama, penanda Gmail). **Tidak ada token atau sandi yang disimpan** |
 | Gmail | Izin `gmail.readonly` diminta lewat AuthorizationClient, bisa sekalian saat masuk atau belakangan dari tab Lainnya. **Aplikasi belum membaca email apa pun**; fitur ini baru menyiapkan izinnya |
@@ -47,7 +47,7 @@ Client ID adalah pengenal publik, bukan rahasia, jadi aman masuk ke git.
 3. **Identitas ini hanya lokal.** Tidak ada server Rizqflow, jadi ID token Google tidak diverifikasi siapa pun dan riwayat masuk hanyalah penanda di ponsel. Jangan dipakai untuk mengotorisasi Sync (fase 2) tanpa backend yang memverifikasi token.
 4. **Butuh internet dan layanan Google** untuk masuk pertama kali. Ponsel tanpa Google Play services (misalnya sebagian perangkat Huawei) tidak bisa masuk.
 5. **Prinsip produk**: janji "Datamu tetap di ponselmu" di halaman masuk tetap benar selama tidak ada sync. Ubah teksnya bila Sync dibuat.
-6. **Tombol Google** sebaiknya mengikuti pedoman merek Google (logo G, warna) sebelum rilis; saat ini tombolnya teks biasa.
+6. **Tombol Google** memakai logo G empat warna resmi dalam varian ikon (latar putih, garis tepi tipis; #131314 di mode gelap). Warna dan bentuk logo tidak boleh diubah. Periksa ulang pedoman merek Google sebelum rilis.
 
 ## Yang belum dibangun
 

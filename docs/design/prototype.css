@@ -1780,3 +1780,28 @@ details.card[open] summary {
 .splash__pill i {
   height: 12px;
 }
+
+/* ---------- Tombol Google (varian ikon): latar putih, garis tepi tipis, logo G empat warna ---------- */
+
+.google-btn {
+  align-self: center;
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #747775;
+  border-radius: var(--rf-radius-full);
+  background: #ffffff;
+}
+
+:root[data-theme='dark'] .google-btn {
+  border-color: #8e918f;
+  background: #131314;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme='light'])) .google-btn {
+    border-color: #8e918f;
+    background: #131314;
+  }
+}
