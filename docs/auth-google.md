@@ -47,21 +47,41 @@ Batas yang perlu dipahami:
 
 ## Yang harus Anda siapkan di Google Cloud
 
-Tombol Google menampilkan "belum disiapkan" sampai ini selesai. Saya tidak bisa membuatnya untuk Anda karena butuh akun Google Anda.
+Tombol Google menampilkan "belum disiapkan" sampai ini selesai. Saya tidak bisa membuatnya untuk Anda: klien OAuth Web dan Android hanya bisa dibuat lewat console dengan akun Google Anda (tidak ada perintah gcloud atau API untuk itu). Yang sudah saya siapkan: kodenya, nilai yang perlu Anda salin (di bawah), pemeriksa bentuk ID, dan catatan kegagalan di Logcat.
 
-1. Buka [console.cloud.google.com](https://console.cloud.google.com), buat proyek (misalnya `rizqflow`).
-2. **APIs & Services, OAuth consent screen**: tipe **External**, isi nama aplikasi, email dukungan, dan tambahkan akun Anda sebagai **Test user**. Biarkan status **Testing**.
-3. **Credentials, Create credentials, OAuth client ID**, dua buah:
-   - Tipe **Web application** (nama bebas). Salin **Client ID**-nya, lalu tempel ke `app/src/main/res/values/google_auth.xml` pada `google_web_client_id`. Ini yang dipakai aplikasi.
-   - Tipe **Android**: package `com.roziqrizal.rizqflow` dan SHA-1 kunci debug di bawah. Nanti tambahkan SHA-1 kunci rilis (dari Play Console, App signing).
-4. Untuk Gmail: **Library, Gmail API, Enable**, lalu di consent screen tambahkan scope `.../auth/gmail.readonly`.
-5. Uji di emulator: image `google_apis` memuat layanan Google, tetapi Anda tetap perlu menambahkan akun Google Anda di Pengaturan emulator. Bila Credential Manager menolak di emulator, uji di ponsel asli.
+**Nilai yang akan diminta Google** (salin apa adanya):
 
-SHA-1 kunci debug di PC ini (`~/.android/debug.keystore`): `8A:63:D7:61:0E:42:F4:71:45:01:87:22:F0:42:A9:5A:6C:22:7F:95`. Untuk PC lain, jalankan:
+| Isian | Nilai |
+|---|---|
+| Package name | `com.roziqrizal.rizqflow` |
+| SHA-1 debug (PC ini) | `8A:63:D7:61:0E:42:F4:71:45:01:87:22:F0:42:A9:5A:6C:22:7F:95` |
+| Scope Gmail (opsional) | `https://www.googleapis.com/auth/gmail.readonly` |
+| Nama aplikasi di consent screen | Rizqflow |
 
-```
-keytool -list -v -keystore %USERPROFILE%\.android\debug.keystore -alias androiddebugkey -storepass android -keypass android
-```
+**Langkah** (kira-kira 10 menit):
+
+1. Buka [console.cloud.google.com/projectcreate](https://console.cloud.google.com/projectcreate), buat proyek (misalnya `rizqflow`).
+2. **Google Auth Platform** (dulu "OAuth consent screen"): tipe **External**, isi nama aplikasi dan email dukungan, lalu di **Audience** tambahkan akun Google Anda sebagai **Test user**. Biarkan status **Testing**.
+3. **Clients, Create client**, dua kali:
+   - Tipe **Web application** (nama bebas). Salin **Client ID**-nya, lalu tempel ke `app/src/main/res/values/google_auth.xml` pada `google_web_client_id`. Bentuknya `123456789012-xxxxxxxx.apps.googleusercontent.com`; aplikasi memeriksa bentuk ini dan menolak yang salah tempel.
+   - Tipe **Android**: isi package dan SHA-1 dari tabel di atas. ID Android ini **tidak perlu ditempel ke mana pun**; cukup terdaftar supaya Google mengenali aplikasi. Nanti tambahkan SHA-1 kunci rilis (Play Console, App integrity, App signing).
+4. Untuk Gmail: **Library, Gmail API, Enable**, lalu di **Data access** tambahkan scope `gmail.readonly`.
+5. Uji di emulator: image `google_apis` sudah memuat layanan Google, tetapi emulator belum punya akun. Tambahkan akun Google Anda di Pengaturan emulator (Passwords and accounts) sebelum menekan tombol G. Saya tidak memasukkan kata sandi Google Anda; bagian ini Anda yang lakukan.
+
+Setelah client ID ditempel: `./gradlew :app:assembleDebug`, pasang, tekan tombol G. Bila layar pilih akun Google muncul, konfigurasi dasarnya benar.
+
+**Cek SHA-1 di PC lain** (tidak perlu keytool): `./gradlew :app:signingReport`, ambil baris `SHA1` pada `Variant: debug`. Tiap PC punya kunci debug sendiri, jadi tiap PC pengembang menambah SHA-1-nya ke klien Android.
+
+**Bila gagal**, lihat Logcat dengan filter tag `RizqflowGoogle`. Pengguna hanya melihat pesan lembut; penyebabnya ada di log:
+
+| Gejala | Penyebab yang paling mungkin |
+|---|---|
+| Pesan "belum disiapkan" walau sudah ditempel | ID bukan berbentuk client ID Google (log: "bukan berbentuk client ID Google"), atau aplikasi belum dibangun ulang setelah mengubah `google_auth.xml` |
+| Log "tidak ada akun Google di perangkat" | Emulator atau ponsel belum punya akun Google; tambahkan di Pengaturan |
+| Log `GetCredentialException` dengan pesan "developer console is not set up correctly" (kode 10 atau 28444) | Klien **Android** belum ada, atau package/SHA-1 tidak cocok dengan yang dipakai membangun. Cek dengan `signingReport` |
+| Layar Google menolak "Access blocked" atau "app not verified" | Proyek berstatus Testing dan akun belum jadi **Test user** |
+| Izin Gmail diminta tetapi ditolak | Scope `gmail.readonly` belum ditambahkan di Data access, atau Gmail API belum di-enable |
+| Bekerja di debug, gagal di rilis | SHA-1 kunci rilis (App signing Play Console) belum didaftarkan |
 
 Client ID adalah pengenal publik, bukan rahasia, jadi aman masuk ke git.
 
