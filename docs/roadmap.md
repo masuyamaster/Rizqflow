@@ -54,7 +54,7 @@ Spesifikasi teks sudah ada di [ui-flow.md](ui-flow.md); tahap ini mengubahnya me
 
 - [x] Putuskan arah visual: opsi A, pakai ulang identitas homepage (2026-09-19)
 - [x] Tetapkan design tokens dan komponen dasar ([design/tokens.css](design/tokens.css))
-- [x] Wireframe seluruh layar (S01–S28), termasuk keadaan kosong ([wireframe.md](wireframe.md), 2026-09-21)
+- [x] Wireframe seluruh layar (S01–S31), termasuk keadaan kosong ([wireframe.md](wireframe.md), 2026-09-21)
 - [x] Hi-fi layar kunci: Denah, Catat + Pratinjau alokasi, Detail ruang, Kartu haul (prototipe HTML di [design/](design/README.md); disetujui pemilik 2026-09-20)
 - [x] Prototipe klik untuk flow F1–F9 dan seluruh layar S01–S28 (2026-09-21); pembayaran, izin, dan notifikasi tetap disimulasikan
 - [x] Uji prototipe dengan pola data nyata dari Transaksi Harian di Ruang Finansial (2026-09-21): dua perbaikan tata letak di teks 200% dan temuan model data (lihat [design/README.md](design/README.md) dan [model-data.md](model-data.md))
@@ -81,7 +81,7 @@ Logika bisnis yang benar dan teruji sebelum ada layar.
 ## Tahap 3 — Layar inti: onboarding, catat, transaksi (In Progress)
 
 - [x] Tema Compose dari design tokens (warna terang dan gelap, font Manrope dan Libre Caslon Text, warna ruang dan status) dan kerangka navigasi (bottom nav empat tab, tombol Catat) (2026-09-21)
-- [x] Splash dan halaman masuk dengan Google dan Gmail (S29, S30), riwayat masuk, dan ikon aplikasi (2026-09-21); tombol Google butuh client ID dari Google Cloud milik pemilik ([auth-google.md](auth-google.md))
+- [x] Splash dan halaman masuk dengan Google dan Gmail (S29, S30), riwayat masuk, dan ikon aplikasi (2026-09-21); proyek Google Cloud dan client ID sudah dibuat, masuk dengan Google teruji di emulator (2026-09-21); izin Gmail belum disiapkan ([auth-google.md](auth-google.md))
 - [x] Masuk dengan nama pengguna dan sandi serta halaman Daftar (S30, S31): akun lokal dengan hash PBKDF2, tanpa server (2026-09-21)
 - [ ] Onboarding (S01–S04; S01 digantikan S30)
 - [ ] Catat transaksi (S06)

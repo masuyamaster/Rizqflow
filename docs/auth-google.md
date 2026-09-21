@@ -47,7 +47,7 @@ Batas yang perlu dipahami:
 
 ## Status penyiapan (2026-09-21)
 
-Proyek Google Cloud **rizqflow** (`rizqflow-509308`) sudah dibuat. Klien Web (`232915442214-5fusjgtntn65tdg34km2ppra9ee6k1ka`) sudah ditempel ke `google_auth.xml`; klien Android (`232915442214-rn110tas126b9e7m5c6s7pq3lb1ojml0`, package `com.roziqrizal.rizqflow`, SHA-1 debug PC ini) terdaftar dan tidak dipakai di kode. Belum dicoba sampai masuk dengan akun sungguhan; emulator perlu akun Google dulu. Gmail (Data Access dan Gmail API) belum disiapkan.
+Proyek Google Cloud **rizqflow** (`rizqflow-509308`) sudah dibuat. Klien Web (`232915442214-5fusjgtntn65tdg34km2ppra9ee6k1ka`) sudah ditempel ke `google_auth.xml`; klien Android (`232915442214-rn110tas126b9e7m5c6s7pq3lb1ojml0`, package `com.roziqrizal.rizqflow`, SHA-1 debug PC ini) terdaftar dan tidak dipakai di kode. **Masuk dengan Google sudah diuji berhasil di emulator** (pilih akun, lalu langsung ke menu utama; Lainnya menampilkan nama dan email, dan riwayat masuk tersimpan tanpa token). Gmail (Data Access dan Gmail API) belum disiapkan dan belum diuji.
 
 ## Yang harus Anda siapkan di Google Cloud
 
