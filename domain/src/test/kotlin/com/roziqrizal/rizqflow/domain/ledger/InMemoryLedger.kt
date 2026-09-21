@@ -1,0 +1,132 @@
+package com.roziqrizal.rizqflow.domain.ledger
+
+import com.roziqrizal.rizqflow.domain.allocation.AllocationRule
+import com.roziqrizal.rizqflow.domain.model.AccountId
+import com.roziqrizal.rizqflow.domain.model.CategoryId
+import com.roziqrizal.rizqflow.domain.model.RoomId
+import com.roziqrizal.rizqflow.domain.model.TransactionId
+import com.roziqrizal.rizqflow.domain.model.TransactionKind
+import com.roziqrizal.rizqflow.domain.money.Money
+import java.time.LocalDate
+
+/**
+ * Penyimpanan tiruan di memori untuk menguji layanan tanpa database. Perilakunya meniru
+ * yang dijanjikan antarmuka: urutan menurut prioritas ruang, saldo dihitung dari transaksi,
+ * dan hapus transaksi ikut menghapus potret alokasinya. Perilaku Room yang sebenarnya diuji
+ * terpisah di :data.
+ */
+class InMemoryLedger : WorkspaceRepository, AccountRepository, RoomRepository, TransactionRepository {
+    val accountRows = linkedMapOf<AccountId, Account>()
+    val roomRows = linkedMapOf<RoomId, Room>()
+    val categoryRows = linkedMapOf<CategoryId, Category>()
+    var ruleRows: List<AllocationRule> = emptyList()
+    val transactionRows = linkedMapOf<TransactionId, MoneyTransaction>()
+    val entryRows = linkedMapOf<String, AllocationEntry>()
+
+    /** Bila diisi, penyimpanan berikutnya melempar galat ini: untuk menguji atomisitas di pemanggil. */
+    var failNextWrite: Throwable? = null
+
+    private fun maybeFail() {
+        failNextWrite?.let {
+            failNextWrite = null
+            throw it
+        }
+    }
+
+    // ---- WorkspaceRepository
+    override suspend fun isEmpty() = roomRows.isEmpty() && accountRows.isEmpty()
+
+    override suspend fun initialize(snapshot: WorkspaceSnapshot) {
+        maybeFail()
+        snapshot.rooms.forEach { roomRows[it.id] = it }
+        snapshot.categories.forEach { categoryRows[it.id] = it }
+        snapshot.accounts.forEach { accountRows[it.id] = it }
+        ruleRows = snapshot.rules
+    }
+
+    // ---- AccountRepository
+    override suspend fun find(id: AccountId) = accountRows[id]
+
+    override suspend fun activeAccounts() = accountRows.values.filter { !it.archived }.sortedBy { it.sortOrder }
+
+    override suspend fun save(account: Account) {
+        accountRows[account.id] = account
+    }
+
+    override suspend fun balance(id: AccountId): Money {
+        val account = accountRows.getValue(id)
+        var total = account.openingBalance
+        for (t in transactionRows.values) {
+            when (t.kind) {
+                TransactionKind.INCOME -> if (t.accountId == id) total += t.amount
+                TransactionKind.EXPENSE -> if (t.accountId == id) total -= t.amount
+                TransactionKind.TRANSFER -> {
+                    if (t.accountId == id) total -= t.amount
+                    if (t.toAccountId == id) total += t.amount
+                }
+            }
+        }
+        return total
+    }
+
+    // ---- RoomRepository
+    override suspend fun activeRooms() = roomRows.values.filter { !it.archived }.sortedBy { it.sortOrder }
+
+    override suspend fun find(id: RoomId) = roomRows[id]
+
+    override suspend fun rules(): List<AllocationRule> {
+        val order = activeRooms().map { it.id }
+        return ruleRows.filter { it.roomId in order }.sortedBy { order.indexOf(it.roomId) }
+    }
+
+    override suspend fun categories(roomId: RoomId) =
+        categoryRows.values.filter { it.roomId == roomId && !it.archived }.sortedBy { it.sortOrder }
+
+    override suspend fun findCategory(id: CategoryId) = categoryRows[id]
+
+    override suspend fun addRoom(room: Room, categories: List<Category>) {
+        maybeFail()
+        roomRows[room.id] = room
+        categories.forEach { categoryRows[it.id] = it }
+    }
+
+    override suspend fun replaceRules(rules: List<AllocationRule>) {
+        maybeFail()
+        ruleRows = rules
+    }
+
+    // ---- TransactionRepository
+    override suspend fun find(id: TransactionId) = transactionRows[id]
+
+    override suspend fun entriesOf(incomeId: TransactionId): List<AllocationEntry> {
+        val order = roomRows.values.sortedBy { it.sortOrder }.map { it.id }
+        return entryRows.values.filter { it.incomeId == incomeId }.sortedBy { order.indexOf(it.roomId) }
+    }
+
+    override suspend fun saveIncome(transaction: MoneyTransaction, entries: List<AllocationEntry>) {
+        maybeFail()
+        transactionRows[transaction.id] = transaction
+        entries.forEach { entryRows[it.id] = it }
+    }
+
+    override suspend fun save(transaction: MoneyTransaction) {
+        maybeFail()
+        transactionRows[transaction.id] = transaction
+    }
+
+    override suspend fun replaceIncome(transaction: MoneyTransaction, entries: List<AllocationEntry>) {
+        maybeFail()
+        entryRows.values.removeAll { it.incomeId == transaction.id }
+        transactionRows[transaction.id] = transaction
+        entries.forEach { entryRows[it.id] = it }
+    }
+
+    override suspend fun delete(id: TransactionId) {
+        transactionRows.remove(id)
+        entryRows.values.removeAll { it.incomeId == id }
+    }
+
+    override suspend fun between(from: LocalDate, to: LocalDate) = transactionRows.values
+        .filter { it.occurredOn in from..to }
+        .sortedWith(compareByDescending<MoneyTransaction> { it.occurredOn }.thenByDescending { it.createdAtMillis })
+}
