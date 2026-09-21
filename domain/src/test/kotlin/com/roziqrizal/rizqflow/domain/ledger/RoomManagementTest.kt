@@ -20,6 +20,32 @@ class RoomManagementTest {
 
     private fun overview(f: LedgerFixture) = runSuspend { f.rules.overview() }
 
+    @Test
+    fun `urungkan arsip mengembalikan urutan dan persentase seperti semula`() {
+        val f = LedgerFixture().standard()
+        val diri = f.room("Diri")
+
+        val undo = (runSuspend { f.rules.archiveWithUndo(diri.id) } as LedgerResult.Success).value
+        assertEquals(listOf("Memberi", "Keluarga"), runSuspend { f.rules.overview() }.active.map { it.room.name })
+
+        assertIs<LedgerResult.Success<*>>(runSuspend { f.rules.undoArchive(undo) })
+
+        val overview = runSuspend { f.rules.overview() }
+        assertEquals(listOf("Memberi", "Diri", "Keluarga"), overview.active.map { it.room.name })
+        assertEquals(listOf(1_000, 3_000, 6_000), overview.active.map { it.shareBp })
+        assertTrue(overview.isBalanced)
+    }
+
+    @Test
+    fun `urungkan arsip ditolak bila batas ruang atau nama sudah bentrok`() {
+        val f = LedgerFixture().standard()
+        val undo = (runSuspend { f.rules.archiveWithUndo(f.room("Diri").id) } as LedgerResult.Success).value
+        runSuspend { f.rules.addRoom(NewRoom("Diri", RoomKind.MENUMBUHKAN, "sprout", 4)) }
+
+        assertEquals(LedgerResult.Failure(LedgerError.NAME_TAKEN), runSuspend { f.rules.undoArchive(undo) })
+        assertEquals(LedgerResult.Failure(LedgerError.ROOM_NOT_FOUND), runSuspend { f.rules.archiveWithUndo(RoomId("hilang")) })
+    }
+
     private fun archive(f: LedgerFixture, name: String) = runSuspend { f.rules.archiveRoom(f.room(name).id) }
 
     private fun restore(f: LedgerFixture, name: String) = runSuspend { f.rules.restoreRoom(f.room(name).id) }

@@ -12,6 +12,9 @@ data class NewRoom(val name: String, val kind: RoomKind, val iconKey: String, va
 /** Satu ruang aktif beserta persentasenya (basis point; 0 bila belum punya aturan). */
 data class RoomEntry(val room: Room, val shareBp: Int)
 
+/** Keadaan sebelum ruang diarsipkan: ruang itu dan aturan alokasi aktif saat itu. */
+data class ArchiveUndo(val room: Room, val activeRules: List<AllocationRule>)
+
 /**
  * Isi S10: ruang aktif berurutan menurut prioritas, yang diarsipkan, total pembagian, dan batas ruang
  * paket ini ([roomLimit] null = tak terbatas). Total selain 100% bukan galat: ia tampil sebagai
@@ -66,6 +69,29 @@ class RuleService(
     suspend fun archiveRoom(id: RoomId): LedgerResult<Unit> {
         val room = rooms.find(id) ?: return failure(LedgerError.ROOM_NOT_FOUND)
         if (!room.archived) rooms.saveRooms(listOf(room.copy(archived = true)))
+        return LedgerResult.Success(Unit)
+    }
+
+    /**
+     * Mengarsipkan ruang dan mengembalikan keadaan sebelumnya untuk Urungkan ([undoArchive]). Berbeda dengan
+     * [restoreRoom] (Pulihkan dari daftar Diarsipkan: urutan terakhir, 0%), Urungkan mengembalikan urutan
+     * dan persentase seperti semula.
+     */
+    suspend fun archiveWithUndo(id: RoomId): LedgerResult<ArchiveUndo> {
+        val room = rooms.find(id) ?: return failure(LedgerError.ROOM_NOT_FOUND)
+        val undo = ArchiveUndo(room, rooms.rules())
+        archiveRoom(id)
+        return LedgerResult.Success(undo)
+    }
+
+    /** Mengurungkan [archiveWithUndo]. Batas ruang dan nama yang bentrok tetap diperiksa. */
+    suspend fun undoArchive(undo: ArchiveUndo): LedgerResult<Unit> {
+        val current = rooms.find(undo.room.id) ?: return failure(LedgerError.ROOM_NOT_FOUND)
+        if (!current.archived) return LedgerResult.Success(Unit)
+        val active = rooms.activeRooms()
+        if (!entitlements.canAddRoom(active.size)) return failure(LedgerError.ROOM_LIMIT_REACHED)
+        if (active.any { it.name.equals(current.name, ignoreCase = true) }) return failure(LedgerError.NAME_TAKEN)
+        rooms.saveRooms(listOf(undo.room.copy(archived = false)), rules = undo.activeRules)
         return LedgerResult.Success(Unit)
     }
 
