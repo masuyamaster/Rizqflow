@@ -48,7 +48,7 @@ Menetapkan keputusan yang menentukan arah teknis dan bisnis sebelum kode ditulis
 - [x] Tetapkan asumsi fikih default zakat mal: 85 g emas, 2,5%, haul 1 tahun Hijriyah (2026-09-20); default sementara, menunggu verifikasi kitab oleh pemilik
 - [ ] Validasi minat lewat landing page dan daftar tunggu
 
-## Tahap 1 — Desain UI/UX (In Progress)
+## Tahap 1 — Desain UI/UX (Selesai)
 
 Spesifikasi teks sudah ada di [ui-flow.md](ui-flow.md); tahap ini mengubahnya menjadi desain visual.
 

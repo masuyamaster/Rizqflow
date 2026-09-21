@@ -27,7 +27,7 @@ object AllocationEngine {
         require(!amount.isNegative) { "Nominal yang dialirkan tidak boleh negatif: ${amount.minor}" }
         require(rules.map { it.roomId }.toSet().size == rules.size) { "Satu ruang muncul lebih dari sekali di aturan" }
         val totalShare = rules.sumOf { it.share.value }
-        require(totalShare <= BasisPoints.FULL) { "Total aturan melebihi 100%: ${totalShare / 100.0}%" }
+        require(totalShare <= BasisPoints.FULL) { "Total aturan melebihi 100%: $totalShare basis point" }
 
         val full = BigInteger.valueOf(BasisPoints.FULL.toLong())
         val total = BigInteger.valueOf(amount.minor)

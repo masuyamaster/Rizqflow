@@ -6,7 +6,7 @@ Aplikasi finansial berbasis **hak**: rezeki yang masuk dibagi ke ruang-ruang keh
 
 Inti aplikasinya universal (role-based budgeting). Modul Islami, yaitu tracker zakat mal dengan nisab dan haul kalender Hijriyah, bersifat opsional dan menjadi pembeda utama.
 
-**Status:** Tahap 0 dan 1 hampir selesai, Tahap 2 dimulai: kerangka proyek Android sudah bisa dibangun dan `Money` sudah ada. Platform: Android, dirilis di Google Play Store.
+**Status:** Tahap 1 (desain) selesai: wireframe dan prototipe klik seluruh layar S01–S28. Tahap 2 (inti domain) selesai secara kode: alokasi, nisab, haul, entitlement, dan skema Room dengan 82 tes hijau; tinggal dua tugas pemasangan milik pemilik (Android Studio baru dan emulator API 37). Tahap 3 (layar sungguhan) menunggu Android Studio baru. Platform: Android, dirilis di Google Play Store.
 
 ## Dokumen
 
