@@ -42,7 +42,7 @@ Menetapkan keputusan yang menentukan arah teknis dan bisnis sebelum kode ditulis
 - [x] Putuskan platform: Android saja, rilis di Play Store (2026-09-19)
 - [x] Putuskan stack Android: Kotlin + Jetpack Compose + Room (2026-09-19)
 - [x] Setujui detail stack Android: modul, min SDK 26, DI manual, enkripsi (2026-09-20)
-- [ ] Cek ketersediaan nama (Play Store, domain, GitHub, Google). Hasil awal 2026-09-20 di [konsep.md](konsep.md): Rizqflow layak, Rizqly bukan cadangan yang baik; tinggal cek manual Play Store, kepemilikan rizqflow.com, dan merek DJKI
+- [x] Cek ketersediaan nama (2026-09-21): pencarian "rizqflow" di Google Play dan pangkalan merek DJKI tanpa hasil; rizqflow.com dipegang pihak lain, rizqflow.app dan .id bebas ([konsep.md](konsep.md))
 - [x] Putuskan sumber harga emas: input manual (gratis), otomatis lewat API (Pro); riset API dilakukan di Tahap 7 (2026-09-20)
 - [x] Putuskan kalender Hijriyah untuk haul: Umm al-Qura di balik antarmuka `HijriCalendar`; hisab Al-Kaukaba bisa menyusul (2026-09-21)
 - [x] Tetapkan asumsi fikih default zakat mal: 85 g emas, 2,5%, haul 1 tahun Hijriyah (2026-09-20); default sementara, menunggu verifikasi kitab oleh pemilik
@@ -59,7 +59,7 @@ Spesifikasi teks sudah ada di [ui-flow.md](ui-flow.md); tahap ini mengubahnya me
 - [x] Prototipe klik untuk flow F1–F9 dan seluruh layar S01–S28 (2026-09-21); pembayaran, izin, dan notifikasi tetap disimulasikan
 - [x] Uji prototipe dengan pola data nyata dari Transaksi Harian di Ruang Finansial (2026-09-21): dua perbaikan tata letak di teks 200% dan temuan model data (lihat [design/README.md](design/README.md) dan [model-data.md](model-data.md))
 
-## Tahap 2 — Inti domain, tanpa UI (In Progress)
+## Tahap 2 — Inti domain, tanpa UI (Selesai)
 
 Logika bisnis yang benar dan teruji sebelum ada layar.
 
@@ -77,7 +77,7 @@ Logika bisnis yang benar dan teruji sebelum ada layar.
 
 **Selesai bila:** unit test hijau untuk alokasi, nisab, dan haul (termasuk kasus tepi); tidak ada floating point untuk uang; skema penyimpanan punya jalur migrasi.
 
-**Status 2026-09-21:** semua kriteria terpenuhi (82 tes domain hijau, skema Room versi 1 dengan berkas skema JSON dan larangan migrasi destruktif). Yang tersisa hanya dua tugas infrastruktur milik pengguna: memperbarui Android Studio dan memasang image emulator API 37.
+**Status 2026-09-21:** semua kriteria terpenuhi (82 tes domain hijau, skema Room versi 1 dengan berkas skema JSON dan larangan migrasi destruktif). Android Studio Quail 4 sudah terpasang dan build dengan JDK bawaannya lulus; image emulator API 37 sudah ada dan aplikasi berjalan di emulator (2026-09-21).
 
 ## Tahap 3 — Layar inti: onboarding, catat, transaksi (In Progress)
 

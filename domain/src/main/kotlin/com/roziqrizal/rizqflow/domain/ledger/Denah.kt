@@ -11,13 +11,17 @@ import java.time.YearMonth
 /**
  * Status satu ruang pada satu bulan (S05, S11). Selalu ditampilkan sebagai ikon plus teks, bukan warna saja.
  * [MENUNGGU]: belum ada jatah bulan itu, jadi belum ada yang bisa dinilai (netral, bukan peringatan).
+ * [BELUM_TERCAPAI]: bulan yang sudah berakhir dan jatah Menunaikan atau Menumbuhkan belum terpenuhi;
+ * penanda netral (bukan peringatan), supaya riwayat tidak menghakimi dan tidak masuk Perlu perhatian.
  */
-enum class RoomStatus { MENUNGGU, BERJALAN, TERPENUHI, PERLU_PERHATIAN }
+enum class RoomStatus { MENUNGGU, BERJALAN, TERPENUHI, PERLU_PERHATIAN, BELUM_TERCAPAI }
 
 /**
  * Arti "hak terpenuhi" per tipe ruang (dikonfirmasi 2026-09-20, docs/konsep.md):
  *
- * - **Menunaikan** dan **Menumbuhkan**: terpenuhi saat terpakai mencapai jatah; selebihnya berjalan.
+ * - **Menunaikan** dan **Menumbuhkan**: terpenuhi saat terpakai mencapai jatah; selebihnya berjalan,
+ *   atau belum tercapai bila bulannya sudah berakhir. Investasi dicatat sebagai pengeluaran di ruang Diri
+ *   (kategori Investasi atau Dana darurat), tanpa akun tujuan (disetujui 2026-09-21).
  * - **Mencukupi**: perlu perhatian saat terpakai mencapai 85% jatah atau lebih (termasuk melewati jatah).
  *   Setelah bulannya berakhir, terpenuhi bila terpakai tidak melebihi jatah. Penafsiran "kebutuhan
  *   tertutup" ini usulan yang menunggu konfirmasi pemilik.
@@ -41,7 +45,11 @@ object RoomStatusRules {
         val progress = progressBp(allocated, spent) ?: return RoomStatus.MENUNGGU
         return when (kind) {
             RoomKind.MENUNAIKAN, RoomKind.MENUMBUHKAN ->
-                if (progress >= 10_000) RoomStatus.TERPENUHI else RoomStatus.BERJALAN
+                when {
+                    progress >= 10_000 -> RoomStatus.TERPENUHI
+                    monthOver -> RoomStatus.BELUM_TERCAPAI
+                    else -> RoomStatus.BERJALAN
+                }
 
             RoomKind.MENCUKUPI -> when {
                 // Dibandingkan sebagai uang, bukan persentase yang dibulatkan: lebih Rp 1 tetap melewati jatah.

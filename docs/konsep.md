@@ -161,6 +161,9 @@ Kesimpulan awal: **Rizqflow masih layak dipakai**. **Rizqly bukan cadangan yang 
 - **Usulan wireframe S08, S09, S12 disetujui** (2026-09-21): filter Ruang dan Kategori di ikon filter samping kolom cari; rincian alokasi pemasukan tersimpan sebagai potret saat dicatat (mengubah aturan tidak mengubah riwayat, mengubah nominal menghitung ulang dengan persentase potret); urutan ruang menentukan prioritas sisa pembulatan dan urutan di Denah.
 - **Kalender Hijriyah untuk haul: Umm al-Qura** (2026-09-21), lewat `HijrahChronology` bawaan Java di balik antarmuka `HijriCalendar`. Berbasis tabel, deterministik, dan tanpa internet. Bisa berbeda satu hari dari penetapan Kemenag, jadi tanggal Hijriyah tampil sebagai perkiraan; kalender lain (Kemenag, hisab Al-Kaukaba) tinggal menukar implementasi.
 - **Arti "terpenuhi" per tipe ruang** dikonfirmasi (2026-09-20): Menunaikan dan Menumbuhkan terpenuhi saat penggunaan mencapai jatah; Mencukupi masuk Perlu perhatian pada pemakaian 85% jatah atau lebih.
+- **Status di akhir bulan** (2026-09-21): Mencukupi terpenuhi bila terpakai tidak melebihi jatah setelah bulannya berakhir. Menunaikan dan Menumbuhkan yang belum tercapai di bulan yang sudah berakhir berlabel netral "Belum tercapai" (tanpa merah, tidak masuk Perlu perhatian). Jatah dihitung per bulan dan tidak dibawa ke bulan berikutnya.
+- **Investasi** dicatat sebagai pengeluaran di ruang Diri (kategori Investasi atau Dana darurat); belum ada akun tujuan. Lebihan jatah ruang lain bisa diinvestasikan dengan mencatat pengeluaran di Diri; fitur "Alihkan sisa" antar ruang menjadi ide lanjutan.
+- **Cek nama** (2026-09-21): pencarian "rizqflow" di Google Play dan pangkalan merek DJKI (pdki-indonesia.dgip.go.id, mode Normal) tanpa hasil. Nama aman dipakai.
 - **Sumber harga emas** (2026-09-20): versi gratis memakai input manual; harga otomatis lewat API masuk Pro. Riset sumber API dilakukan di Tahap 7.
 - **Detail stack Android** disetujui pemilik (2026-09-20):
   - **Tiga modul Gradle.** `:domain` (Kotlin/JVM murni, tanpa dependensi Android) berisi `Money`, alokasi, nisab, haul, dan antarmuka repositori; `:data` (Room dan implementasi repositori); `:app` (Jetpack Compose, ViewModel, perakitan dependensi). Unit test domain berjalan cepat di JVM mengikuti `docs/strategi-unit-test.md` di alkaukabaandroid (JUnit + MockK).
@@ -174,7 +177,7 @@ Kesimpulan awal: **Rizqflow masih layak dipakai**. **Rizqly bukan cadangan yang 
 
 ## Keputusan yang masih terbuka
 
-- **Cek ketersediaan nama:** hasil awal sudah ada (lihat Cek nama). Tinggal cek manual di Play Store dan merek DJKI, serta memutuskan apakah perlu domain sendiri (rizqflow.com dipegang pihak lain; .app dan .id bebas).
+- **Domain sendiri:** rizqflow.com dipegang pihak lain; .app dan .id bebas. Landing page bisa berada di roziqrizal.com, jadi domain sendiri belum tentu perlu.
 - **Haul saat harta turun di bawah nisab di tengah tahun:** terputus lalu mulai dari nol (bawaan sementara), atau hanya diperiksa di awal dan akhir haul (pendapat lain). Keduanya sudah ada sebagai `HaulBreakPolicy`; menunggu verifikasi kitab oleh pemilik.
 - **Pengingat haul:** tetap gratis untuk satu profil atau masuk Pro.
 - **Harga final** Pro dan Sync, berdasarkan uji minat.

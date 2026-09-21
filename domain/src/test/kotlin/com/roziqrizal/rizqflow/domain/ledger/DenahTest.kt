@@ -41,6 +41,15 @@ class DenahTest {
     }
 
     @Test
+    fun `menunaikan dan menumbuhkan yang belum tercapai di bulan lalu netral bukan peringatan`() {
+        listOf(RoomKind.MENUNAIKAN, RoomKind.MENUMBUHKAN).forEach { kind ->
+            assertEquals(RoomStatus.BELUM_TERCAPAI, status(kind, 1_000_000, 400_000, monthOver = true), "$kind")
+            assertEquals(RoomStatus.BELUM_TERCAPAI, status(kind, 1_000_000, 0, monthOver = true), "$kind tanpa pemakaian")
+            assertEquals(RoomStatus.TERPENUHI, status(kind, 1_000_000, 1_000_000, monthOver = true), "$kind tepat")
+        }
+    }
+
+    @Test
     fun `menunaikan dan menumbuhkan tidak pernah perlu perhatian karena persentase`() {
         assertEquals(RoomStatus.BERJALAN, status(RoomKind.MENUNAIKAN, 1_000_000, 900_000))
         assertEquals(RoomStatus.BERJALAN, status(RoomKind.MENUMBUHKAN, 1_000_000, 850_000))
@@ -222,6 +231,9 @@ class DenahTest {
 
         val keluarga = agustus.cards.first { it.room.name == "Keluarga" }
         assertEquals(RoomStatus.TERPENUHI, keluarga.status)
+        // Memberi dan Diri tidak dipakai sama sekali di bulan itu: netral, bukan peringatan.
+        assertEquals(RoomStatus.BELUM_TERCAPAI, agustus.cards.first { it.room.name == "Memberi" }.status)
+        assertEquals(RoomStatus.BELUM_TERCAPAI, agustus.cards.first { it.room.name == "Diri" }.status)
         assertTrue(agustus.attention.isEmpty())
         // Bulan berjalan tidak ikut terhitung di bulan lalu.
         assertEquals(rupiah(1_000_000), agustus.income)
