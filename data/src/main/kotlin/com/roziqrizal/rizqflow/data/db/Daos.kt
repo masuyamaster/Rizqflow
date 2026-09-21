@@ -162,6 +162,21 @@ interface TransactionDao {
 }
 
 @Dao
+interface FavoriteDao {
+    @Query("SELECT * FROM quick_favorite ORDER BY use_count DESC, COALESCE(last_used_at, 0) DESC, name COLLATE NOCASE")
+    suspend fun all(): List<QuickFavoriteEntity>
+
+    @Query("SELECT * FROM quick_favorite WHERE id = :id")
+    suspend fun find(id: String): QuickFavoriteEntity?
+
+    @Upsert
+    suspend fun upsert(favorite: QuickFavoriteEntity)
+
+    @Query("DELETE FROM quick_favorite WHERE id = :id")
+    suspend fun delete(id: String)
+}
+
+@Dao
 interface SettingsDao {
     @Upsert
     suspend fun put(setting: AppSettingEntity)

@@ -4,6 +4,7 @@ import com.roziqrizal.rizqflow.data.db.AccountEntity
 import com.roziqrizal.rizqflow.data.db.AllocationEntryEntity
 import com.roziqrizal.rizqflow.data.db.AllocationRuleEntity
 import com.roziqrizal.rizqflow.data.db.CategoryEntity
+import com.roziqrizal.rizqflow.data.db.QuickFavoriteEntity
 import com.roziqrizal.rizqflow.data.db.RoomEntity
 import com.roziqrizal.rizqflow.data.db.TransactionEntity
 import com.roziqrizal.rizqflow.domain.allocation.AllocationRule
@@ -12,6 +13,7 @@ import com.roziqrizal.rizqflow.domain.ledger.Account
 import com.roziqrizal.rizqflow.domain.ledger.AllocationEntry
 import com.roziqrizal.rizqflow.domain.ledger.Category
 import com.roziqrizal.rizqflow.domain.ledger.MoneyTransaction
+import com.roziqrizal.rizqflow.domain.ledger.QuickFavorite
 import com.roziqrizal.rizqflow.domain.ledger.Room
 import com.roziqrizal.rizqflow.domain.model.AccountId
 import com.roziqrizal.rizqflow.domain.model.CategoryId
@@ -93,6 +95,28 @@ internal fun Category.toEntity() = CategoryEntity(
     isSystem = isSystem,
     archived = archived,
     sortOrder = sortOrder,
+)
+
+internal fun QuickFavoriteEntity.toDomain() = QuickFavorite(
+    id = id,
+    name = name,
+    amount = Money.rupiah(amount),
+    roomId = RoomId(roomId),
+    categoryId = CategoryId(categoryId),
+    accountId = AccountId(accountId),
+    useCount = useCount,
+    lastUsedAtMillis = lastUsedAt,
+)
+
+internal fun QuickFavorite.toEntity() = QuickFavoriteEntity(
+    id = id,
+    name = name,
+    amount = amount.minor,
+    roomId = roomId.value,
+    categoryId = categoryId.value,
+    accountId = accountId.value,
+    useCount = useCount,
+    lastUsedAt = lastUsedAtMillis,
 )
 
 internal fun AllocationRuleEntity.toDomain() = AllocationRule(RoomId(roomId), BasisPoints(shareBp))

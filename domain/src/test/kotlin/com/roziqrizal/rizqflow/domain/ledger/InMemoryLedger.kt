@@ -15,13 +15,14 @@ import java.time.LocalDate
  * dan hapus transaksi ikut menghapus potret alokasinya. Perilaku Room yang sebenarnya diuji
  * terpisah di :data.
  */
-class InMemoryLedger : WorkspaceRepository, AccountRepository, RoomRepository, TransactionRepository {
+class InMemoryLedger : WorkspaceRepository, AccountRepository, RoomRepository, TransactionRepository, FavoriteRepository {
     val accountRows = linkedMapOf<AccountId, Account>()
     val roomRows = linkedMapOf<RoomId, Room>()
     val categoryRows = linkedMapOf<CategoryId, Category>()
     var ruleRows: List<AllocationRule> = emptyList()
     val transactionRows = linkedMapOf<TransactionId, MoneyTransaction>()
     val entryRows = linkedMapOf<String, AllocationEntry>()
+    val favoriteRows = linkedMapOf<String, QuickFavorite>()
 
     /** Bila diisi, penyimpanan berikutnya melempar galat ini: untuk menguji atomisitas di pemanggil. */
     var failNextWrite: Throwable? = null
@@ -71,7 +72,27 @@ class InMemoryLedger : WorkspaceRepository, AccountRepository, RoomRepository, T
         return total
     }
 
+    // ---- FavoriteRepository
+    override suspend fun all(): List<QuickFavorite> =
+        favoriteRows.values.sortedWith(compareByDescending<QuickFavorite> { it.useCount }.thenByDescending { it.lastUsedAtMillis ?: 0L }.thenBy { it.name.lowercase() })
+
+    override suspend fun find(id: String): QuickFavorite? = favoriteRows[id]
+
+    override suspend fun save(favorite: QuickFavorite) {
+        maybeFail()
+        favoriteRows[favorite.id] = favorite
+    }
+
+    override suspend fun delete(id: String) {
+        favoriteRows.remove(id)
+    }
+
     // ---- RoomRepository
+    override suspend fun saveCategory(category: Category) {
+        maybeFail()
+        categoryRows[category.id] = category
+    }
+
     override suspend fun activeRooms() = roomRows.values.filter { !it.archived }.sortedBy { it.sortOrder }
 
     override suspend fun allRooms() = roomRows.values.sortedBy { it.sortOrder }

@@ -32,4 +32,5 @@ abstract class RizqflowDatabase : RoomDatabase() {
     abstract fun rooms(): RoomDao
     abstract fun transactions(): TransactionDao
     abstract fun settings(): SettingsDao
+    abstract fun favorites(): FavoriteDao
 }

@@ -3,7 +3,9 @@ package com.roziqrizal.rizqflow.workspace
 import android.content.Context
 import com.roziqrizal.rizqflow.data.LocalLedger
 import com.roziqrizal.rizqflow.domain.entitlement.PlanEntitlements
+import com.roziqrizal.rizqflow.domain.ledger.FavoriteService
 import com.roziqrizal.rizqflow.domain.ledger.LedgerService
+import com.roziqrizal.rizqflow.domain.ledger.ManagementService
 import com.roziqrizal.rizqflow.domain.ledger.RuleService
 import com.roziqrizal.rizqflow.domain.ledger.WorkspaceSetup
 import java.util.UUID
@@ -21,7 +23,10 @@ class AccountWorkspace private constructor(private val local: LocalLedger) : Aut
     val ledger = LedgerService(local.accounts, local.rooms, local.transactions, newId, System::currentTimeMillis)
 
     // Paket gratis sampai Tahap 7 menghubungkannya dengan status pembelian.
-    val rules = RuleService(local.rooms, PlanEntitlements(), newId)
+    private val entitlements = PlanEntitlements()
+    val rules = RuleService(local.rooms, entitlements, newId)
+    val management = ManagementService(local.accounts, local.rooms, entitlements, newId)
+    val favorites = FavoriteService(local.favorites, local.accounts, local.rooms, ledger, newId, System::currentTimeMillis)
 
     override fun close() = local.close()
 

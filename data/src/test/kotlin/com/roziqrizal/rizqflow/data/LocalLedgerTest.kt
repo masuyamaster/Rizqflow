@@ -12,6 +12,11 @@ import com.roziqrizal.rizqflow.domain.ledger.Account
 import com.roziqrizal.rizqflow.domain.ledger.AllocationEntry
 import com.roziqrizal.rizqflow.domain.ledger.CatatContextLoader
 import com.roziqrizal.rizqflow.domain.ledger.CatatDraft
+import com.roziqrizal.rizqflow.domain.ledger.FavoriteService
+import com.roziqrizal.rizqflow.domain.ledger.LedgerError
+import com.roziqrizal.rizqflow.domain.ledger.ManagementService
+import com.roziqrizal.rizqflow.domain.ledger.NewAccount
+import com.roziqrizal.rizqflow.domain.ledger.QuickFavorite
 import com.roziqrizal.rizqflow.domain.ledger.Category
 import com.roziqrizal.rizqflow.domain.ledger.FirstAccount
 import com.roziqrizal.rizqflow.domain.ledger.IncomeReceipt
@@ -676,5 +681,97 @@ class LocalLedgerTest {
 
         runBlocking { rules.restoreRules(asal.toRules()) }
         assertEquals(listOf(1_000, 3_000, 6_000), runBlocking { local.rooms.rules() }.map { it.share.value })
+    }
+
+    // ------------------------------------------------------------------ Favorit dan kelola akun/kategori (S13, S24)
+
+    private fun favorites() = FavoriteService(local.favorites, local.accounts, local.rooms, service, newId) { now }
+
+    private fun makeFavorite(name: String, amount: Long): QuickFavorite = runBlocking {
+        val result = favorites().create(name, rupiah(amount), room("Keluarga").id, category("Keluarga", "Lain-lain").id, account().id)
+        (result as LedgerResult.Success).value
+    }
+
+    @Test
+    fun `favorit tersimpan di Room dan urut menurut pemakaian lalu nama`() {
+        standard()
+        makeFavorite("Kopi", 15_000)
+        val parkir = makeFavorite("Parkir", 3_000)
+        makeFavorite("Bensin", 30_000)
+
+        now = 9_000
+        runBlocking { favorites().use(parkir.id, day) }
+
+        val daftar = runBlocking { local.favorites.all() }
+        assertEquals(listOf("Parkir", "Bensin", "Kopi"), daftar.map { it.name })
+        assertEquals(1, daftar.first().useCount)
+        assertEquals(9_000L, daftar.first().lastUsedAtMillis)
+        assertEquals(rupiah(3_000), daftar.first().amount)
+    }
+
+    @Test
+    fun `memakai lalu mengurungkan favorit mengembalikan saldo dan hitungan di database`() {
+        standard()
+        val kopi = makeFavorite("Kopi", 15_000)
+
+        val use = runBlocking { (favorites().use(kopi.id, day) as LedgerResult.Success).value }
+        assertEquals(rupiah(485_000), runBlocking { local.accounts.balance(account().id) })
+        assertEquals("Kopi", runBlocking { local.transactions.find(use.transaction.id) }?.note)
+
+        runBlocking { favorites().undoUse(use) }
+
+        assertEquals(rupiah(500_000), runBlocking { local.accounts.balance(account().id) })
+        assertNull(runBlocking { local.transactions.find(use.transaction.id) })
+        assertEquals(0, runBlocking { local.favorites.find(kopi.id) }?.useCount)
+    }
+
+    @Test
+    fun `arsip ruang tidak menghapus favorit tetapi menandainya tidak bisa dipakai`() {
+        standard()
+        val kopi = makeFavorite("Kopi", 15_000)
+
+        runBlocking { rules.archiveRoom(room("Keluarga").id) }
+
+        val baris = runBlocking { favorites().list() }.single()
+        assertEquals(kopi.id, baris.favorite.id)
+        assertTrue(!baris.usable)
+        runBlocking { favorites().delete(kopi.id) }
+        assertNull(runBlocking { local.favorites.find(kopi.id) })
+    }
+
+    @Test
+    fun `kelola kategori di Room menyimpan tambah ubah nama dan arsip`() {
+        standard()
+        val management = ManagementService(local.accounts, local.rooms, PlanEntitlements(), newId)
+        val keluarga = room("Keluarga").id
+
+        val baru = runBlocking { (management.addCategory(keluarga, "Transportasi") as LedgerResult.Success).value }
+        runBlocking { management.renameCategory(baru, "Ojek") }
+        runBlocking { management.archiveCategory(category("Keluarga", "Sekolah").id) }
+
+        val aktif = runBlocking { local.rooms.categories(keluarga) }.map { it.name }
+        assertTrue("Ojek" in aktif)
+        assertTrue("Sekolah" !in aktif)
+        val semua = runBlocking { local.rooms.allCategories() }.filter { it.roomId == keluarga }
+        assertTrue(semua.any { it.name == "Sekolah" && it.archived })
+    }
+
+    @Test
+    fun `kelola akun di Room menghitung saldo dan membatasi tiga akun aktif`() {
+        standard()
+        income(1_000_000)
+        val management = ManagementService(local.accounts, local.rooms, PlanEntitlements(), newId)
+        runBlocking { management.addAccount(NewAccount("Bank", AccountKind.BANK, rupiah(250_000))) }
+        runBlocking { management.addAccount(NewAccount("GoPay", AccountKind.EWALLET, rupiah(0))) }
+
+        val hasil = runBlocking { management.addAccount(NewAccount("Cadangan", AccountKind.CASH, rupiah(0))) }
+        assertEquals(LedgerError.ACCOUNT_LIMIT_REACHED, (hasil as LedgerResult.Failure).error)
+
+        val overview = runBlocking { management.accountOverview() }
+        assertEquals(listOf("Dompet", "Bank", "GoPay"), overview.active.map { it.account.name })
+        assertEquals(listOf(1_500_000L, 250_000L, 0L), overview.active.map { it.balance.minor })
+
+        runBlocking { management.archiveAccount(overview.active[1].account.id) }
+        assertEquals(listOf("Bank"), runBlocking { management.accountOverview() }.archived.map { it.account.name })
     }
 }

@@ -65,6 +65,9 @@ interface RoomRepository {
 
     suspend fun findCategory(id: CategoryId): Category?
 
+    /** Menyimpan satu kategori (baru, diganti nama, atau diarsipkan). */
+    suspend fun saveCategory(category: Category)
+
     /** Menambah ruang beserta kategori awalnya (atomik). */
     suspend fun addRoom(room: Room, categories: List<Category>)
 

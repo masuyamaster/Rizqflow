@@ -7,6 +7,8 @@ import com.roziqrizal.rizqflow.domain.ledger.Account
 import com.roziqrizal.rizqflow.domain.ledger.AccountRepository
 import com.roziqrizal.rizqflow.domain.ledger.AllocationEntry
 import com.roziqrizal.rizqflow.domain.ledger.Category
+import com.roziqrizal.rizqflow.domain.ledger.FavoriteRepository
+import com.roziqrizal.rizqflow.domain.ledger.QuickFavorite
 import com.roziqrizal.rizqflow.domain.ledger.MoneyTransaction
 import com.roziqrizal.rizqflow.domain.ledger.Room
 import com.roziqrizal.rizqflow.domain.ledger.RoomRepository
@@ -56,6 +58,16 @@ class LocalAccountRepository(private val db: RizqflowDatabase) : AccountReposito
     }
 }
 
+class LocalFavoriteRepository(private val db: RizqflowDatabase) : FavoriteRepository {
+    override suspend fun all(): List<QuickFavorite> = db.favorites().all().map { it.toDomain() }
+
+    override suspend fun find(id: String): QuickFavorite? = db.favorites().find(id)?.toDomain()
+
+    override suspend fun save(favorite: QuickFavorite) = db.favorites().upsert(favorite.toEntity())
+
+    override suspend fun delete(id: String) = db.favorites().delete(id)
+}
+
 class LocalRoomRepository(private val db: RizqflowDatabase) : RoomRepository {
     override suspend fun activeRooms(): List<Room> = db.rooms().active().map { it.toDomain() }
 
@@ -70,6 +82,8 @@ class LocalRoomRepository(private val db: RizqflowDatabase) : RoomRepository {
     override suspend fun categories(roomId: RoomId): List<Category> = db.rooms().categories(roomId.value).map { it.toDomain() }
 
     override suspend fun findCategory(id: CategoryId): Category? = db.rooms().findCategory(id.value)?.toDomain()
+
+    override suspend fun saveCategory(category: Category) = db.rooms().upsertCategory(category.toEntity())
 
     override suspend fun addRoom(room: Room, categories: List<Category>) {
         db.withTransaction {

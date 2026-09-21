@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.roziqrizal.rizqflow.data.db.RizqflowDatabase
 import com.roziqrizal.rizqflow.data.repo.LocalAccountRepository
+import com.roziqrizal.rizqflow.data.repo.LocalFavoriteRepository
 import com.roziqrizal.rizqflow.data.repo.LocalRoomRepository
 import com.roziqrizal.rizqflow.data.repo.LocalTransactionRepository
 import com.roziqrizal.rizqflow.data.repo.LocalWorkspaceRepository
@@ -19,6 +20,7 @@ class LocalLedger(val db: RizqflowDatabase) : AutoCloseable {
     val accounts = LocalAccountRepository(db)
     val rooms = LocalRoomRepository(db)
     val transactions = LocalTransactionRepository(db)
+    val favorites = LocalFavoriteRepository(db)
 
     override fun close() = db.close()
 
