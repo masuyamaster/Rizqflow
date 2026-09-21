@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -56,7 +57,10 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import com.roziqrizal.rizqflow.R
+import com.roziqrizal.rizqflow.domain.allocation.AllocationEngine
 import com.roziqrizal.rizqflow.domain.allocation.AllocationResult
+import com.roziqrizal.rizqflow.domain.allocation.AllocationRule
+import com.roziqrizal.rizqflow.domain.ledger.AllocationEntry
 import com.roziqrizal.rizqflow.domain.ledger.BudgetWarning
 import com.roziqrizal.rizqflow.domain.ledger.CatatContext
 import com.roziqrizal.rizqflow.domain.ledger.CatatContextLoader
@@ -67,6 +71,7 @@ import com.roziqrizal.rizqflow.domain.ledger.INCOME_SOURCES
 import com.roziqrizal.rizqflow.domain.ledger.LedgerError
 import com.roziqrizal.rizqflow.domain.ledger.LedgerResult
 import com.roziqrizal.rizqflow.domain.ledger.OneTimeSplit
+import com.roziqrizal.rizqflow.domain.ledger.TransactionSnapshot
 import com.roziqrizal.rizqflow.domain.model.AccountId
 import com.roziqrizal.rizqflow.domain.model.CategoryId
 import com.roziqrizal.rizqflow.domain.model.RoomId
@@ -75,6 +80,7 @@ import com.roziqrizal.rizqflow.domain.model.TransactionKind
 import com.roziqrizal.rizqflow.domain.money.Money
 import com.roziqrizal.rizqflow.ui.RizqflowIcons
 import com.roziqrizal.rizqflow.ui.formatDate
+import com.roziqrizal.rizqflow.ui.formatPercent
 import com.roziqrizal.rizqflow.ui.formatRupiah
 import com.roziqrizal.rizqflow.ui.onboarding.AmountKeypad
 import com.roziqrizal.rizqflow.ui.theme.CaslonFamily
@@ -88,8 +94,12 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
 
-/** Yang baru saja tersimpan: cukup untuk menyusun pesan dan mengurungkannya. [roomCount]: jumlah ruang yang menerima alirannya. */
-data class SavedInfo(val id: TransactionId, val kind: TransactionKind, val amount: Money, val roomCount: Int)
+/**
+ * Yang baru saja tersimpan: cukup untuk menyusun pesan dan mengurungkannya. [roomCount]: jumlah ruang
+ * yang menerima alirannya. [previous] tidak null bila ini perubahan (bukan catatan baru): keadaan sebelumnya,
+ * yang dipulihkan oleh Urungkan.
+ */
+data class SavedInfo(val id: TransactionId, val kind: TransactionKind, val amount: Money, val roomCount: Int, val previous: TransactionSnapshot? = null)
 
 /** Hasil pratinjau S07 yang sedang dilihat pengguna. [split] tidak null berarti "Ubah sekali ini" aktif. */
 private data class Review(val allocation: AllocationResult, val split: OneTimeSplit?)
@@ -105,12 +115,22 @@ fun CatatFlow(
     workspace: AccountWorkspace,
     onClose: () -> Unit,
     onSaved: (SavedInfo) -> Unit,
+    /** Bila diisi, layar ini menjadi Detail transaksi (S09): kolom terisi dari transaksi itu, tanpa tab dan tanpa pratinjau. */
+    editing: TransactionId? = null,
+    onDeleted: (TransactionSnapshot) -> Unit = {},
 ) {
     val today = remember { LocalDate.now() }
     var loaded by remember { mutableStateOf<CatatContext?>(null) }
-    LaunchedEffect(workspace) {
+    var existing by remember { mutableStateOf<TransactionSnapshot?>(null) }
+    LaunchedEffect(workspace, editing) {
         val repos = workspace.repositories
-        loaded = CatatContextLoader(repos.accounts, repos.rooms, repos.transactions).load()
+        val snapshot = editing?.let { workspace.ledger.snapshotOf(it) }
+        if (editing != null && snapshot == null) {
+            onClose() // sudah dihapus di tempat lain
+            return@LaunchedEffect
+        }
+        existing = snapshot
+        loaded = CatatContextLoader(repos.accounts, repos.rooms, repos.transactions).load(snapshot?.transaction)
     }
     val context = loaded
     if (context == null) {
@@ -118,7 +138,10 @@ fun CatatFlow(
         return
     }
 
-    var draft by rememberSaveable(stateSaver = DraftSaver) { mutableStateOf(CatatDraft.start(context, today)) }
+    var draft by rememberSaveable(stateSaver = DraftSaver) {
+        mutableStateOf(existing?.let { CatatDraft.from(it.transaction) } ?: CatatDraft.start(context, today))
+    }
+    var confirmingDelete by remember { mutableStateOf(false) }
     var review by remember { mutableStateOf<Review?>(null) }
     var busy by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<LedgerError?>(null) }
@@ -130,7 +153,7 @@ fun CatatFlow(
     LaunchedEffect(draft.mode, draft.roomId, draft.amount, draft.date) {
         val room = draft.roomId
         warning = if (draft.mode == CatatMode.EXPENSE && draft.amount.isPositive && room != null) {
-            workspace.ledger.budgetWarning(room, draft.amount, draft.date)
+            workspace.ledger.budgetWarning(room, draft.amount, draft.date, excluding = editing)
         } else {
             null
         }
@@ -195,6 +218,38 @@ fun CatatFlow(
         }
     }
 
+    fun saveEdit() {
+        val id = editing ?: return
+        if (busy || draft.issue(context) != null) return
+        busy = true
+        error = null
+        scope.launch {
+            val result = workspace.ledger.updateTransaction(id, draft)
+            busy = false
+            when (result) {
+                is LedgerResult.Success -> {
+                    val previous = result.value
+                    onSaved(SavedInfo(id, previous.transaction.kind, draft.amount, 0, previous))
+                    onClose()
+                }
+
+                is LedgerResult.Failure -> error = result.error
+            }
+        }
+    }
+
+    fun deleteIt() {
+        val snapshot = existing ?: return
+        if (busy) return
+        busy = true
+        scope.launch {
+            workspace.ledger.delete(snapshot.transaction.id)
+            busy = false
+            onDeleted(snapshot)
+            onClose()
+        }
+    }
+
     val shown = review
     if (shown != null) {
         ReviewScreen(
@@ -234,12 +289,28 @@ fun CatatFlow(
                 IconButton(onClick = onClose, enabled = !busy) {
                     Icon(RizqflowIcons.Tutup, contentDescription = stringResource(R.string.catat_close))
                 }
-                Text(stringResource(R.string.catat_title), style = MaterialTheme.typography.titleLarge)
+                Text(stringResource(if (editing != null) R.string.detail_title else R.string.catat_title), style = MaterialTheme.typography.titleLarge)
             }
 
-            ModeTabs(draft.mode, canTransfer = context.canTransfer, onMode = { change(draft.withMode(it, context)) })
-            if (!context.canTransfer && draft.mode == CatatMode.TRANSFER) {
-                Hint(stringResource(R.string.catat_transfer_needs_two))
+            if (editing == null) {
+                ModeTabs(draft.mode, canTransfer = context.canTransfer, onMode = { change(draft.withMode(it, context)) })
+                if (!context.canTransfer && draft.mode == CatatMode.TRANSFER) {
+                    Hint(stringResource(R.string.catat_transfer_needs_two))
+                }
+            } else {
+                // Jenis transaksi tidak bisa diganti; hanya ditampilkan.
+                Text(
+                    stringResource(
+                        when (draft.mode) {
+                            CatatMode.INCOME -> R.string.catat_tab_income
+                            CatatMode.EXPENSE -> R.string.catat_tab_expense
+                            CatatMode.TRANSFER -> R.string.catat_tab_transfer
+                        },
+                    ),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(start = spacing.s3),
+                )
             }
 
             // Nominal besar: satu-satunya hal yang paling penting di layar ini.
@@ -262,7 +333,7 @@ fun CatatFlow(
                 CatatMode.INCOME -> {
                     FieldLabel(R.string.catat_source)
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(spacing.s2)) {
-                        INCOME_SOURCES.forEach { source ->
+                        (INCOME_SOURCES + listOfNotNull(draft.source?.takeIf { it.isNotBlank() && it !in INCOME_SOURCES })).forEach { source ->
                             FilterChip(
                                 selected = draft.source == source,
                                 onClick = { change(draft.withSource(source)) },
@@ -327,6 +398,9 @@ fun CatatFlow(
                 modifier = Modifier.fillMaxWidth().padding(top = spacing.s3),
             )
 
+            if (editing != null && draft.mode == CatatMode.INCOME) {
+                existing?.let { AllocationSnapshotSection(context, it.entries, draft.amount) }
+            }
         }
 
         Column(modifier = Modifier.padding(horizontal = spacing.s5).padding(top = spacing.s2, bottom = spacing.s3)) {
@@ -334,7 +408,16 @@ fun CatatFlow(
             if (!imeVisible) AmountKeypad(enabled = !busy, onKey = { change(draft.pressKey(it)) })
 
             val canSave = issue == null && !busy
-            when (draft.mode) {
+            if (editing != null) {
+                Button(
+                    onClick = ::saveEdit,
+                    enabled = canSave,
+                    modifier = Modifier.padding(top = spacing.s3).fillMaxWidth().height(52.dp),
+                ) { Text(stringResource(R.string.catat_save)) }
+                TextButton(onClick = { confirmingDelete = true }, enabled = !busy, modifier = Modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.detail_delete), color = MaterialTheme.colorScheme.error)
+                }
+            } else when (draft.mode) {
                 CatatMode.INCOME -> Button(
                     onClick = ::openReview,
                     enabled = canSave,
@@ -361,6 +444,21 @@ fun CatatFlow(
                 ) { Text(stringResource(R.string.catat_save)) }
             }
         }
+    }
+
+    if (confirmingDelete) {
+        AlertDialog(
+            onDismissRequest = { confirmingDelete = false },
+            title = { Text(stringResource(R.string.detail_delete_title)) },
+            text = { Text(stringResource(R.string.detail_delete_body)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmingDelete = false
+                    deleteIt()
+                }) { Text(stringResource(R.string.detail_delete_confirm), color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = { TextButton(onClick = { confirmingDelete = false }) { Text(stringResource(R.string.catat_date_cancel)) } },
+        )
     }
 
     if (pickingDate) {
@@ -509,3 +607,37 @@ private val DraftSaver = Saver<CatatDraft, List<String>>(
         )
     },
 )
+
+/**
+ * "Dialirkan saat itu" di Detail pemasukan: persentase dari potret saat pemasukan dicatat, dengan jumlah
+ * yang mengikuti nominal yang sedang diisi. Ruang dan persentasenya tidak bisa diubah dari sini.
+ */
+@Composable
+private fun AllocationSnapshotSection(context: CatatContext, entries: List<AllocationEntry>, amount: Money) {
+    if (entries.isEmpty()) return
+    val spacing = MaterialTheme.spacing
+    val allocation = if (amount.isPositive) {
+        AllocationEngine.allocate(amount, entries.map { AllocationRule(it.roomId, it.share) })
+    } else {
+        null
+    }
+    FieldLabel(R.string.detail_allocated)
+    entries.forEachIndexed { i, entry ->
+        val room = context.rooms.firstOrNull { it.id == entry.roomId }
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = spacing.s1),
+            horizontalArrangement = Arrangement.spacedBy(spacing.s3),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(room?.name.orEmpty(), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+            Text(formatPercent(entry.share.value), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(formatRupiah(allocation?.shares?.getOrNull(i)?.amount ?: entry.amount), style = MaterialTheme.typography.titleSmall)
+        }
+    }
+    Text(
+        stringResource(R.string.detail_allocated_note),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(top = spacing.s1),
+    )
+}

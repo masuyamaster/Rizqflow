@@ -158,4 +158,41 @@
     <string name="saved_income_none">%1$s tersimpan, belum dialirkan</string>
     <string name="saved_expense">Pengeluaran %1$s tersimpan</string>
     <string name="saved_transfer">Transfer %1$s tersimpan</string>
+
+    <!-- Daftar transaksi S08 dan Detail S09 -->
+    <string name="tx_title">Transaksi</string>
+    <string name="tx_search">Cari catatan atau nominal</string>
+    <string name="tx_month_prev">Bulan sebelumnya</string>
+    <string name="tx_month_next">Bulan berikutnya</string>
+    <string name="tx_filter_all">Semua</string>
+    <string name="tx_filter_income">Masuk</string>
+    <string name="tx_filter_expense">Keluar</string>
+    <string name="tx_filter_transfer">Transfer</string>
+    <string name="tx_filter_open">Saring transaksi</string>
+    <string name="tx_filter_title">Saring transaksi</string>
+    <string name="tx_filter_account">Akun</string>
+    <string name="tx_filter_room">Ruang</string>
+    <string name="tx_filter_category">Kategori</string>
+    <string name="tx_filter_clear">Hapus saringan</string>
+    <string name="tx_filter_done">Selesai</string>
+    <string name="tx_filter_remove">Lepas saringan</string>
+    <string name="tx_active_account">Akun: %1$s</string>
+    <string name="tx_active_room">Ruang: %1$s</string>
+    <string name="tx_active_category">Kategori: %1$s</string>
+    <string name="tx_empty">Belum ada transaksi. Rezeki dan pengeluaran yang kamu catat akan muncul di sini.</string>
+    <string name="tx_no_match">Tidak ada yang cocok dengan pencarianmu.</string>
+    <string name="tx_income_default">Pemasukan</string>
+    <string name="tx_expense_default">Pengeluaran</string>
+    <string name="tx_transfer_default">Transfer</string>
+    <string name="tx_sub_allocated">dialirkan ke %1$d ruang</string>
+    <string name="tx_sub_unallocated">belum dialirkan</string>
+    <string name="detail_title">Detail transaksi</string>
+    <string name="detail_allocated">Dialirkan saat itu</string>
+    <string name="detail_allocated_note">Persentase saat pemasukan dicatat; mengubah aturan alokasi tidak mengubah ini.</string>
+    <string name="detail_delete">Hapus transaksi</string>
+    <string name="detail_delete_title">Hapus transaksi ini?</string>
+    <string name="detail_delete_body">Transaksi ini dihapus dari catatan. Kamu bisa mengurungkannya sebentar setelah ini.</string>
+    <string name="detail_delete_confirm">Hapus</string>
+    <string name="saved_edit">Perubahan tersimpan</string>
+    <string name="deleted">Transaksi dihapus</string>
 </resources>

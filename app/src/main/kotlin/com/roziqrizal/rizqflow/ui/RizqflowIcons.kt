@@ -62,6 +62,18 @@ object RizqflowIcons {
 
     val Tutup: ImageVector = strokeIcon("Tutup", "M6 6l12 12M18 6L6 18")
 
+    val PanahKiri: ImageVector = strokeIcon("PanahKiri", "m15 5-7 7 7 7")
+
+    val PanahKanan: ImageVector = strokeIcon("PanahKanan", "m9 5 7 7-7 7")
+
+    val PanahAtas: ImageVector = strokeIcon("PanahAtas", "M12 19V5", "M6 11l6-6 6 6")
+
+    val Transfer: ImageVector = strokeIcon("Transfer", "M4 8h14", "M14 4l4 4-4 4", "M20 16H6", "M10 12l-4 4 4 4")
+
+    val Cari: ImageVector = strokeIcon("Cari", "M11 4a7 7 0 1 0 0 14a7 7 0 1 0 0-14z", "M20 20l-4-4")
+
+    val Saring: ImageVector = strokeIcon("Saring", "M4 5h16l-6.5 8v5.5l-3-1.5V13z")
+
     // Ikon ruang dan status, sama dengan prototipe HTML.
     val Hati: ImageVector = strokeIcon(
         "Hati",

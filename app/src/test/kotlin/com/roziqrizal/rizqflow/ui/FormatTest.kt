@@ -2,6 +2,7 @@ package com.roziqrizal.rizqflow.ui
 
 import com.roziqrizal.rizqflow.domain.money.Money
 import java.time.LocalDate
+import java.time.YearMonth
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -68,6 +69,14 @@ class FormatTest {
     fun `kemarin dikenali juga saat melewati batas bulan dan tahun`() {
         assertEquals("Kemarin", formatDate(LocalDate.of(2026, 8, 31), LocalDate.of(2026, 9, 1)))
         assertEquals("Kemarin", formatDate(LocalDate.of(2025, 12, 31), LocalDate.of(2026, 1, 1)))
+    }
+
+    @Test
+    fun `bulan untuk navigator memakai singkatan Indonesia`() {
+        assertEquals("Sep 2026", formatMonth(YearMonth.of(2026, 9)))
+        assertEquals("Jan 2027", formatMonth(YearMonth.of(2027, 1)))
+        assertEquals("Agu 2026", formatMonth(YearMonth.of(2026, 8)))
+        assertEquals("Des 2025", formatMonth(YearMonth.of(2025, 12)))
     }
 
     @Test

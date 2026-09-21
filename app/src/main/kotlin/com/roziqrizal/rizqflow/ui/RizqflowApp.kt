@@ -73,6 +73,7 @@ fun RizqflowApp(
     onSignOut: () -> Unit = {},
     onDismissNotice: () -> Unit = {},
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+    transaksiContent: (@Composable () -> Unit)? = null,
 ) {
     val nav = rememberNavController()
     val backStack by nav.currentBackStackEntryAsState()
@@ -129,6 +130,8 @@ fun RizqflowApp(
                 composable(tab.route) {
                     if (tab == TopTab.Lainnya && account != null) {
                         LainnyaScreen(account, onConnectGmail, onSignOut, onDismissNotice)
+                    } else if (tab == TopTab.Transaksi && transaksiContent != null) {
+                        transaksiContent()
                     } else {
                         PlaceholderScreen(title = stringResource(tab.label), note = stringResource(tab.placeholder))
                     }

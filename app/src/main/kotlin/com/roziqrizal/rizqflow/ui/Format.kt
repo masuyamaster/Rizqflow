@@ -2,6 +2,7 @@ package com.roziqrizal.rizqflow.ui
 
 import com.roziqrizal.rizqflow.domain.money.Money
 import java.time.LocalDate
+import java.time.YearMonth
 
 /** Rupiah dengan pemisah ribuan titik dan spasi tak terputus setelah "Rp", misalnya `Rp 1.234.567`. */
 fun formatRupiah(rupiah: Long): String {
@@ -20,6 +21,9 @@ fun formatDate(date: LocalDate, today: LocalDate): String = when (date) {
     today.minusDays(1) -> "Kemarin"
     else -> "${date.dayOfMonth} ${MONTHS[date.monthValue - 1]} ${date.year}"
 }
+
+/** Bulan untuk navigator S08: "Sep 2026". */
+fun formatMonth(month: YearMonth): String = "${MONTHS[month.monthValue - 1]} ${month.year}"
 
 /** Persen dari basis point: "10%" untuk kelipatan 1%, dan "2,5%" untuk pecahan. */
 fun formatPercent(basisPoints: Int): String {
