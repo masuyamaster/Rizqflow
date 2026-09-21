@@ -9,6 +9,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -72,6 +73,12 @@ fun RizqflowApp(onCatat: () -> Unit = {}) {
                             // Label sudah menjelaskan ikon, jadi ikon tidak perlu deskripsi sendiri.
                             icon = { Icon(tab.icon, contentDescription = null) },
                             label = { Text(stringResource(tab.label)) },
+                            // Penanda tab aktif hijau seperti prototipe, bukan biru bawaan secondaryContainer.
+                            colors = NavigationBarItemDefaults.colors(
+                                indicatorColor = MaterialTheme.colorScheme.primaryFixed,
+                                selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                                selectedTextColor = MaterialTheme.colorScheme.onSurface,
+                            ),
                         )
                     }
                 }
@@ -83,6 +90,9 @@ fun RizqflowApp(onCatat: () -> Unit = {}) {
                     onClick = onCatat,
                     icon = { Icon(RizqflowIcons.Tambah, contentDescription = null) },
                     text = { Text(stringResource(R.string.action_catat)) },
+                    // Hijau tua dengan teks putih seperti prototipe (bawaan Material memakai primaryContainer).
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
                 )
             }
         },
