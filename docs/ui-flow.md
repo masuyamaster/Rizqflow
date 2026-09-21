@@ -77,6 +77,8 @@ T -.-> F
 | S26 | Pengingat harian | Jam dan nada pengingat malam | 6 |
 | S27 | Draf dari notifikasi | Setujui, ubah, atau abaikan draf transaksi | v1.1 |
 | S28 | Tangkap otomatis | Penjelasan izin, aplikasi yang didukung, pemetaan ke akun (Pro) | v1.1 |
+| S29 | Splash | Layar pembuka; menahan sampai riwayat masuk terbaca | 3 |
+| S30 | Masuk | Google connect dan Gmail (opsional); menggantikan S01 Sambutan | 3 |
 
 ## Wireframe layar kunci
 
@@ -351,7 +353,9 @@ Fitur v1.1 (Pro), dibuka dari S18 Lainnya.
 
 ```mermaid
 flowchart LR
-A["S01 Sambutan"] --> B["S02 Pilih pola ruang"]
+P["S29 Splash"] --> L["S30 Masuk"]
+P -->|"Sudah punya riwayat masuk"| M["S05 Denah"]
+L -->|"Baru masuk, belum ada data"| B["S02 Pilih pola ruang"]
 B --> C["S03 Atur persentase"]
 C --> D["S04 Tambah akun pertama"]
 D --> E["S05 Denah kosong"]
@@ -359,7 +363,8 @@ E --> F["Catat rezeki pertama"]
 E --> G["Coba data contoh"]
 ```
 
-- S01: tagline dan satu tombol Mulai, tanpa slide berlapis. Tautan teks **Pulihkan dari cadangan** untuk yang pindah ponsel (menuju F7).
+- S29 Splash lalu S30 Masuk (2026-09-21): splash menahan sampai riwayat masuk terbaca; tanpa riwayat tampil S30, dengan riwayat langsung ke Denah. S30 berisi tagline, tiga jaminan, tombol **Lanjutkan dengan Google**, dan tombol **Hubungkan Gmail** (opsional, izin baca). Kegagalan tampil sebagai pesan lembut, tidak memblokir. **S30 menggantikan S01**; teks S01 di bawah dipertahankan sebagai riwayat.
+- S01 (digantikan S30): tagline dan satu tombol Mulai, tanpa slide berlapis. Tautan teks **Pulihkan dari cadangan** untuk yang pindah ponsel (menuju F7).
 - S02: kartu **Tiga hak** (Memberi, Diri, Keluarga) atau **Mulai kosong**; **Mulai kosong** sekaligus cara melewati langkah ini (S03 dilewati), dan pilihan bisa diubah nanti. Layar S02 sampai S04 menampilkan penghitung langkah.
 - S03: slider dengan total selalu 100%: ruang terakhir menerima sisanya dan tidak punya slider; tampilkan hasil untuk contoh Rp 1.000.000 supaya konkret.
 - S04: jenis akun (tunai, bank, dompet digital), nama akun (wajib), dan saldo awal (boleh nol). Saldo awal **bukan rezeki**: tidak masuk "Rezeki bulan ini" dan tidak dialirkan ke ruang.

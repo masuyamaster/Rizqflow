@@ -48,7 +48,7 @@ Masuk:
 Sengaja tidak masuk (agar tidak melebar):
 - Sinkronisasi rekening bank
 - Fitur investasi lengkap / portofolio saham
-- Akun pengguna dan sinkronisasi server (baru di fase 2, sebagai langganan Sync)
+- Sinkronisasi server (baru di fase 2, sebagai langganan Sync). Masuk dengan akun Google sudah ada sejak 2026-09-21 tetapi hanya identitas lokal, tanpa server ([auth-google.md](auth-google.md))
 
 ## Disiplin mencatat
 
@@ -117,6 +117,8 @@ Semua nominal disimpan sebagai **bilangan bulat dalam satuan terkecil** (value o
 
 ## Risiko
 
+- **Izin baca Gmail (restricted scope)** bisa menunda rilis: Google mewajibkan verifikasi OAuth dan penilaian keamanan tahunan untuk pengguna publik. Saran: rilis pertama tanpa tombol Gmail. Rincian di [auth-google.md](auth-google.md).
+
 - **Cakupan melebar.** Jaga MVP tetap sempit.
 - **Perbedaan pendapat fikih** soal nisab dan haul. Tulis asumsi yang dipakai secara eksplisit, atau sediakan pilihan.
 - **Data sensitif.** Simpan lokal, jangan kirim ke mana pun tanpa alasan kuat.
@@ -153,6 +155,7 @@ Kesimpulan awal: **Rizqflow masih layak dipakai**. **Rizqly bukan cadangan yang 
 - **Tangkap otomatis dari notifikasi** disetujui: dikerjakan di versi 1.1 setelah rilis, dan masuk **Pro** (2026-09-20).
 - **Asumsi fikih default zakat mal** (2026-09-20): nisab 85 gram emas, tarif 2,5%, haul 1 tahun Hijriyah. Ini **default sementara**: pemilik akan memverifikasinya dengan rujukan kitab, dan bila ada perubahan cukup mengganti konstanta di modul domain. Tetap ditampilkan di layar beserta disclaimer.
 - **Aturan pembulatan alokasi: metode sisa terbesar** (2026-09-21). Tiap ruang menerima bagian yang dibulatkan ke bawah; sisa rupiah dibagikan satu-satu ke ruang dengan pecahan terbesar, dan urutan prioritas ruang memutus seri. Jumlah bagian selalu persis nominal (contoh: Rp 1.234.567 dengan 10/50/40% menjadi 123.457, 617.283, 493.827). Persentase disimpan sebagai basis point supaya 2,5% tetap eksak. Sudah diimplementasikan dan diuji di `AllocationEngine`.
+- **Masuk dengan Google dan Gmail** (2026-09-21, permintaan pemilik): aplikasi dibuka dengan splash, lalu halaman masuk; yang sudah punya riwayat masuk langsung ke menu utama. **Ini mengubah keputusan "tanpa akun".** Identitas hanya lokal (tidak ada server Rizqflow, tidak ada token yang disimpan); data keuangan tetap di ponsel. Izin baca Gmail diminta opsional dan aplikasi belum membaca email. Langkah penyiapan Google Cloud dan risiko (cakupan Gmail "restricted" butuh verifikasi dan penilaian keamanan untuk rilis publik) ada di [auth-google.md](auth-google.md).
 - **Kalender Hijriyah untuk haul: Umm al-Qura** (2026-09-21), lewat `HijrahChronology` bawaan Java di balik antarmuka `HijriCalendar`. Berbasis tabel, deterministik, dan tanpa internet. Bisa berbeda satu hari dari penetapan Kemenag, jadi tanggal Hijriyah tampil sebagai perkiraan; kalender lain (Kemenag, hisab Al-Kaukaba) tinggal menukar implementasi.
 - **Arti "terpenuhi" per tipe ruang** dikonfirmasi (2026-09-20): Menunaikan dan Menumbuhkan terpenuhi saat penggunaan mencapai jatah; Mencukupi masuk Perlu perhatian pada pemakaian 85% jatah atau lebih.
 - **Sumber harga emas** (2026-09-20): versi gratis memakai input manual; harga otomatis lewat API masuk Pro. Riset sumber API dilakukan di Tahap 7.

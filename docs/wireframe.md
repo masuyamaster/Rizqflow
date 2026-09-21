@@ -34,6 +34,7 @@ Wireframe teks untuk **semua** layar S01–S28 (kecuali yang sudah ada di [ui-fl
 | S25 | Koreksi saldo | [ui-flow.md](ui-flow.md) | Ada |
 | S26 | Pengingat harian | Di sini | Ada |
 | S27–S28 | Draf, Tangkap otomatis (v1.1) | Di sini | Ada |
+| S29–S30 | Splash, Masuk (menggantikan S01) | Di sini | Ada (`?screen=splash`) |
 
 ## S01 Sambutan
 
@@ -909,6 +910,63 @@ Notifikasi malam (di luar aplikasi):
 - Penjelasan tampil sebelum izin diminta. Android tidak memakai dialog biasa untuk akses notifikasi: tombol membuka pengaturan sistem, dan aplikasi memeriksa hasilnya saat kembali.
 - Pengguna gratis yang membuka layar ini melihat S21 dengan manfaat "Catat pembayaran digital otomatis". Akses dicabut: draf dan transaksi yang ada tetap, tanpa peringatan mendesak.
 - Daftar aplikasi diperluas bertahap; notifikasi dari aplikasi lain diabaikan dan tidak dibaca lebih jauh.
+
+## S29 Splash
+
+```
++--------------------------------+
+|                                |
+|                                |
+|                                |
+|                                |
+|         +------------+         |
+|         | [#][##][###]|        |
+|         +------------+         |
+|                                |
+|                                |
+|                                |
+|                                |
++--------------------------------+
+```
+
+- Splash sistem Android: ikon aplikasi di tengah, latar warna token. Tanpa teks dan tanpa tombol.
+- Tetap tampil sampai riwayat masuk terbaca (sekejap), supaya halaman masuk tidak berkedip bagi yang sudah punya riwayat.
+
+## S30 Masuk
+
+```
++--------------------------------+
+|                                |
+|         (h)  (s)  (r)          |
+|                                |
+|            Rizqflow            |
+|  Rezeki mengalir, setiap hak   |
+|  terpenuhi.                    |
+|                                |
+|  v Datamu tetap di ponselmu,   |
+|    tidak dikirim ke server     |
+|  v Jalan tanpa internet        |
+|    setelah masuk               |
+|  v Tanpa iklan                 |
+|                                |
+| [  Lanjutkan dengan Google   ] |
+| [     Hubungkan Gmail        ] |
+| Opsional. Izin baca Gmail.     |
+| Belum membaca email apa pun.   |
+|                                |
+| +----------------------------+ |
+| | ! Masuk dengan Google belum| |
+| |   disiapkan di versi ini.  | |
+| +----------------------------+ |
+|      Masuk uji (debug saja)    |
++--------------------------------+
+```
+
+- Satu tindakan utama (Google). **Hubungkan Gmail** meminta masuk dan izin baca sekaligus; bisa dilewati dan dihubungkan belakangan dari Lainnya.
+- Pesan lembut, bukan merah, dibacakan pembaca layar: belum disiapkan, gagal masuk, izin Gmail ditolak. Menutup dialog akun tidak menampilkan pesan.
+- Selama proses berjalan kedua tombol nonaktif dan tombol yang ditekan menampilkan indikator.
+- **Masuk uji** hanya ada di build debug.
+- Bagian Akun di **Lainnya**: nama, email, status Gmail, Hubungkan Gmail bila belum, dan **Keluar** (menghapus riwayat masuk saja, data keuangan tidak disentuh).
 
 ## Keadaan yang berlaku di semua layar
 

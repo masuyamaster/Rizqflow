@@ -81,7 +81,8 @@ Logika bisnis yang benar dan teruji sebelum ada layar.
 ## Tahap 3 — Layar inti: onboarding, catat, transaksi (In Progress)
 
 - [x] Tema Compose dari design tokens (warna terang dan gelap, font Manrope dan Libre Caslon Text, warna ruang dan status) dan kerangka navigasi (bottom nav empat tab, tombol Catat) (2026-09-21)
-- [ ] Onboarding (S01–S04)
+- [x] Splash dan halaman masuk dengan Google dan Gmail (S29, S30), riwayat masuk, dan ikon aplikasi (2026-09-21); tombol Google butuh client ID dari Google Cloud milik pemilik ([auth-google.md](auth-google.md))
+- [ ] Onboarding (S01–S04; S01 digantikan S30)
 - [ ] Catat transaksi (S06)
 - [ ] Pratinjau alokasi (S07)
 - [ ] Daftar transaksi dan detail/edit (S08–S09)
