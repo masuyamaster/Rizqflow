@@ -22,9 +22,12 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -69,12 +72,14 @@ fun RizqflowApp(
     onConnectGmail: () -> Unit = {},
     onSignOut: () -> Unit = {},
     onDismissNotice: () -> Unit = {},
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     val nav = rememberNavController()
     val backStack by nav.currentBackStackEntryAsState()
     val current = TopTab.fromRoute(backStack?.destination?.route)
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             CappedFontScale(NAV_LABEL_MAX_FONT_SCALE) {
                 NavigationBar {

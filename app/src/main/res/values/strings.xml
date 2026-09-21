@@ -114,4 +114,48 @@
     <plurals name="onb_percent_state">
         <item quantity="other">%d persen</item>
     </plurals>
+
+    <!-- Catat S06 dan Pratinjau alokasi S07 -->
+    <string name="catat_title">Catat</string>
+    <string name="catat_close">Tutup</string>
+    <string name="catat_tab_income">Pemasukan</string>
+    <string name="catat_tab_expense">Pengeluaran</string>
+    <string name="catat_tab_transfer">Transfer</string>
+    <string name="catat_transfer_needs_two">Transfer butuh dua akun. Akun lain bisa ditambah nanti.</string>
+    <string name="catat_source">Sumber</string>
+    <string name="catat_account_to">Akun tujuan</string>
+    <string name="catat_account">Akun</string>
+    <string name="catat_room">Ruang</string>
+    <string name="catat_category">Kategori</string>
+    <string name="catat_from">Dari</string>
+    <string name="catat_to">Ke</string>
+    <string name="catat_date">Tanggal</string>
+    <string name="catat_note">Catatan (opsional)</string>
+    <string name="catat_next">Lanjut</string>
+    <string name="catat_save">Simpan</string>
+    <string name="catat_save_more">Simpan + tambah</string>
+    <string name="catat_no_rooms">Belum ada ruang untuk pengeluaran. Pakai pola Tiga hak, atau tambah ruang di tab Ruang.</string>
+    <string name="catat_over_budget">Jatah %1$s bulan ini terlampaui: %2$s dari %3$s. Tetap bisa disimpan.</string>
+    <string name="catat_issue_amount">Isi nominal dulu.</string>
+    <string name="catat_issue_account">Pilih akun.</string>
+    <string name="catat_issue_category">Pilih kategori.</string>
+    <string name="catat_issue_same_account">Pilih akun tujuan yang berbeda.</string>
+    <string name="catat_error_account">Akun ini tidak bisa dipakai. Pilih akun lain.</string>
+    <string name="catat_error_room">Ruang atau kategori ini tidak bisa dipakai. Pilih lagi.</string>
+    <string name="catat_error_note">Catatan terlalu panjang.</string>
+    <string name="catat_error_generic">Belum bisa menyimpan. Coba lagi.</string>
+    <string name="catat_date_ok">Pilih</string>
+    <string name="catat_date_cancel">Batal</string>
+    <string name="review_title">Alirkan rezeki</string>
+    <string name="review_income">Pemasukan</string>
+    <string name="review_no_rooms">Belum ada ruang. Rezeki ini disimpan dulu sebagai belum dialirkan dan menunggu sampai ada ruang.</string>
+    <string name="review_unallocated">Belum dialirkan</string>
+    <string name="review_edit_once">Ubah sekali ini</string>
+    <string name="review_edit_once_note">Hanya untuk pemasukan ini; aturan tidak berubah.</string>
+    <string name="review_confirm">Alirkan</string>
+    <string name="action_undo">Urungkan</string>
+    <string name="saved_income">%1$s dialirkan ke %2$d ruang</string>
+    <string name="saved_income_none">%1$s tersimpan, belum dialirkan</string>
+    <string name="saved_expense">Pengeluaran %1$s tersimpan</string>
+    <string name="saved_transfer">Transfer %1$s tersimpan</string>
 </resources>

@@ -68,8 +68,9 @@ fun AppRoot(controller: AuthController, showDebugLogin: Boolean) {
             }
 
             // Setiap akun membuka database sendiri; akun baru melewati onboarding dulu.
-            is AuthUiState.SignedIn -> WorkspaceHost(accountId = s.session.accountId) {
-                RizqflowApp(
+            is AuthUiState.SignedIn -> WorkspaceHost(accountId = s.session.accountId) { workspace ->
+                MainHost(
+                    workspace = workspace,
                     account = AccountUi(
                         identifier = s.session.identifier,
                         local = s.session.provider == AuthProviderType.PASSWORD,

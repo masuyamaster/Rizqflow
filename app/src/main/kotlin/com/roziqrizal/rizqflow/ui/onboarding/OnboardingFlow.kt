@@ -37,7 +37,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -55,12 +54,13 @@ import com.roziqrizal.rizqflow.domain.ledger.OnboardingDraft
 import com.roziqrizal.rizqflow.domain.ledger.RoomTemplate
 import com.roziqrizal.rizqflow.domain.ledger.RoomTemplates
 import com.roziqrizal.rizqflow.domain.ledger.ShareEditor
-import com.roziqrizal.rizqflow.domain.ledger.TemplateRoom
 import com.roziqrizal.rizqflow.domain.model.AccountKind
 import com.roziqrizal.rizqflow.domain.money.Money
 import com.roziqrizal.rizqflow.ui.RizqflowIcons
+import com.roziqrizal.rizqflow.ui.RoomTile
 import com.roziqrizal.rizqflow.ui.formatRupiah
 import com.roziqrizal.rizqflow.ui.theme.rizqflow
+import com.roziqrizal.rizqflow.ui.theme.rizqflowFilterChipColors
 import com.roziqrizal.rizqflow.ui.theme.spacing
 import kotlin.math.roundToInt
 
@@ -155,26 +155,6 @@ private fun StepScaffold(
 }
 
 @Composable
-private fun RoomTile(room: TemplateRoom, size: Int = 36) {
-    val color = MaterialTheme.rizqflow.room(room.colorSlot)
-    Box(
-        modifier = Modifier
-            .size(size.dp)
-            .background(color.copy(alpha = 0.14f), RoundedCornerShape(12.dp)),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(iconFor(room.iconKey), contentDescription = null, tint = color, modifier = Modifier.size((size * 0.55f).dp))
-    }
-}
-
-private fun iconFor(key: String): ImageVector = when (key) {
-    "heart" -> RizqflowIcons.Hati
-    "sprout" -> RizqflowIcons.Tunas
-    "home" -> RizqflowIcons.Rumah
-    else -> RizqflowIcons.Ruang
-}
-
-@Composable
 private fun roomDescription(name: String): String = when (name) {
     "Memberi" -> stringResource(R.string.onb_room_memberi)
     "Diri" -> stringResource(R.string.onb_room_diri)
@@ -203,7 +183,7 @@ private fun PolaScreen(draft: OnboardingDraft, onTemplate: (RoomTemplate) -> Uni
             Column(verticalArrangement = Arrangement.spacedBy(spacing.s2), modifier = Modifier.padding(top = spacing.s3)) {
                 RoomTemplates.tigaHak.forEach { room ->
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacing.s3)) {
-                        RoomTile(room, size = 32)
+                        RoomTile(room.iconKey, room.colorSlot, size = 32)
                         Column {
                             Text(room.name, style = MaterialTheme.typography.titleSmall)
                             Text(roomDescription(room.name), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -302,7 +282,7 @@ private fun PersenScreen(draft: OnboardingDraft, onChange: (OnboardingDraft) -> 
                 val percent = draft.percents[index]
                 Column {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacing.s3)) {
-                        RoomTile(room)
+                        RoomTile(room.iconKey, room.colorSlot)
                         Column(modifier = Modifier.weight(1f)) {
                             Text(room.name, style = MaterialTheme.typography.titleSmall)
                             Text(
@@ -407,6 +387,7 @@ private fun AkunScreen(
                     onClick = { onChange(draft.chooseKind(kind)) },
                     enabled = !busy,
                     label = { Text(stringResource(label)) },
+                    colors = rizqflowFilterChipColors(),
                 )
             }
         }

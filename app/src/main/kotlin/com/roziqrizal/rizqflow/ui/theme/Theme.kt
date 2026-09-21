@@ -3,6 +3,10 @@ package com.roziqrizal.rizqflow.ui.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.SegmentedButtonColors
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SelectableChipColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
@@ -92,3 +96,19 @@ fun rizqflowTonalButtonColors(): ButtonColors = ButtonDefaults.filledTonalButton
 
 const val HERO_MAX_FONT_SCALE = 1.25f
 const val NAV_LABEL_MAX_FONT_SCALE = 1.3f
+
+/** Chip terpilih berwarna hijau muda seperti prototipe, bukan biru bawaan secondaryContainer. */
+@Composable
+fun rizqflowFilterChipColors(): SelectableChipColors = FilterChipDefaults.filterChipColors(
+    selectedContainerColor = MaterialTheme.colorScheme.primaryFixed,
+    selectedLabelColor = MaterialTheme.colorScheme.onSurface,
+    selectedLeadingIconColor = MaterialTheme.colorScheme.onSurface,
+)
+
+/** Tab segmen (Pemasukan, Pengeluaran, Transfer) dengan penanda terpilih hijau muda. */
+@Composable
+fun rizqflowSegmentedColors(): SegmentedButtonColors = SegmentedButtonDefaults.colors(
+    activeContainerColor = MaterialTheme.colorScheme.primaryFixed,
+    activeContentColor = MaterialTheme.colorScheme.onSurface,
+    activeBorderColor = MaterialTheme.colorScheme.primary,
+)

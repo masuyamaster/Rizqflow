@@ -85,8 +85,8 @@ Logika bisnis yang benar dan teruji sebelum ada layar.
 - [x] Splash dan halaman masuk dengan Google dan Gmail (S29, S30), riwayat masuk, dan ikon aplikasi (2026-09-21); proyek Google Cloud dan client ID sudah dibuat, masuk dengan Google teruji di emulator (2026-09-21); izin Gmail belum disiapkan ([auth-google.md](auth-google.md))
 - [x] Masuk dengan nama pengguna dan sandi serta halaman Daftar (S30, S31): akun lokal dengan hash PBKDF2, tanpa server (2026-09-21)
 - [x] Onboarding S02–S04 (S01 digantikan S30): pola ruang, pembagian persen (total selalu 100%), akun pertama dengan papan angka; Mulai kosong melewati langkah persentase; tiap akun membuka database sendiri (2026-09-21)
-- [ ] Catat transaksi (S06)
-- [ ] Pratinjau alokasi (S07)
+- [x] Catat transaksi (S06): tab Pemasukan, Pengeluaran, Transfer; ruang, kategori, akun, tanggal, catatan; banner lembut bila jatah bulan itu terlampaui; snackbar Urungkan (2026-09-21). Chip "Terakhir" dan "Jadikan favorit" menunggu S24
+- [x] Pratinjau alokasi (S07): rezeki terlihat mengalir sebelum disimpan, "Ubah sekali ini" (aturan tidak berubah), bagian belum dialirkan (2026-09-21)
 - [ ] Daftar transaksi dan detail/edit (S08–S09)
 - [ ] Daftar ruang, aturan alokasi, kelola akun, kategori, dan favorit (S10, S12, S13)
 - [ ] Catat kilat dan favorit (S24): pintasan ikon dan tile Quick Settings
