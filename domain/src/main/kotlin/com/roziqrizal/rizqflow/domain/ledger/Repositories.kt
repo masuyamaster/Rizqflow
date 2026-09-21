@@ -68,6 +68,15 @@ interface RoomRepository {
     /** Menambah ruang beserta kategori awalnya (atomik). */
     suspend fun addRoom(room: Room, categories: List<Category>)
 
+    /** Menambah beberapa ruang beserta kategori dan aturannya sekaligus (atomik), misalnya pola Tiga hak. */
+    suspend fun addRooms(rooms: List<Room>, categories: List<Category>, rules: List<AllocationRule>)
+
+    /**
+     * Menyimpan perubahan ruang (nama, urutan, arsip) sekaligus (atomik). Bila [rules] diberikan, aturan
+     * alokasi ruang aktif diganti di transaksi yang sama.
+     */
+    suspend fun saveRooms(rooms: List<Room>, rules: List<AllocationRule>? = null)
+
     /** Mengganti seluruh aturan alokasi (atomik). */
     suspend fun replaceRules(rules: List<AllocationRule>)
 }

@@ -26,6 +26,7 @@ import com.roziqrizal.rizqflow.domain.ledger.NewTransfer
 import com.roziqrizal.rizqflow.domain.ledger.OneTimeSplit
 import com.roziqrizal.rizqflow.domain.ledger.Room
 import com.roziqrizal.rizqflow.domain.ledger.RoomTemplate
+import com.roziqrizal.rizqflow.domain.ledger.RuleDraft
 import com.roziqrizal.rizqflow.domain.ledger.RuleService
 import com.roziqrizal.rizqflow.domain.ledger.TransactionLister
 import com.roziqrizal.rizqflow.domain.ledger.WorkspaceSetup
@@ -358,7 +359,7 @@ class LocalLedgerTest {
         val baru = runBlocking { rules.addRoom(NewRoom("Orang tua", RoomKind.MENCUKUPI, "home", 4)) }
         val id = (baru as LedgerResult.Success).value
 
-        assertEquals(listOf("Lain-lain"), runBlocking { local.rooms.categories(id) }.map { it.name })
+        assertEquals(listOf("Lain-lain", "Tak terlacak"), runBlocking { local.rooms.categories(id) }.map { it.name })
         assertEquals(4, runBlocking { local.rooms.activeRooms() }.size)
         runBlocking { rules.addRoom(NewRoom("Tabungan haji", RoomKind.MENUMBUHKAN, "sprout", 5)) }
         assertIs<LedgerResult.Failure>(runBlocking { rules.addRoom(NewRoom("Liburan", RoomKind.MENCUKUPI, "home", 6)) })
@@ -605,5 +606,75 @@ class LocalLedgerTest {
 
         assertNull(runBlocking { service.budgetWarning(keluarga, rupiah(600_000), day, excluding = tx.id) })
         assertNotNull(runBlocking { service.budgetWarning(keluarga, rupiah(600_000), day) })
+    }
+
+    // ------------------------------------------------------------------ Ruang (S10) dan aturan (S12)
+
+    @Test
+    fun `mengarsipkan lalu memulihkan ruang bekerja di database dan aturan lama tidak menggelembungkan total`() {
+        standard()
+        val diri = room("Diri")
+
+        runBlocking { rules.archiveRoom(diri.id) }
+        val terarsip = runBlocking { rules.overview() }
+        assertEquals(listOf("Memberi", "Keluarga"), terarsip.active.map { it.room.name })
+        assertEquals(listOf("Diri"), terarsip.archived.map { it.name })
+        assertEquals(7_000, terarsip.totalBp)
+
+        runBlocking { rules.changeRules(listOf(AllocationRule(room("Memberi").id, BasisPoints.percent(20)), AllocationRule(room("Keluarga").id, BasisPoints.percent(80)))) }
+        assertIs<LedgerResult.Success<Unit>>(runBlocking { rules.restoreRoom(diri.id) })
+
+        val pulih = runBlocking { rules.overview() }
+        assertEquals(listOf("Memberi", "Keluarga", "Diri"), pulih.active.map { it.room.name })
+        assertEquals(listOf(2_000, 8_000, 0), pulih.active.map { it.shareBp })
+        assertTrue(pulih.isBalanced)
+        val tersimpan = db.query("SELECT COUNT(*) FROM allocation_rule WHERE room_id = ?", arrayOf<Any?>(diri.id.value)).use { c -> c.moveToFirst(); c.getInt(0) }
+        assertEquals(1, tersimpan, "hanya satu baris aturan untuk ruang yang dipulihkan")
+    }
+
+    @Test
+    fun `menggeser ruang menyimpan urutan baru dan aturan mengikutinya`() {
+        standard()
+
+        runBlocking { rules.moveRoom(room("Keluarga").id, -1) }
+        runBlocking { rules.moveRoom(room("Keluarga").id, -1) }
+
+        assertEquals(listOf("Keluarga", "Memberi", "Diri"), runBlocking { local.rooms.activeRooms() }.map { it.name })
+        assertEquals(listOf(6_000, 1_000, 3_000), runBlocking { local.rooms.rules() }.map { it.share.value })
+    }
+
+    @Test
+    fun `memakai pola Tiga hak pada akun tanpa ruang menyimpan ruang kategori dan aturan sekaligus`() {
+        runBlocking { setup.setUp(RoomTemplate.KOSONG, FirstAccount("Dompet", AccountKind.CASH, rupiah(0))) }
+        assertTrue(runBlocking { local.rooms.activeRooms() }.isEmpty())
+
+        assertIs<LedgerResult.Success<Unit>>(runBlocking { rules.applyTemplate(RoomTemplate.TIGA_HAK) })
+
+        assertEquals(listOf("Memberi", "Diri", "Keluarga"), runBlocking { local.rooms.activeRooms() }.map { it.name })
+        assertEquals(listOf(1_000, 3_000, 6_000), runBlocking { local.rooms.rules() }.map { it.share.value })
+        assertTrue(runBlocking { local.rooms.allCategories() }.any { it.name == "Zakat mal" && it.isSystem })
+    }
+
+    @Test
+    fun `penyimpanan banyak ruang yang gagal membatalkan semuanya`() {
+        val ruang = Room(RoomId("r1"), "Baru", RoomKind.MENCUKUPI, "home", 4, 0)
+        val yatim = Category(CategoryId("c1"), RoomId("bukan-r1"), "Yatim")
+
+        assertFailsWith<Exception> { runBlocking { local.rooms.addRooms(listOf(ruang), listOf(yatim), emptyList()) } }
+
+        assertNull(runBlocking { local.rooms.find(ruang.id) })
+    }
+
+    @Test
+    fun `draf aturan dari database dan simpan lewat layanan lalu urungkan`() {
+        standard()
+        val asal = runBlocking { RuleDraft.from(local.rooms.activeRooms(), local.rooms.rules()) }
+        val ubah = asal.step(0, 5).step(2, -5)
+
+        assertIs<LedgerResult.Success<Unit>>(runBlocking { rules.changeRules(ubah.toRules()) })
+        assertEquals(listOf(1_500, 3_000, 5_500), runBlocking { local.rooms.rules() }.map { it.share.value })
+
+        runBlocking { rules.restoreRules(asal.toRules()) }
+        assertEquals(listOf(1_000, 3_000, 6_000), runBlocking { local.rooms.rules() }.map { it.share.value })
     }
 }

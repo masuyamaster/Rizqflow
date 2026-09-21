@@ -47,7 +47,34 @@ object RoomTemplates {
         RoomTemplate.TIGA_HAK -> tigaHak
         RoomTemplate.KOSONG -> emptyList()
     }
+
+    /**
+     * Membangun ruang, kategori, dan aturan sebuah pola. [startOrder]: urutan ruang pertama (0 untuk akun
+     * baru; setelah ruang yang sudah ada bila pola dipakai belakangan). [shares]: pembagian per ruang pola.
+     */
+    fun build(template: RoomTemplate, newId: () -> String, startOrder: Int = 0, shares: List<BasisPoints> = emptyList()): BuiltRooms {
+        val templateRooms = rooms(template)
+        val chosen = shares.ifEmpty { templateRooms.map { it.defaultShare } }
+        require(chosen.size == templateRooms.size) { "Jumlah pembagian harus sama dengan jumlah ruang pola" }
+        val rooms = templateRooms.mapIndexed { index, t ->
+            Room(RoomId(newId()), t.name, t.kind, t.iconKey, t.colorSlot, sortOrder = startOrder + index, givingMode = t.givingMode)
+        }
+        val categories = rooms.zip(templateRooms).flatMap { (room, t) ->
+            val own = t.categories.mapIndexed { i, label -> Category(CategoryId(newId()), room.id, label, sortOrder = i) }
+            // Kategori sistem ikut dibuat: Koreksi saldo mencatat selisih ke "Tak terlacak" di ruang mana pun,
+            // dan "Zakat mal" hanya di ruang Memberi.
+            val system = buildList {
+                if (room.kind == RoomKind.MENUNAIKAN) add(Category(CategoryId(newId()), room.id, ZAKAT, isSystem = true, sortOrder = own.size))
+                add(Category(CategoryId(newId()), room.id, UNTRACKED, isSystem = true, sortOrder = own.size + size))
+            }
+            own + system
+        }
+        return BuiltRooms(rooms, categories, rooms.zip(chosen).map { (room, share) -> AllocationRule(room.id, share) })
+    }
 }
+
+/** Hasil [RoomTemplates.build]: siap disimpan sekaligus. */
+data class BuiltRooms(val rooms: List<Room>, val categories: List<Category>, val rules: List<AllocationRule>)
 
 /** Akun pertama yang diisi di S04. */
 data class FirstAccount(val name: String, val kind: AccountKind, val openingBalance: Money)
@@ -83,23 +110,10 @@ class WorkspaceSetup(
         }
         if (!workspace.isEmpty()) return failure(LedgerError.WORKSPACE_NOT_EMPTY)
 
-        val rooms = templateRooms.mapIndexed { index, t ->
-            Room(RoomId(newId()), t.name, t.kind, t.iconKey, t.colorSlot, sortOrder = index, givingMode = t.givingMode)
-        }
-        val categories = rooms.zip(templateRooms).flatMap { (room, t) ->
-            val own = t.categories.mapIndexed { i, label -> Category(CategoryId(newId()), room.id, label, sortOrder = i) }
-            // Kategori sistem ikut dibuat: Koreksi saldo mencatat selisih ke "Tak terlacak" di ruang mana pun,
-            // dan "Zakat mal" hanya di ruang Memberi.
-            val system = buildList {
-                if (room.kind == RoomKind.MENUNAIKAN) add(Category(CategoryId(newId()), room.id, RoomTemplates.ZAKAT, isSystem = true, sortOrder = own.size))
-                add(Category(CategoryId(newId()), room.id, RoomTemplates.UNTRACKED, isSystem = true, sortOrder = own.size + size))
-            }
-            own + system
-        }
-        val rules = rooms.zip(chosen).map { (room, share) -> AllocationRule(room.id, share) }
+        val built = RoomTemplates.build(template, newId, shares = chosen)
         val account = Account(AccountId(newId()), name, firstAccount.kind, firstAccount.openingBalance)
 
-        workspace.initialize(WorkspaceSnapshot(rooms, categories, rules, listOf(account)))
+        workspace.initialize(WorkspaceSnapshot(built.rooms, built.categories, built.rules, listOf(account)))
         return LedgerResult.Success(Unit)
     }
 }

@@ -100,7 +100,7 @@ class RuleServiceTest {
         assertEquals("Orang tua", room.name)
         assertEquals(3, room.sortOrder)
         assertEquals(RoomKind.MENCUKUPI, room.kind)
-        assertEquals(listOf("Lain-lain"), runSuspend { f.store.categories(id) }.map { it.name })
+        assertEquals(listOf("Lain-lain", "Tak terlacak"), runSuspend { f.store.categories(id) }.map { it.name })
         assertTrue(rulesOf(f).none { it.first == "Orang tua" }, "belum menerima alokasi")
     }
 

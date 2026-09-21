@@ -54,6 +54,9 @@ interface RoomDao {
     @Upsert
     suspend fun upsert(room: RoomEntity)
 
+    @Upsert
+    suspend fun upsertAll(rooms: List<RoomEntity>)
+
     @Query("SELECT COUNT(*) FROM room")
     suspend fun count(): Int
 

@@ -84,6 +84,25 @@ class LocalRoomRepository(private val db: RizqflowDatabase) : RoomRepository {
             db.rooms().upsertRules(rules.map(AllocationRule::toEntity))
         }
     }
+
+    override suspend fun addRooms(rooms: List<Room>, categories: List<Category>, rules: List<AllocationRule>) {
+        db.withTransaction {
+            db.rooms().upsertAll(rooms.map { it.toEntity() })
+            db.rooms().upsertCategories(categories.map(Category::toEntity))
+            db.rooms().upsertRules(rules.map(AllocationRule::toEntity))
+        }
+    }
+
+    override suspend fun saveRooms(rooms: List<Room>, rules: List<AllocationRule>?) {
+        db.withTransaction {
+            db.rooms().upsertAll(rooms.map { it.toEntity() })
+            if (rules != null) {
+                // Ruang yang baru dipulihkan sudah aktif di sini, jadi aturan lamanya ikut terhapus dan diganti.
+                db.rooms().clearActiveRules()
+                db.rooms().upsertRules(rules.map(AllocationRule::toEntity))
+            }
+        }
+    }
 }
 
 class LocalTransactionRepository(private val db: RizqflowDatabase) : TransactionRepository {

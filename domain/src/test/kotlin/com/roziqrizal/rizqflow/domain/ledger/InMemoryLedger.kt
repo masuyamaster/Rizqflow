@@ -98,7 +98,22 @@ class InMemoryLedger : WorkspaceRepository, AccountRepository, RoomRepository, T
 
     override suspend fun replaceRules(rules: List<AllocationRule>) {
         maybeFail()
-        ruleRows = rules
+        // Meniru Room: hanya aturan ruang aktif yang diganti; aturan ruang terarsip dibiarkan.
+        val activeIds = roomRows.values.filter { !it.archived }.map { it.id }.toSet()
+        ruleRows = ruleRows.filter { it.roomId !in activeIds } + rules
+    }
+
+    override suspend fun addRooms(rooms: List<Room>, categories: List<Category>, rules: List<AllocationRule>) {
+        maybeFail()
+        rooms.forEach { roomRows[it.id] = it }
+        categories.forEach { categoryRows[it.id] = it }
+        ruleRows = ruleRows + rules
+    }
+
+    override suspend fun saveRooms(rooms: List<Room>, rules: List<AllocationRule>?) {
+        maybeFail()
+        rooms.forEach { roomRows[it.id] = it }
+        if (rules != null) replaceRules(rules)
     }
 
     // ---- TransactionRepository
