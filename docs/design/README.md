@@ -98,6 +98,8 @@ Status memakai palet tetap yang reserved (good `#0ca30c`, warning `#fab219`, ser
 
 ## Peta ke Jetpack Compose
 
+**Sudah diimplementasikan 2026-09-21** di `app/src/main/kotlin/.../ui/theme` (`Color.kt`, `Type.kt`, `Theme.kt`); token di `tokens.css` tetap sumbernya, dan `RizqflowTokensTest` menjaga kontras warna hasil validasi. Cuplikan di bawah tinggal sebagai penjelasan.
+
 Nama peran warna di `tokens.css` sama dengan Material 3, jadi langsung dipetakan ke `ColorScheme`:
 
 ```kotlin

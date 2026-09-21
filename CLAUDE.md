@@ -25,11 +25,12 @@ Aplikasi finansial berbasis "hak": rezeki yang masuk dialirkan ke ruang-ruang (M
 ## Proyek Android
 
 - Application ID: `com.roziqrizal.rizqflow`. Tetap setelah terbit di Play Store (diputuskan 2026-09-20).
-- Modul Gradle: `:domain` (Kotlin/JVM murni, tanpa Android), `:data` (Room; masih kerangka), `:app` (Compose). `:app` dan `:data` boleh bergantung pada `:domain`, tidak sebaliknya.
+- Modul Gradle: `:domain` (Kotlin/JVM murni, tanpa Android), `:data` (Room, skema versi 1), `:app` (Compose). `:app` dan `:data` boleh bergantung pada `:domain`, tidak sebaliknya.
 - Versi: Gradle 9.7.1, AGP 9.4.1 (Kotlin bawaan AGP, tanpa plugin `kotlin-android`), Kotlin 2.4.20, compileSdk dan targetSdk 37, min SDK 26. Semua versi ada di `gradle/libs.versions.toml`.
-- Build dari terminal butuh **JDK 17** lewat `JAVA_HOME` (bukan Java 8 yang ada di PATH). Path Android SDK ada di `local.properties`, yang tidak di-commit. Perintah: `./gradlew :domain:test` dan `./gradlew :app:assembleDebug`.
-- Android Studio harus versi terbaru: Chipmunk (2021.2) tidak bisa membuka proyek dengan AGP 9.4.
-- Tes `:domain`: JUnit Jupiter + kotlin.test, dengan `allWarningsAsErrors` menyala. Kalkulasi murni diuji dengan golden test tanpa mock, mengikuti `docs/strategi-unit-test.md` di alkaukabaandroid.
+- Build dari terminal butuh **JDK 17 atau lebih baru** lewat `JAVA_HOME` (bukan Java 8 yang ada di PATH). CI memakai 17; JDK 25 bawaan Android Studio juga sudah dicoba dan lulus. Path Android SDK ada di `local.properties`, yang tidak di-commit. Perintah: `./gradlew :domain:test` dan `./gradlew :app:assembleDebug`.
+- Android Studio harus **Quail 4 (2026.1.4) atau lebih baru** (syarat minimum AGP 9.4); pakai kanal Stable dan tolak Upgrade Assistant. Chipmunk (2021.2) tidak bisa membuka proyek ini.
+- Tes `:domain` dan `:app`: JUnit Jupiter + kotlin.test (`:domain` dengan `allWarningsAsErrors`). Kalkulasi murni diuji dengan golden test tanpa mock, mengikuti [docs/strategi-unit-test.md](docs/strategi-unit-test.md).
+- Tema Compose ada di `app/.../ui/theme` dan **bersumber dari `docs/design/tokens.css`**: ubah token di sana lebih dulu, lalu samakan `Color.kt`; `RizqflowTokensTest` menjaga kontras warna. Font Manrope dan Libre Caslon Text (OFL) ada di `res/font`, lisensinya di `assets/licenses`.
 
 ## Status dan tracking
 

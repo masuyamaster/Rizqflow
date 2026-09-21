@@ -80,6 +80,7 @@ Logika bisnis yang benar dan teruji sebelum ada layar.
 
 ## Tahap 3 — Layar inti: onboarding, catat, transaksi (Backlog)
 
+- [x] Tema Compose dari design tokens (warna terang dan gelap, font Manrope dan Libre Caslon Text, warna ruang dan status) dan kerangka navigasi (bottom nav empat tab, tombol Catat) (2026-09-21)
 - [ ] Onboarding (S01–S04)
 - [ ] Catat transaksi (S06)
 - [ ] Pratinjau alokasi (S07)
