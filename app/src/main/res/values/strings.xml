@@ -1,4 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Rizqflow</string>
+
+    <!-- Tab utama -->
+    <string name="tab_denah">Denah</string>
+    <string name="tab_transaksi">Transaksi</string>
+    <string name="tab_ruang">Ruang</string>
+    <string name="tab_lainnya">Lainnya</string>
+    <string name="action_catat">Catat</string>
+
+    <!-- Isi sementara tab sampai layarnya dikerjakan -->
+    <string name="placeholder_denah">Denah dikerjakan di Tahap 4.</string>
+    <string name="placeholder_transaksi">Daftar transaksi dikerjakan di Tahap 3.</string>
+    <string name="placeholder_ruang">Daftar ruang dikerjakan di Tahap 3.</string>
+    <string name="placeholder_lainnya">Pengaturan dikerjakan bertahap di Tahap 3 dan 6.</string>
 </resources>

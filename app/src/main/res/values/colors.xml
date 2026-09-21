@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Sama dengan token rf-background di docs/design/tokens.css (mode terang). -->
+    <color name="rf_background">#FAF9F7</color>
+</resources>

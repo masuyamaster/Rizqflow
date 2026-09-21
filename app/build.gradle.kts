@@ -31,6 +31,11 @@ android {
     buildFeatures {
         compose = true
     }
+
+    testOptions {
+        // Tes memakai JUnit Jupiter dan kotlin.test, sama dengan :domain.
+        unitTests.all { it.useJUnitPlatform() }
+    }
 }
 
 dependencies {
@@ -42,5 +47,11 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.navigation.compose)
     debugImplementation(libs.androidx.compose.ui.tooling)
+
+    testImplementation(platform(libs.junit.bom))
+    testImplementation(libs.kotlin.test.junit5) // menghubungkan kotlin.test ke JUnit 5 di modul Android
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
