@@ -11,6 +11,9 @@ import java.security.MessageDigest
  */
 object AccountStorage {
     private const val PREFIX = "rizqflow-"
+
+    /** Pengenal ruang kerja mode demo (S22): database terpisah yang dihapus saat keluar dari demo. */
+    const val DEMO_ACCOUNT_ID = "rizqflow-demo"
     private const val HASH_HEX_CHARS = 32
 
     fun databaseName(accountId: String): String {
