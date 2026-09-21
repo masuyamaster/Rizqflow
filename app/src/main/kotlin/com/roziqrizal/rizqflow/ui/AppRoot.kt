@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -19,29 +20,37 @@ import com.roziqrizal.rizqflow.ui.login.LoginScreen
 @Composable
 fun AppRoot(controller: AuthController, showDebugLogin: Boolean) {
     val state by controller.state.collectAsState()
-    when (val s = state) {
-        AuthUiState.Loading -> Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
+    // Surface menentukan warna teks bawaan (onBackground). Tanpanya teks tanpa warna eksplisit
+    // memakai hitam dan tak terbaca di mode gelap.
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.onBackground,
+    ) {
+        when (val s = state) {
+            AuthUiState.Loading -> Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
 
-        is AuthUiState.SignedOut -> LoginScreen(
-            busy = s.busy,
-            message = s.message,
-            showDebugLogin = showDebugLogin,
-            onGoogle = { controller.signInWithGoogle(alsoConnectGmail = false) },
-            onGoogleWithGmail = { controller.signInWithGoogle(alsoConnectGmail = true) },
-            onDebug = controller::signInDebug,
-        )
-
-        is AuthUiState.SignedIn -> RizqflowApp(
-            account = AccountUi(
-                email = s.session.email,
-                displayName = s.session.displayName,
-                gmailConnected = s.session.gmailConnected,
+            is AuthUiState.SignedOut -> LoginScreen(
                 busy = s.busy,
-                notice = s.notice,
-            ),
-            onConnectGmail = controller::connectGmail,
-            onSignOut = controller::signOut,
-            onDismissNotice = controller::dismissNotice,
-        )
+                message = s.message,
+                showDebugLogin = showDebugLogin,
+                onGoogle = { controller.signInWithGoogle(alsoConnectGmail = false) },
+                onGoogleWithGmail = { controller.signInWithGoogle(alsoConnectGmail = true) },
+                onDebug = controller::signInDebug,
+            )
+
+            is AuthUiState.SignedIn -> RizqflowApp(
+                account = AccountUi(
+                    email = s.session.email,
+                    displayName = s.session.displayName,
+                    gmailConnected = s.session.gmailConnected,
+                    busy = s.busy,
+                    notice = s.notice,
+                ),
+                onConnectGmail = controller::connectGmail,
+                onSignOut = controller::signOut,
+                onDismissNotice = controller::dismissNotice,
+            )
+        }
     }
 }
