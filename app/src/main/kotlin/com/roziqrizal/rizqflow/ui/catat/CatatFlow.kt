@@ -71,6 +71,7 @@ import com.roziqrizal.rizqflow.domain.ledger.INCOME_SOURCES
 import com.roziqrizal.rizqflow.domain.ledger.LedgerError
 import com.roziqrizal.rizqflow.domain.ledger.LedgerResult
 import com.roziqrizal.rizqflow.domain.ledger.OneTimeSplit
+import com.roziqrizal.rizqflow.domain.ledger.QuickFavorite
 import com.roziqrizal.rizqflow.domain.ledger.TransactionSnapshot
 import com.roziqrizal.rizqflow.domain.model.AccountId
 import com.roziqrizal.rizqflow.domain.model.CategoryId
@@ -99,7 +100,17 @@ import java.time.ZoneOffset
  * yang menerima alirannya. [previous] tidak null bila ini perubahan (bukan catatan baru): keadaan sebelumnya,
  * yang dipulihkan oleh Urungkan.
  */
-data class SavedInfo(val id: TransactionId, val kind: TransactionKind, val amount: Money, val roomCount: Int, val previous: TransactionSnapshot? = null)
+data class SavedInfo(
+    val id: TransactionId,
+    val kind: TransactionKind,
+    val amount: Money,
+    val roomCount: Int,
+    val previous: TransactionSnapshot? = null,
+    /** Pengeluaran ini juga disimpan sebagai favorit (S13, S24). */
+    val favoriteSaved: Boolean = false,
+    /** Alasan favorit tidak tersimpan padahal diminta (mis. nama sudah ada, sudah 6 favorit). */
+    val favoriteError: LedgerError? = null,
+)
 
 /** Hasil pratinjau S07 yang sedang dilihat pengguna. [split] tidak null berarti "Ubah sekali ini" aktif. */
 private data class Review(val allocation: AllocationResult, val split: OneTimeSplit?)
@@ -147,6 +158,7 @@ fun CatatFlow(
     var error by remember { mutableStateOf<LedgerError?>(null) }
     var warning by remember { mutableStateOf<BudgetWarning?>(null) }
     var pickingDate by remember { mutableStateOf(false) }
+    var asFavorite by rememberSaveable { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     // Banner lembut jatah terlampaui: dihitung ulang setiap nominal, ruang, atau tanggal berubah.
@@ -180,7 +192,15 @@ fun CatatFlow(
             when (result) {
                 is LedgerResult.Success -> {
                     val tx = result.value
-                    onSaved(SavedInfo(tx.id, tx.kind, tx.amount, 0))
+                    var favoriteError: LedgerError? = null
+                    val wantsFavorite = asFavorite && tx.kind == TransactionKind.EXPENSE
+                    if (wantsFavorite) {
+                        // Nama: catatan bila ada, kalau tidak nama kategorinya.
+                        val name = draft.note.trim().ifEmpty { context.categoriesOf(tx.roomId!!).firstOrNull { it.id == tx.categoryId }?.name.orEmpty() }.take(QuickFavorite.NAME_MAX)
+                        favoriteError = (workspace.favorites.create(name, tx.amount, tx.roomId!!, tx.categoryId!!, tx.accountId) as? LedgerResult.Failure)?.error
+                    }
+                    onSaved(SavedInfo(tx.id, tx.kind, tx.amount, 0, favoriteSaved = wantsFavorite && favoriteError == null, favoriteError = favoriteError))
+                    asFavorite = false
                     if (keepOpen) change(draft.copy(digits = "", note = "")) else onClose()
                 }
 
@@ -400,6 +420,21 @@ fun CatatFlow(
 
             if (editing != null && draft.mode == CatatMode.INCOME) {
                 existing?.let { AllocationSnapshotSection(context, it.entries, draft.amount) }
+            }
+
+            // Jadikan favorit: hanya pengeluaran baru. Nominal, ruang, kategori, dan akun ikut tersimpan.
+            if (editing == null && draft.mode == CatatMode.EXPENSE) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(top = spacing.s3),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(spacing.s3),
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(stringResource(R.string.catat_favorite), style = MaterialTheme.typography.titleSmall)
+                        Text(stringResource(R.string.catat_favorite_hint), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    androidx.compose.material3.Switch(checked = asFavorite, onCheckedChange = { asFavorite = it }, enabled = !busy)
+                }
             }
         }
 

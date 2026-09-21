@@ -81,6 +81,7 @@ fun RizqflowApp(
     ruangContent: (@Composable () -> Unit)? = null,
     denahContent: (@Composable () -> Unit)? = null,
     onOpenRules: (() -> Unit)? = null,
+    onOpenManage: (() -> Unit)? = null,
 ) {
     val nav = rememberNavController()
     val backStack by nav.currentBackStackEntryAsState()
@@ -136,7 +137,7 @@ fun RizqflowApp(
             TopTab.entries.forEach { tab ->
                 composable(tab.route) {
                     if (tab == TopTab.Lainnya && account != null) {
-                        LainnyaScreen(account, onConnectGmail, onSignOut, onDismissNotice, onOpenRules)
+                        LainnyaScreen(account, onConnectGmail, onSignOut, onDismissNotice, onOpenRules, onOpenManage)
                     } else if (tab == TopTab.Transaksi && transaksiContent != null) {
                         transaksiContent()
                     } else if (tab == TopTab.Ruang && ruangContent != null) {
@@ -170,6 +171,25 @@ private fun PlaceholderScreen(title: String, note: String) {
     }
 }
 
+/** Baris menu di tab Lainnya: judul, keterangan, dan panah. */
+@Composable
+private fun MenuRow(title: String, subtitle: String, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .padding(top = MaterialTheme.spacing.s3)
+            .fillMaxWidth()
+            .clickable(role = Role.Button, onClick = onClick)
+            .padding(vertical = MaterialTheme.spacing.s2),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.titleSmall)
+            Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        Icon(RizqflowIcons.PanahKanan, contentDescription = null)
+    }
+}
+
 /** Data akun untuk tab Lainnya. */
 data class AccountUi(
     /** Email (akun Google) atau nama pengguna (akun lokal). */
@@ -189,6 +209,7 @@ private fun LainnyaScreen(
     onSignOut: () -> Unit,
     onDismissNotice: () -> Unit,
     onOpenRules: (() -> Unit)? = null,
+    onOpenManage: (() -> Unit)? = null,
 ) {
     val spacing = MaterialTheme.spacing
     Column(
@@ -204,22 +225,8 @@ private fun LainnyaScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = spacing.s2),
         )
-        if (onOpenRules != null) {
-            Row(
-                modifier = Modifier
-                    .padding(top = spacing.s4)
-                    .fillMaxWidth()
-                    .clickable(role = Role.Button, onClick = onOpenRules)
-                    .padding(vertical = spacing.s2),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(stringResource(R.string.menu_rules), style = MaterialTheme.typography.titleSmall)
-                    Text(stringResource(R.string.menu_rules_sub), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-                Icon(RizqflowIcons.PanahKanan, contentDescription = null)
-            }
-        }
+        if (onOpenRules != null) MenuRow(stringResource(R.string.menu_rules), stringResource(R.string.menu_rules_sub), onOpenRules)
+        if (onOpenManage != null) MenuRow(stringResource(R.string.menu_manage), stringResource(R.string.menu_manage_sub), onOpenManage)
         Text(
             stringResource(R.string.account_title),
             style = MaterialTheme.typography.titleLarge,

@@ -195,6 +195,52 @@
     <string name="detail_delete_confirm">Hapus</string>
     <string name="saved_edit">Perubahan tersimpan</string>
     <string name="deleted">Transaksi dihapus</string>
+    <string name="catat_favorite">Jadikan favorit</string>
+    <string name="catat_favorite_hint">Nominal, ruang, kategori, dan akun ikut tersimpan.</string>
+    <string name="saved_favorite">Disimpan sebagai favorit.</string>
+    <string name="saved_favorite_failed">Favorit tidak tersimpan: %1$s</string>
+
+    <!-- Kelola akun, kategori, favorit S13 -->
+    <string name="menu_manage">Akun dan kategori</string>
+    <string name="menu_manage_sub">Akun, pos pengeluaran, dan favorit</string>
+    <string name="manage_title">Akun dan kategori</string>
+    <string name="manage_tab_accounts">Akun</string>
+    <string name="manage_tab_categories">Kategori</string>
+    <string name="manage_tab_favorites">Favorit</string>
+    <string name="manage_add_account">Tambah akun</string>
+    <string name="manage_account_limit">%1$d dari %2$d akun gratis</string>
+    <string name="manage_archived">Diarsipkan (%1$d)</string>
+    <string name="manage_new_account">Akun baru</string>
+    <string name="manage_edit_account">Ubah akun</string>
+    <string name="manage_name">Nama</string>
+    <string name="manage_kind">Jenis</string>
+    <string name="manage_opening">Saldo awal</string>
+    <string name="manage_opening_hint">Uang yang sudah ada di akun ini. Bukan rezeki, jadi tidak dialirkan ke ruang.</string>
+    <string name="manage_balance">Saldo menurut catatan: %1$s</string>
+    <string name="manage_save">Simpan</string>
+    <string name="manage_archive">Arsipkan</string>
+    <string name="manage_delete">Hapus</string>
+    <string name="manage_amount">Nominal</string>
+    <string name="manage_no_rooms">Belum ada ruang. Tambah ruang di tab Ruang.</string>
+    <string name="manage_system">Kategori sistem</string>
+    <string name="manage_add_category">Tambah kategori</string>
+    <string name="manage_new_category">Kategori baru di %1$s</string>
+    <string name="manage_edit_category">Ubah kategori</string>
+    <string name="manage_archived_category">Diarsipkan: %1$s</string>
+    <string name="manage_favorites_hint">Tampil di Catat kilat (maksimal %1$d)</string>
+    <string name="manage_favorites_empty">Belum ada favorit. Jadikan favorit dari layar Catat.</string>
+    <string name="manage_favorites_create_hint">Favorit baru dibuat dari layar Catat (Jadikan favorit).</string>
+    <string name="manage_favorite_unusable">%1$s, %2$s, %3$s (tujuan sudah diarsipkan)</string>
+    <string name="manage_edit_favorite">Ubah favorit</string>
+    <string name="manage_err_taken">Nama itu sudah dipakai.</string>
+    <string name="manage_err_name">Nama tidak boleh kosong atau terlalu panjang.</string>
+    <string name="manage_err_amount">Nominal harus lebih dari nol.</string>
+    <string name="manage_err_account_limit">Batas akun paket gratis (3) tercapai. Akun tak terbatas ada di Rizqflow Pro.</string>
+    <string name="manage_err_last_account">Harus ada satu akun aktif. Tambah akun lain dulu sebelum mengarsipkan ini.</string>
+    <string name="manage_err_last_category">Ruang harus punya satu kategori aktif. Tambah kategori lain dulu.</string>
+    <string name="manage_err_system">Kategori sistem tidak bisa diubah.</string>
+    <string name="manage_err_favorite_limit">Favorit sudah 6, yang paling banyak. Hapus satu dulu.</string>
+
     <!-- Denah S05 -->
     <string name="denah_income">Rezeki bulan ini</string>
     <string name="denah_unallocated">Belum dialirkan: %1$s</string>

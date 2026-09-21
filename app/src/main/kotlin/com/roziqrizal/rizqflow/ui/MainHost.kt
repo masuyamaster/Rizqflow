@@ -8,6 +8,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import com.roziqrizal.rizqflow.domain.allocation.AllocationRule
 import com.roziqrizal.rizqflow.ui.denah.DenahScreen
+import com.roziqrizal.rizqflow.ui.kelola.KelolaScreen
+import com.roziqrizal.rizqflow.ui.kelola.manageErrorText
 import com.roziqrizal.rizqflow.ui.ruang.AturanScreen
 import com.roziqrizal.rizqflow.ui.ruang.RuangScreen
 import androidx.compose.material3.MaterialTheme
@@ -52,6 +54,7 @@ fun MainHost(
     var catat by rememberSaveable { mutableStateOf(false) }
     var editId by rememberSaveable { mutableStateOf<String?>(null) }
     var aturan by rememberSaveable { mutableStateOf(false) }
+    var kelola by rememberSaveable { mutableStateOf(false) }
     // Berubah setiap ada transaksi yang disimpan, diubah, dihapus, atau diurungkan: daftar memuat ulang.
     var version by rememberSaveable { mutableIntStateOf(0) }
     val snackbar = remember { SnackbarHostState() }
@@ -111,7 +114,14 @@ fun MainHost(
             TransactionKind.INCOME ->
                 if (saved.roomCount > 0) context.getString(R.string.saved_income, amount, saved.roomCount) else context.getString(R.string.saved_income_none, amount)
 
-            TransactionKind.EXPENSE -> context.getString(R.string.saved_expense, amount)
+            TransactionKind.EXPENSE -> {
+                val extra = when {
+                    saved.favoriteSaved -> " " + context.getString(R.string.saved_favorite)
+                    saved.favoriteError != null -> " " + context.getString(R.string.saved_favorite_failed, manageErrorText(context, saved.favoriteError))
+                    else -> ""
+                }
+                context.getString(R.string.saved_expense, amount) + extra
+            }
             TransactionKind.TRANSFER -> context.getString(R.string.saved_transfer, amount)
         }
         scope.launch {
@@ -139,6 +149,7 @@ fun MainHost(
             RuangScreen(workspace, refreshKey = version, notifier = notifier, onOpenRules = { aturan = true }, onChanged = { version++ })
         },
         onOpenRules = { aturan = true },
+        onOpenManage = { kelola = true },
     )
     val editing = editId
     if (editing != null) {
@@ -155,6 +166,13 @@ fun MainHost(
         // Surface menangkap sentuhan supaya tidak tembus ke menu utama di bawahnya.
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             CatatFlow(workspace, onClose = { catat = false }, onSaved = ::announce)
+        }
+    } else if (kelola) {
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            Box {
+                KelolaScreen(workspace = workspace, notifier = notifier, onClose = { kelola = false }, onChanged = { version++ })
+                SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp))
+            }
         }
     } else if (aturan) {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
