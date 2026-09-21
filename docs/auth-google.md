@@ -45,6 +45,10 @@ Batas yang perlu dipahami:
 4. **Hanya di ponsel ini.** Akun tidak ikut pindah ponsel. Pindah ponsel memakai cadangan terenkripsi (S19) atau masuk dengan Google. Bila Sync (fase 2) dibuat, akun lokal perlu dihubungkan ke akun sungguhan lewat backend yang memverifikasi.
 5. **Satu ponsel bisa punya beberapa akun lokal.** Data keuangan belum dipisah per akun; itu perlu diputuskan sebelum Tahap 3 memakai akun sebagai pemilik data (usulan: satu database per akun).
 
+## Status penyiapan (2026-09-21)
+
+Proyek Google Cloud **rizqflow** (`rizqflow-509308`) sudah dibuat. Klien Web (`232915442214-5fusjgtntn65tdg34km2ppra9ee6k1ka`) sudah ditempel ke `google_auth.xml`; klien Android (`232915442214-rn110tas126b9e7m5c6s7pq3lb1ojml0`, package `com.roziqrizal.rizqflow`, SHA-1 debug PC ini) terdaftar dan tidak dipakai di kode. Belum dicoba sampai masuk dengan akun sungguhan; emulator perlu akun Google dulu. Gmail (Data Access dan Gmail API) belum disiapkan.
+
 ## Yang harus Anda siapkan di Google Cloud
 
 Tombol Google menampilkan "belum disiapkan" sampai ini selesai. Saya tidak bisa membuatnya untuk Anda: klien OAuth Web dan Android hanya bisa dibuat lewat console dengan akun Google Anda (tidak ada perintah gcloud atau API untuk itu). Yang sudah saya siapkan: kodenya, nilai yang perlu Anda salin (di bawah), pemeriksa bentuk ID, dan catatan kegagalan di Logcat.
