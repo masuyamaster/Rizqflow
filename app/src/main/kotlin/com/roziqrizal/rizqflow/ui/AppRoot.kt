@@ -25,7 +25,7 @@ import com.roziqrizal.rizqflow.ui.login.RegisterScreen
  * riwayat masuk. Selama [AuthUiState.Loading] splash sistem masih menutupi layar.
  */
 @Composable
-fun AppRoot(controller: AuthController, showDebugLogin: Boolean) {
+fun AppRoot(controller: AuthController, showDebugLogin: Boolean, quickCatatRequest: Int = 0) {
     val state by controller.state.collectAsState()
     var registering by rememberSaveable { mutableStateOf(false) }
     fun openRegister(open: Boolean) {
@@ -82,6 +82,7 @@ fun AppRoot(controller: AuthController, showDebugLogin: Boolean) {
                     onConnectGmail = controller::connectGmail,
                     onSignOut = controller::signOut,
                     onDismissNotice = controller::dismissNotice,
+                    quickCatatRequest = quickCatatRequest,
                 )
             }
         }

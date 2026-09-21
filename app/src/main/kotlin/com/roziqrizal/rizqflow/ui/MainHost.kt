@@ -32,6 +32,12 @@ import com.roziqrizal.rizqflow.domain.ledger.TransactionSnapshot
 import com.roziqrizal.rizqflow.domain.model.TransactionId
 import com.roziqrizal.rizqflow.domain.model.TransactionKind
 import com.roziqrizal.rizqflow.ui.catat.CatatFlow
+import com.roziqrizal.rizqflow.ui.catat.QuickCatatSheet
+import com.roziqrizal.rizqflow.domain.ledger.FavoriteUse
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.LaunchedEffect
 import com.roziqrizal.rizqflow.ui.catat.SavedInfo
 import com.roziqrizal.rizqflow.ui.transaksi.TransaksiScreen
 import com.roziqrizal.rizqflow.workspace.AccountWorkspace
@@ -42,6 +48,7 @@ import kotlinx.coroutines.launch
  * sehingga tab yang sedang dibuka tidak hilang. Setelah menyimpan, snackbar menawarkan
  * **Urungkan**, yang menghapus transaksi itu (dan potret alokasinya).
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainHost(
     workspace: AccountWorkspace,
@@ -49,12 +56,22 @@ fun MainHost(
     onConnectGmail: () -> Unit,
     onSignOut: () -> Unit,
     onDismissNotice: () -> Unit,
+    /** Bertambah setiap ada permintaan Catat kilat dari luar (pintasan ikon, tile). */
+    quickCatatRequest: Int = 0,
 ) {
     val context = LocalContext.current
     var catat by rememberSaveable { mutableStateOf(false) }
     var editId by rememberSaveable { mutableStateOf<String?>(null) }
     var aturan by rememberSaveable { mutableStateOf(false) }
     var kelola by rememberSaveable { mutableStateOf(false) }
+    var quick by rememberSaveable { mutableStateOf(false) }
+    var handledQuick by rememberSaveable { mutableIntStateOf(0) }
+    LaunchedEffect(quickCatatRequest) {
+        if (quickCatatRequest > handledQuick) {
+            handledQuick = quickCatatRequest
+            quick = true
+        }
+    }
     // Berubah setiap ada transaksi yang disimpan, diubah, dihapus, atau diurungkan: daftar memuat ulang.
     var version by rememberSaveable { mutableIntStateOf(0) }
     val snackbar = remember { SnackbarHostState() }
@@ -77,6 +94,16 @@ fun MainHost(
         scope.launch {
             if (notifier.show(context.getString(R.string.rules_saved), undoLabel)) {
                 workspace.rules.restoreRules(previous)
+                version++
+            }
+        }
+    }
+
+    fun announceFavorite(use: FavoriteUse) {
+        version++
+        scope.launch {
+            if (notifier.show(context.getString(R.string.quick_used, use.previous.name, formatRupiah(use.transaction.amount)), undoLabel)) {
+                workspace.favorites.undoUse(use)
                 version++
             }
         }
@@ -151,6 +178,11 @@ fun MainHost(
         onOpenRules = { aturan = true },
         onOpenManage = { kelola = true },
     )
+    if (quick) {
+        ModalBottomSheet(onDismissRequest = { quick = false }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+            QuickCatatSheet(workspace = workspace, onClose = { quick = false }, onSaved = ::announce, onFavoriteUsed = ::announceFavorite)
+        }
+    }
     val editing = editId
     if (editing != null) {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {

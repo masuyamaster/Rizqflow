@@ -200,6 +200,14 @@
     <string name="saved_favorite">Disimpan sebagai favorit.</string>
     <string name="saved_favorite_failed">Favorit tidak tersimpan: %1$s</string>
 
+    <string name="shortcut_catat_short">Catat kilat</string>
+    <string name="shortcut_catat_long">Catat pengeluaran kilat</string>
+    <string name="tile_catat_label">Catat kilat</string>
+    <string name="quick_title">Catat kilat</string>
+    <string name="quick_destination">Ke %1$s, %2$s</string>
+    <string name="quick_favorites">Favorit</string>
+    <string name="quick_used">%1$s tercatat: %2$s</string>
+
     <!-- Kelola akun, kategori, favorit S13 -->
     <string name="menu_manage">Akun dan kategori</string>
     <string name="menu_manage_sub">Akun, pos pengeluaran, dan favorit</string>

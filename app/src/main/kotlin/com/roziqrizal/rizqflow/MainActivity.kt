@@ -1,9 +1,12 @@
 package com.roziqrizal.rizqflow
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.collectAsState
+import kotlinx.coroutines.flow.MutableStateFlow
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.roziqrizal.rizqflow.auth.AuthController
@@ -26,11 +29,26 @@ import java.util.UUID
  * inset sistem. Warna ikon bar sistem mengikuti tema terang atau gelap (`enableEdgeToEdge`).
  */
 class MainActivity : ComponentActivity() {
+    /** Bertambah setiap ada permintaan Catat kilat (pintasan atau tile); layar membandingkannya dengan yang sudah ditangani. */
+    private val quickCatatRequests = MutableStateFlow(0)
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        noteQuickCatat(intent)
+    }
+
+    private fun noteQuickCatat(intent: Intent?) {
+        if (intent?.action == ACTION_QUICK_CATAT) quickCatatRequests.value += 1
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         // Harus dipanggil sebelum super.onCreate: mengganti tema splash ke tema aplikasi.
         val splash = installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        // Hanya saat dibuat baru: setelah layar diputar, intent lama tidak boleh membuka sheet lagi.
+        if (savedInstanceState == null) noteQuickCatat(intent)
 
         val controller = AuthController(
             store = SharedPrefsSessionStore(this),
@@ -48,7 +66,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             RizqflowTheme {
-                AppRoot(controller = controller, showDebugLogin = BuildConfig.DEBUG)
+                AppRoot(controller = controller, showDebugLogin = BuildConfig.DEBUG, quickCatatRequest = quickCatatRequests.collectAsState().value)
             }
         }
     }
