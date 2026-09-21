@@ -423,6 +423,16 @@ I --> J["Transaksi pengeluaran di Ruang Memberi dan haul baru"]
 - S17: jumlah zakat (2,5% dari harta bersih, bisa diubah), akun sumber, konfirmasi. Hasilnya transaksi pengeluaran kategori Zakat mal di ruang Memberi.
 - Mode alternatif **Persentase donasi** untuk yang tidak memakai modul zakat: tanpa nisab dan haul.
 
+### Keputusan tambahan dari melengkapi prototipe (2026-09-21)
+
+- **S06 Transfer:** memindahkan uang antar akun; bukan pemasukan atau pengeluaran, tanpa ruang. Butuh dua akun. Pola ini datang dari data nyata, tempat transfer dicatat sebagai dua baris.
+- **S08:** kolom cari (catatan dan nominal), filter cepat Semua, Masuk, Keluar, Transfer. Baris bisa diketuk menuju S09.
+- **S09:** pengeluaran, pemasukan, dan transfer bisa diubah dan dihapus (dengan konfirmasi dan Urungkan). Alokasi pemasukan dihitung ulang dengan persentase saat itu; ruang dan persentasenya tidak bisa diedit dari sini.
+- **S10 dan S11:** tambah ruang lewat sheet (nama, tipe, ikon); ruang ke-6 memicu S21 (batas 5 ruang gratis). Arsipkan ruang lewat S11 dengan konfirmasi; ruang arsip tidak tampil dan tidak menerima alokasi baru, riwayat tetap, dan bisa dipulihkan dari baris Diarsipkan di S10. Setelah mengarsipkan, aturan alokasi perlu diatur ulang supaya total kembali 100%.
+- **S14 sampai S17:** status Belum diisi, Belum mencapai nisab, Haul berjalan, dan Haul genap. Menyimpan profil harta yang membuat harta mencapai nisab memulai haul hari itu; di bawah nisab, haul dipantau saja. Tunaikan zakat menjadi pengeluaran kategori Zakat mal di ruang Memberi lalu memulai haul baru. Mode Persentase donasi biasa menyembunyikan nisab dan haul tanpa menghapus data.
+- **S19:** PIN 6 angka diketik dua kali; lima kali salah menahan sementara (data tidak dihapus); sidik jari hanya bisa aktif setelah ada PIN.
+- **S20:** cadangan memakai sandi (minimal 6 karakter); pulihkan menanyakan berkas, sandi, lalu konfirmasi menimpa. Impor dari Transaksi Harian menampilkan pratinjau dulu dan menyatukan pasangan transfer.
+
 ### F6 Membuka fitur Pro
 
 ```mermaid

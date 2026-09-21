@@ -33,6 +33,12 @@ Langsung ke layar tertentu lewat parameter URL: `prototype.html?screen=denah&the
 | `sambutan`, `pola`, `persen`, `akun` | S01–S04 Onboarding (tambah `&template=kosong` untuk pola Mulai kosong). Tombol *Mulai dari awal* di panel kiri menjalankan seluruh F1 |
 | `kosong`, `kosong-tanpa-ruang` | S05 Denah pengguna baru: dengan pola Tiga hak, atau tanpa ruang sama sekali |
 | `aturan` (opsional `&focus=diri`) | S12 Aturan alokasi |
+| `txdetail` (opsional `&id=t7`) | S09 Detail dan edit transaksi (`t1` sampai `t7` adalah data contoh) |
+| `kelola` (opsional `&tab=kategori` atau `favorit`) | S13 Akun, kategori, dan favorit |
+| `zakat` (opsional `&haul=genap`), `harta`, `tunai` | S14 Beranda Zakat, S15 Profil harta, S17 Tunaikan zakat |
+| `keamanan`, `pin`, `kunci` | S19 Keamanan, buat PIN, simulasi kunci aplikasi |
+| `cadangan`, `impor` | S20 Backup dan restore, pratinjau impor dari Transaksi Harian |
+| `tampilan`, `tentang` | S22 Tampilan dan bahasa, S23 Tentang dan disclaimer |
 
 ## Cakupan prototipe
 
@@ -41,6 +47,8 @@ Langsung ke layar tertentu lewat parameter URL: `prototype.html?screen=denah&the
 **Ditambah 2026-09-20 (kemudahan mencatat):** S24 Catat kilat, S25 Koreksi saldo, S26 Pengingat harian, notifikasi malam dengan balasan langsung, petunjuk hari kosong di S08, saklar Jadikan favorit di S06, serta S27 Draf dari notifikasi dan S28 Tangkap otomatis (keduanya v1.1, Pro).
 
 **Flow yang bisa dicoba:**
+- **F5** dari harta sampai zakat ditunaikan: kartu Zakat di ruang Memberi atau Lainnya, Zakat; isi harta (S15); di bawah nisab dipantau, mencapai nisab memulai haul; kartu *Hanya di prototipe* mempercepat haul supaya Tunaikan zakat (S17) bisa dicoba.
+- **F7** backup dan restore: buat cadangan, ubah data, pulihkan; sandi salah dan berkas rusak menampilkan pesan tanpa menyentuh data.
 - **F1** pertama kali membuka aplikasi: S01 Sambutan, S02 pola (Tiga hak atau Mulai kosong), S03 persentase (slider, Keluarga otomatis menerima sisa sehingga total selalu 100%), S04 akun pertama dan saldo awal, lalu Denah kosong dengan dua jalan (catat rezeki pertama, atau coba data contoh). Pola Mulai kosong berakhir di Denah tanpa ruang dengan tombol Pakai pola Tiga hak.
 - **F4** ubah aturan: Ruang, Pembagian rezeki (atau Atur aturan di detail ruang), geser persentase; Simpan aktif hanya bila total 100% dan ada perubahan; keluar dengan perubahan menanyakan Buang perubahan; aturan baru langsung dipakai pemasukan berikutnya.
 - **F2** rezeki masuk dialirkan, penuh: bar dan cincin bergerak, status ruang berubah.
@@ -52,9 +60,15 @@ Langsung ke layar tertentu lewat parameter URL: `prototype.html?screen=denah&the
 
 **Ditambah 2026-09-21:** onboarding S01–S04 (flow F1), S12 Aturan alokasi (flow F4), Denah pengguna baru (kosong, tanpa ruang), dan mode demo yang terpisah dari data pengguna (penanda di header, keluar dari demo mengembalikan data pengguna). Rezeki yang tidak habis terbagi kini tersimpan sebagai "belum dialirkan" (sebelumnya hilang saat total persentase kurang dari 100%).
 
-**Belum ada:** S09, S13–S15, S17, S19, S20, S22 (selain penanda dan keluar mode demo), S23, tab Transfer di S06; flow F7 dan sebagian F5 (S14, S15, S17). Wireframe teks semuanya sudah ada di [../wireframe.md](../wireframe.md).
+**Ditambah 2026-09-21 (melengkapi seluruh layar):** S09 detail dan edit transaksi (ubah, hapus, Urungkan; pemasukan menghitung ulang alokasi dari persentase saat itu), tab Transfer di S06, pencarian dan filter di S08, tambah dan arsipkan ruang (S10, S11; ruang ke-6 memicu paywall; ruang ke-4 dan seterusnya berwarna netral), S13 akun, kategori, dan favorit, S14 sampai S17 zakat (harga emas dan harta bisa diubah, status nisab dan haul dihitung, Tunaikan zakat membuat transaksi dan memulai haul baru; tanggal Hijriyah dari kalender Umm al-Qura milik browser), S19 keamanan (buat PIN dua kali, kunci simulasi, salah lima kali menahan sementara), S20 backup dan restore (sandi, sandi salah, berkas rusak, konfirmasi timpa, ekspor CSV, pratinjau impor), S22 tampilan, S23 tentang. Pembulatan alokasi kini sisa terbesar, sama dengan `AllocationEngine` di `:domain`.
 
-**Diuji 2026-09-21:** skrip klik otomatis baru (Chrome headless, tidak disimpan di repo) menjalankan 82 pemeriksaan: regresi F2 dan F3, F1 penuh (kedua pola, batas slider, nama akun wajib), rezeki pertama di data baru, F4 (total 105%, simpan, buang perubahan, aturan baru dipakai), jalur tanpa ruang (sisa tidak menggandakan saldo), mode demo, dan Tangkap otomatis di data baru; tanpa galat konsol. Layar baru diperiksa di mode terang, gelap, dan teks 200% tanpa overflow.
+**Belum ada:** tidak ada layar S01–S28 yang belum dibuat. Yang masih disimulasikan: pembayaran, izin, notifikasi, berbagi berkas, pilih berkas CSV, sidik jari, dan harga emas otomatis. Wireframe teks ada di [../wireframe.md](../wireframe.md).
+
+**Diuji layar lengkap 2026-09-21:** 116 pemeriksaan klik otomatis (Chrome headless, tidak disimpan di repo) untuk tab Transfer, S08 sampai S10, S13 sampai S15, S17, S19, S20, S22, dan S23, ditambah pemeriksaan overflow 15 layar di mode gelap dan teks 200%; tanpa galat konsol. Bersama 82 pemeriksaan layar awal, seluruhnya lulus.
+
+**Diuji dengan pola data nyata 2026-09-21:** 26 baris representatif dari Transaksi Harian (deskripsi panjang, catatan panjang, pasangan transfer, gaji Rp 17.805.137) dimuat ke prototipe di salinan sementara (isi data nyata tidak masuk repo). Temuan tata letak di teks 200%: baris daftar terjepit karena nominal 8 digit berdampingan dengan teks (nominal kini pindah ke baris bawah pada 150% dan 200%), keterangan yang tidak terpecah, dan kolom cari terpotong (teksnya dipendekkan). Pembagian Rp 17.805.137 menjadi 1.780.514 / 5.341.541 / 10.683.082 habis tanpa selisih. Temuan tentang data (transfer dua baris, tanda nominal tidak konsisten) ada di [../model-data.md](../model-data.md).
+
+**Diuji 2026-09-21 (layar awal):** skrip klik otomatis baru (Chrome headless, tidak disimpan di repo) menjalankan 82 pemeriksaan: regresi F2 dan F3, F1 penuh (kedua pola, batas slider, nama akun wajib), rezeki pertama di data baru, F4 (total 105%, simpan, buang perubahan, aturan baru dipakai), jalur tanpa ruang (sisa tidak menggandakan saldo), mode demo, dan Tangkap otomatis di data baru; tanpa galat konsol. Layar baru diperiksa di mode terang, gelap, dan teks 200% tanpa overflow.
 
 **Diuji sebelumnya:** skrip klik otomatis (Chrome headless) menjalankan F2 dan F3 termasuk Urungkan tanpa error konsol; tampilan diperiksa di mode terang, gelap, dan teks 150% dan 200%. Pembaruan 2026-09-20: skrip klik otomatis baru (Chrome headless, tidak disimpan di repo) menjalankan 63 pemeriksaan untuk F2, F3, F6, F8, dan F9 tanpa galat konsol; layar baru diperiksa di mode gelap dan teks 200%, yang menemukan keterangan draf pecah baris dan sudah diperbaiki.
 

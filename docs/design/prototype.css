@@ -1670,3 +1670,81 @@ details.card[open] summary {
 .empty-card .list-row__sub {
   margin: var(--rf-space-1) 0 0;
 }
+
+/* ---------- Layar tambahan: PIN, profil harta, kartu simulasi ---------- */
+
+.pin-dots {
+  display: flex;
+  justify-content: center;
+  gap: var(--rf-space-3);
+  margin: var(--rf-space-4) 0 var(--rf-space-2);
+}
+
+.pin-dot {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--rf-outline);
+  border-radius: var(--rf-radius-full);
+}
+
+.pin-dot.is-on {
+  border-color: var(--rf-primary);
+  background: var(--rf-primary);
+}
+
+.pin-error {
+  min-height: 1.4em;
+  margin: 0;
+  text-align: center;
+  font-size: var(--rf-size-label);
+  font-weight: 700;
+  color: var(--rf-on-surface-variant);
+}
+
+.harta-row {
+  padding: var(--rf-space-3) 0;
+  border-bottom: var(--rf-border);
+}
+
+.harta-row__head {
+  display: flex;
+  align-items: center;
+  gap: var(--rf-space-2);
+  margin-bottom: var(--rf-space-2);
+}
+
+.harta-row__head .icon-btn {
+  flex: none;
+  margin-left: 0;
+}
+
+.sim-card {
+  margin-top: var(--rf-space-4);
+  border-style: dashed;
+}
+
+/* ---------- Teks besar (150% dan 200%): baris daftar tidak terjepit ---------- */
+
+.list-row__sub {
+  overflow-wrap: anywhere;
+}
+
+.phone[data-scale='1.5'] .list-row,
+.phone[data-scale='2'] .list-row,
+.phone[data-scale='1.5'] .pending,
+.phone[data-scale='2'] .pending {
+  flex-wrap: wrap;
+}
+
+.phone[data-scale='1.5'] .list-row__main,
+.phone[data-scale='2'] .list-row__main,
+.phone[data-scale='1.5'] .pending__text,
+.phone[data-scale='2'] .pending__text {
+  flex: 1 1 7em;
+}
+
+.phone[data-scale='1.5'] .list-row__end,
+.phone[data-scale='2'] .list-row__end {
+  flex: 1 0 100%;
+  text-align: right;
+}
