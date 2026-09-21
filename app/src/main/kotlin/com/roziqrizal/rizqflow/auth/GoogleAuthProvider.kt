@@ -1,6 +1,7 @@
 package com.roziqrizal.rizqflow.auth
 
 import android.app.Activity
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,7 +30,10 @@ import kotlin.coroutines.resume
  * Masuk dengan Google lewat Credential Manager, dan izin baca Gmail lewat AuthorizationClient.
  *
  * Butuh **Web client ID** dari proyek Google Cloud pemilik (resource `google_web_client_id`),
- * lihat docs/auth-google.md. Selama kosong, keduanya mengembalikan `NotConfigured`.
+ * lihat docs/auth-google.md. Selama kosong atau bukan berbentuk client ID Google, keduanya
+ * mengembalikan `NotConfigured`. Kegagalan dari Google dicatat di Logcat (tag `RizqflowGoogle`)
+ * supaya salah konfigurasi (SHA-1, package, layar persetujuan) mudah dilacak; pengguna hanya
+ * melihat pesan lembut.
  *
  * Aplikasi tidak menyimpan ID token maupun token akses: identitas dipakai untuk mengenali akun,
  * dan tidak ada server Rizqflow yang menerimanya. Harus dibuat di `onCreate` Activity karena
@@ -41,6 +45,11 @@ class GoogleAuthProvider(
 ) : AuthProvider {
 
     private val credentialManager = CredentialManager.create(activity)
+    private val configured = GoogleClientId.isValid(webClientId).also { ok ->
+        if (!ok && webClientId.isNotBlank()) {
+            Log.w(TAG, "google_web_client_id bukan berbentuk client ID Google (<angka>-<kode>.apps.googleusercontent.com); tombol Google dinonaktifkan")
+        }
+    }
 
     /** Izin yang tertunda menunggu layar persetujuan Google selesai. */
     private var pendingConsent: CancellableContinuation<GmailConnectResult>? = null
@@ -56,13 +65,14 @@ class GoogleAuthProvider(
             val granted = Identity.getAuthorizationClient(activity).getAuthorizationResultFromIntent(result.data)
             if (granted.grantedScopes.contains(GMAIL_READONLY)) GmailConnectResult.Connected else GmailConnectResult.Denied
         } catch (e: ApiException) {
+            Log.w(TAG, "membaca hasil izin Gmail gagal: kode ${e.statusCode}", e)
             GmailConnectResult.Failed(e.message ?: "gagal membaca hasil izin")
         }
         continuation.resume(outcome)
     }
 
     override suspend fun signInWithGoogle(): SignInResult {
-        if (webClientId.isBlank()) return SignInResult.NotConfigured
+        if (!configured) return SignInResult.NotConfigured
         val request = GetCredentialRequest.Builder()
             .addCredentialOption(GetSignInWithGoogleOption.Builder(webClientId).build())
             .build()
@@ -84,14 +94,18 @@ class GoogleAuthProvider(
         } catch (e: GetCredentialCancellationException) {
             SignInResult.Cancelled
         } catch (e: NoCredentialException) {
+            Log.w(TAG, "tidak ada akun Google di perangkat (tambahkan di Pengaturan, Akun)", e)
             SignInResult.Failed("tidak ada akun Google di perangkat")
         } catch (e: GetCredentialException) {
+            // Salah konfigurasi biasanya muncul di sini: SHA-1 atau package belum didaftarkan di client ID Android,
+            // atau proyek masih berstatus Testing dan akun belum jadi Test user. Lihat docs/auth-google.md.
+            Log.w(TAG, "masuk dengan Google gagal: ${e.type}: ${e.message}", e)
             SignInResult.Failed(e.message ?: "gagal masuk")
         }
     }
 
     override suspend fun connectGmail(): GmailConnectResult {
-        if (webClientId.isBlank()) return GmailConnectResult.NotConfigured
+        if (!configured) return GmailConnectResult.NotConfigured
         val request = AuthorizationRequest.Builder()
             .setRequestedScopes(listOf(Scope(GMAIL_READONLY)))
             .build()
@@ -106,12 +120,17 @@ class GoogleAuthProvider(
                         continuation.resume(GmailConnectResult.Connected)
                     }
                 }
-                .addOnFailureListener { e -> continuation.resume(GmailConnectResult.Failed(e.message ?: "gagal meminta izin")) }
+                .addOnFailureListener { e ->
+                    Log.w(TAG, "meminta izin Gmail gagal (kode ${(e as? ApiException)?.statusCode})", e)
+                    continuation.resume(GmailConnectResult.Failed(e.message ?: "gagal meminta izin"))
+                }
             continuation.invokeOnCancellation { pendingConsent = null }
         }
     }
 
     private companion object {
+        const val TAG = "RizqflowGoogle"
+
         /** Izin baca saja. Ini cakupan terbatas (restricted) di Google: lihat docs/auth-google.md. */
         const val GMAIL_READONLY = "https://www.googleapis.com/auth/gmail.readonly"
     }

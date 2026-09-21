@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import com.roziqrizal.rizqflow.auth.AuthController
 import com.roziqrizal.rizqflow.auth.AuthUiState
 import com.roziqrizal.rizqflow.auth.GoogleAuthProvider
+import com.roziqrizal.rizqflow.auth.GoogleClientId
 import com.roziqrizal.rizqflow.auth.SharedPrefsAccountStore
 import com.roziqrizal.rizqflow.auth.SharedPrefsSessionStore
 import com.roziqrizal.rizqflow.domain.auth.LocalAccountService
@@ -33,7 +34,7 @@ class MainActivity : ComponentActivity() {
 
         val controller = AuthController(
             store = SharedPrefsSessionStore(this),
-            provider = GoogleAuthProvider(this, getString(R.string.google_web_client_id)),
+            provider = GoogleAuthProvider(this, GoogleClientId.clean(getString(R.string.google_web_client_id))),
             accounts = LocalAccountService(
                 store = SharedPrefsAccountStore(this),
                 hasher = Pbkdf2PasswordHasher(),
