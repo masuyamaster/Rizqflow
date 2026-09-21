@@ -25,6 +25,9 @@ enum class LedgerError {
     SAME_ACCOUNT,
     TRANSACTION_NOT_FOUND,
     NOT_AN_INCOME,
+
+    /** Isian layar ubah tidak sejenis dengan transaksinya (misalnya isian pengeluaran untuk pemasukan). */
+    KIND_MISMATCH,
     NOTE_TOO_LONG,
     SOURCE_TOO_LONG,
     INVALID_NAME,
@@ -71,6 +74,9 @@ data class NewTransfer(
     val occurredOn: LocalDate,
     val note: String? = null,
 )
+
+/** Keadaan satu transaksi beserta potret alokasinya: bahan Urungkan setelah ubah atau hapus. */
+data class TransactionSnapshot(val transaction: MoneyTransaction, val entries: List<AllocationEntry>)
 
 /** Jatah ruang bulan itu terlampaui bila pengeluaran disimpan: [spentAfter] sudah termasuk pengeluaran yang sedang dicatat. */
 data class BudgetWarning(val room: Room, val allocated: Money, val spentAfter: Money)
@@ -194,6 +200,95 @@ class LedgerService(
         return LedgerResult.Success(IncomeReceipt(updated, allocation))
     }
 
+    /** Keadaan sekarang sebuah transaksi (dengan potret alokasinya bila pemasukan); dipegang layar sebelum menghapus supaya bisa diurungkan. */
+    suspend fun snapshotOf(id: TransactionId): TransactionSnapshot? {
+        val tx = transactions.find(id) ?: return null
+        return TransactionSnapshot(tx, if (tx.kind == TransactionKind.INCOME) transactions.entriesOf(id) else emptyList())
+    }
+
+    /**
+     * Mengubah transaksi dari isian layar Detail (S09). Jenis transaksi tidak bisa diganti. Pemasukan:
+     * nominal baru dihitung ulang dengan persentase potret lama (ruang dan persentasenya tidak berubah);
+     * tanpa perubahan nominal, potret dibiarkan. Akun, ruang, atau kategori yang sudah terarsip boleh
+     * tetap dipakai selama tidak diganti. Hasilnya adalah keadaan **sebelum** diubah, untuk Urungkan.
+     */
+    suspend fun updateTransaction(id: TransactionId, draft: CatatDraft): LedgerResult<TransactionSnapshot> {
+        val current = transactions.find(id) ?: return failure(LedgerError.TRANSACTION_NOT_FOUND)
+        val kind = when (draft.mode) {
+            CatatMode.INCOME -> TransactionKind.INCOME
+            CatatMode.EXPENSE -> TransactionKind.EXPENSE
+            CatatMode.TRANSFER -> TransactionKind.TRANSFER
+        }
+        if (current.kind != kind) return failure(LedgerError.KIND_MISMATCH)
+        val amount = draft.amount
+        if (!amount.isPositive) return failure(LedgerError.AMOUNT_NOT_POSITIVE)
+        if (amount.currency != current.amount.currency) return failure(LedgerError.CURRENCY_MISMATCH)
+        val note = cleanNote(draft.note) ?: return failure(LedgerError.NOTE_TOO_LONG)
+        val before = snapshotOf(id) ?: return failure(LedgerError.TRANSACTION_NOT_FOUND)
+        val now = nowMillis()
+
+        when (kind) {
+            TransactionKind.INCOME -> {
+                val source = cleanSource(draft.source) ?: return failure(LedgerError.SOURCE_TOO_LONG)
+                val accountId = draft.accountId ?: return failure(LedgerError.ACCOUNT_NOT_FOUND)
+                checkAccount(accountId, amount, unchanged = current.accountId)?.let { return failure(it) }
+                val entries = if (amount == current.amount) {
+                    before.entries
+                } else {
+                    val allocation = AllocationEngine.allocate(amount, before.entries.map { AllocationRule(it.roomId, it.share) })
+                    before.entries.zip(allocation.shares) { entry, share -> entry.copy(amount = share.amount) }
+                }
+                val updated = current.copy(
+                    amount = amount, accountId = accountId, incomeSource = source.value,
+                    occurredOn = draft.date, note = note.value, updatedAtMillis = now,
+                )
+                transactions.replaceIncome(updated, entries)
+            }
+
+            TransactionKind.EXPENSE -> {
+                val accountId = draft.accountId ?: return failure(LedgerError.ACCOUNT_NOT_FOUND)
+                checkAccount(accountId, amount, unchanged = current.accountId)?.let { return failure(it) }
+                val room = rooms.find(draft.roomId ?: return failure(LedgerError.ROOM_NOT_FOUND)) ?: return failure(LedgerError.ROOM_NOT_FOUND)
+                if (room.archived && room.id != current.roomId) return failure(LedgerError.ROOM_ARCHIVED)
+                val category = rooms.findCategory(draft.categoryId ?: return failure(LedgerError.CATEGORY_NOT_IN_ROOM))
+                if (category == null || category.roomId != room.id || (category.archived && category.id != current.categoryId)) {
+                    return failure(LedgerError.CATEGORY_NOT_IN_ROOM)
+                }
+                transactions.update(
+                    current.copy(
+                        amount = amount, accountId = accountId, roomId = room.id, categoryId = category.id,
+                        occurredOn = draft.date, note = note.value, updatedAtMillis = now,
+                    ),
+                )
+            }
+
+            TransactionKind.TRANSFER -> {
+                val from = draft.accountId ?: return failure(LedgerError.ACCOUNT_NOT_FOUND)
+                val to = draft.toAccountId ?: return failure(LedgerError.ACCOUNT_NOT_FOUND)
+                if (from == to) return failure(LedgerError.SAME_ACCOUNT)
+                checkAccount(from, amount, unchanged = current.accountId)?.let { return failure(it) }
+                checkAccount(to, amount, unchanged = current.toAccountId)?.let { return failure(it) }
+                transactions.update(
+                    current.copy(amount = amount, accountId = from, toAccountId = to, occurredOn = draft.date, note = note.value, updatedAtMillis = now),
+                )
+            }
+        }
+        return LedgerResult.Success(before)
+    }
+
+    /** Mengembalikan transaksi ke keadaan [snapshot]: menghidupkan lagi yang dihapus, atau membatalkan perubahan. Dasar tombol Urungkan. */
+    suspend fun restore(snapshot: TransactionSnapshot) {
+        val tx = snapshot.transaction
+        val exists = transactions.find(tx.id) != null
+        when {
+            tx.kind == TransactionKind.INCOME ->
+                if (exists) transactions.replaceIncome(tx, snapshot.entries) else transactions.saveIncome(tx, snapshot.entries)
+
+            exists -> transactions.update(tx)
+            else -> transactions.save(tx)
+        }
+    }
+
     suspend fun delete(id: TransactionId): LedgerResult<Unit> {
         transactions.find(id) ?: return failure(LedgerError.TRANSACTION_NOT_FOUND)
         transactions.delete(id)
@@ -212,18 +307,23 @@ class LedgerService(
      * bila jatah bulan itu ada (di atas nol); bulan tanpa pemasukan tidak memunculkan banner terus-menerus.
      * Tidak pernah menghalangi menyimpan. Bulan mengikuti kalender Masehi.
      */
-    suspend fun budgetWarning(roomId: RoomId, amount: Money, date: LocalDate): BudgetWarning? {
+    suspend fun budgetWarning(roomId: RoomId, amount: Money, date: LocalDate, excluding: TransactionId? = null): BudgetWarning? {
         val room = rooms.find(roomId) ?: return null
         val month = YearMonth.from(date)
         val totals = transactions.roomTotals(month.atDay(1), month.atEndOfMonth())
         val allocated = totals.allocated[roomId] ?: Money.zero(amount.currency)
-        val spentAfter = (totals.spent[roomId] ?: Money.zero(amount.currency)) + amount
+        var spent = totals.spent[roomId] ?: Money.zero(amount.currency)
+        // Saat mengubah pengeluaran, nilai lamanya sudah ada di terpakai bulan itu dan tidak boleh terhitung dua kali.
+        val own = excluding?.let { transactions.find(it) }
+        if (own != null && own.kind == TransactionKind.EXPENSE && own.roomId == roomId && YearMonth.from(own.occurredOn) == month) spent -= own.amount
+        val spentAfter = spent + amount
         return if (allocated.isPositive && spentAfter > allocated) BudgetWarning(room, allocated, spentAfter) else null
     }
 
-    private suspend fun checkAccount(id: AccountId, amount: Money): LedgerError? {
+    /** [unchanged]: akun yang sudah dipakai transaksi ini; boleh tetap dipakai walau sudah terarsip. */
+    private suspend fun checkAccount(id: AccountId, amount: Money, unchanged: AccountId? = null): LedgerError? {
         val account = accounts.find(id) ?: return LedgerError.ACCOUNT_NOT_FOUND
-        if (account.archived) return LedgerError.ACCOUNT_ARCHIVED
+        if (account.archived && id != unchanged) return LedgerError.ACCOUNT_ARCHIVED
         if (account.currency != amount.currency) return LedgerError.CURRENCY_MISMATCH
         return null
     }

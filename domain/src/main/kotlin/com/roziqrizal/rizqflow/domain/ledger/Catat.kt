@@ -131,6 +131,23 @@ data class CatatDraft(
     fun toTransfer(): NewTransfer = NewTransfer(amount, requireNotNull(accountId), requireNotNull(toAccountId), date, note)
 
     companion object {
+        /** Isian layar Detail (S09): semua kolom diisi dari [transaction] apa adanya, tanpa dinormalkan. */
+        fun from(transaction: MoneyTransaction): CatatDraft = CatatDraft(
+            mode = when (transaction.kind) {
+                TransactionKind.INCOME -> CatatMode.INCOME
+                TransactionKind.EXPENSE -> CatatMode.EXPENSE
+                TransactionKind.TRANSFER -> CatatMode.TRANSFER
+            },
+            digits = transaction.amount.minor.toString(),
+            source = transaction.incomeSource,
+            accountId = transaction.accountId,
+            toAccountId = transaction.toAccountId,
+            roomId = transaction.roomId,
+            categoryId = transaction.categoryId,
+            date = transaction.occurredOn,
+            note = transaction.note.orEmpty(),
+        )
+
         /** Isian awal: akun terakhir dipakai, ruang dan kategori dari pengeluaran terakhir, tanggal hari ini. */
         fun start(context: CatatContext, today: LocalDate, mode: CatatMode = CatatMode.INCOME): CatatDraft {
             val account = context.lastAccountId?.takeIf { id -> context.accounts.any { it.id == id } }
@@ -155,21 +172,35 @@ class CatatContextLoader(
     private val rooms: RoomRepository,
     private val transactions: TransactionRepository,
 ) {
-    suspend fun load(): CatatContext {
-        val activeAccounts = accounts.activeAccounts()
-        val activeRooms = rooms.activeRooms()
+    /**
+     * [editing]: transaksi yang sedang diubah. Akun, ruang, dan kategori yang dipakainya ikut dimuat walau
+     * sudah terarsip, supaya tetap muncul sebagai pilihan dan tidak diganti diam-diam.
+     */
+    suspend fun load(editing: MoneyTransaction? = null): CatatContext {
+        val activeAccounts = accounts.activeAccounts().withUsed(listOfNotNull(editing?.accountId, editing?.toAccountId)) { accounts.find(it) }
+        val activeRooms = rooms.activeRooms().withUsed(listOfNotNull(editing?.roomId)) { rooms.find(it) }
         val lastAny = transactions.latest(null)
         val lastExpense = transactions.latest(TransactionKind.EXPENSE)
         return CatatContext(
             accounts = activeAccounts,
             rooms = activeRooms,
-            categories = activeRooms.associate { it.id to rooms.categories(it.id) },
+            categories = activeRooms.associate { room ->
+                val own = rooms.categories(room.id)
+                val used = editing?.takeIf { it.roomId == room.id }?.categoryId?.takeIf { id -> own.none { c -> c.id == id } }?.let { rooms.findCategory(it) }
+                room.id to (own + listOfNotNull(used))
+            },
             rules = rooms.rules(),
             lastAccountId = lastAny?.accountId,
             lastRoomId = lastExpense?.roomId,
             lastCategoryId = lastExpense?.categoryId,
         )
     }
+}
+
+/** Menambahkan yang dipakai transaksi tetapi tidak ada di daftar aktif (mis. terarsip), di belakang yang aktif. */
+private suspend fun <T : Any, I> List<T>.withUsed(ids: List<I>, find: suspend (I) -> T?): List<T> {
+    val extras = ids.distinct().mapNotNull { find(it) }.filter { extra -> this.none { it == extra } }
+    return this + extras
 }
 
 /**

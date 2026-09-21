@@ -49,6 +49,8 @@ class InMemoryLedger : WorkspaceRepository, AccountRepository, RoomRepository, T
 
     override suspend fun activeAccounts() = accountRows.values.filter { !it.archived }.sortedBy { it.sortOrder }
 
+    override suspend fun allAccounts() = accountRows.values.sortedBy { it.sortOrder }
+
     override suspend fun save(account: Account) {
         accountRows[account.id] = account
     }
@@ -71,6 +73,10 @@ class InMemoryLedger : WorkspaceRepository, AccountRepository, RoomRepository, T
 
     // ---- RoomRepository
     override suspend fun activeRooms() = roomRows.values.filter { !it.archived }.sortedBy { it.sortOrder }
+
+    override suspend fun allRooms() = roomRows.values.sortedBy { it.sortOrder }
+
+    override suspend fun allCategories() = categoryRows.values.toList()
 
     override suspend fun find(id: RoomId) = roomRows[id]
 
@@ -111,6 +117,12 @@ class InMemoryLedger : WorkspaceRepository, AccountRepository, RoomRepository, T
 
     override suspend fun save(transaction: MoneyTransaction) {
         maybeFail()
+        transactionRows[transaction.id] = transaction
+    }
+
+    override suspend fun update(transaction: MoneyTransaction) {
+        maybeFail()
+        check(transaction.id in transactionRows) { "transaksi belum ada" }
         transactionRows[transaction.id] = transaction
     }
 

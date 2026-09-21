@@ -11,11 +11,13 @@ import com.roziqrizal.rizqflow.domain.entitlement.PlanEntitlements
 import com.roziqrizal.rizqflow.domain.ledger.Account
 import com.roziqrizal.rizqflow.domain.ledger.AllocationEntry
 import com.roziqrizal.rizqflow.domain.ledger.CatatContextLoader
+import com.roziqrizal.rizqflow.domain.ledger.CatatDraft
 import com.roziqrizal.rizqflow.domain.ledger.Category
 import com.roziqrizal.rizqflow.domain.ledger.FirstAccount
 import com.roziqrizal.rizqflow.domain.ledger.IncomeReceipt
 import com.roziqrizal.rizqflow.domain.ledger.LedgerResult
 import com.roziqrizal.rizqflow.domain.ledger.LedgerService
+import com.roziqrizal.rizqflow.domain.ledger.ListFilter
 import com.roziqrizal.rizqflow.domain.ledger.MoneyTransaction
 import com.roziqrizal.rizqflow.domain.ledger.NewExpense
 import com.roziqrizal.rizqflow.domain.ledger.NewIncome
@@ -25,6 +27,7 @@ import com.roziqrizal.rizqflow.domain.ledger.OneTimeSplit
 import com.roziqrizal.rizqflow.domain.ledger.Room
 import com.roziqrizal.rizqflow.domain.ledger.RoomTemplate
 import com.roziqrizal.rizqflow.domain.ledger.RuleService
+import com.roziqrizal.rizqflow.domain.ledger.TransactionLister
 import com.roziqrizal.rizqflow.domain.ledger.WorkspaceSetup
 import com.roziqrizal.rizqflow.domain.model.AccountId
 import com.roziqrizal.rizqflow.domain.model.AccountKind
@@ -43,6 +46,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.time.LocalDate
+import java.time.YearMonth
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
@@ -488,5 +492,118 @@ class LocalLedgerTest {
 
         assertEquals(listOf(500_000L, 300_000L, 200_000L), entryAmounts(receipt.transaction.id))
         assertEquals(listOf(1_000, 3_000, 6_000), runBlocking { local.rooms.rules() }.map { it.share.value })
+    }
+
+    // ------------------------------------------------------------------ Daftar (S08) dan ubah (S09)
+
+    private fun expense(amount: Long, on: LocalDate = day, roomName: String = "Keluarga", categoryName: String = "Belanja bulanan", note: String? = null, accountId: AccountId = account().id) =
+        runBlocking {
+            (service.recordExpense(NewExpense(rupiah(amount), accountId, room(roomName).id, category(roomName, categoryName).id, on, note)) as LedgerResult.Success).value
+        }
+
+    @Test
+    fun `daftar transaksi sebulan dikelompokkan dan disaring dari database`() {
+        standard()
+        income(8_500_000, on = LocalDate.of(2026, 9, 1))
+        expense(150_000, on = LocalDate.of(2026, 9, 18), note = "Belanja pasar")
+        expense(200_000, on = LocalDate.of(2026, 9, 18), categoryName = "Listrik dan air", note = "Token listrik")
+        expense(9_999, on = LocalDate.of(2026, 10, 2), note = "Oktober")
+        val lister = TransactionLister(local.accounts, local.rooms, local.transactions)
+
+        val semua = runBlocking { lister.list(ListFilter(YearMonth.of(2026, 9))) }
+        assertEquals(listOf(18, 1), semua.groups.map { it.date.dayOfMonth })
+        assertEquals(3, semua.count)
+        assertEquals(3, semua.groups.last().rows.single().allocatedRoomCount)
+
+        val keluar = runBlocking { lister.list(ListFilter(YearMonth.of(2026, 9), kinds = setOf(TransactionKind.EXPENSE), query = "listrik")) }
+        assertEquals(listOf("Token listrik"), keluar.groups.flatMap { g -> g.rows.map { it.transaction.note } })
+        assertEquals("Listrik dan air", keluar.groups.single().rows.single().categoryName)
+        assertEquals(1, runBlocking { lister.list(ListFilter(YearMonth.of(2026, 10))) }.count)
+    }
+
+    @Test
+    fun `semua akun ruang dan kategori termasuk terarsip tersedia untuk riwayat`() {
+        standard()
+        val lama = Account(AccountId("lama"), "Lama", AccountKind.CASH, rupiah(0), archived = true, sortOrder = 9)
+        runBlocking { local.accounts.save(lama) }
+        val diri = room("Diri")
+        runBlocking { db.rooms().upsert(diri.copy(archived = true).toEntity()) }
+
+        assertEquals(listOf("Dompet", "Lama"), runBlocking { local.accounts.allAccounts() }.map { it.name })
+        assertEquals(listOf("Memberi", "Diri", "Keluarga"), runBlocking { local.rooms.allRooms() }.map { it.name })
+        assertTrue(runBlocking { local.rooms.allCategories() }.any { it.name == "Investasi" }, "kategori ruang terarsip ikut")
+    }
+
+    @Test
+    fun `ubah pengeluaran tersimpan di database dan bisa dipulihkan`() {
+        standard()
+        val tx = expense(150_000, note = "Belanja pasar")
+        now = 9_000L
+
+        val before = runBlocking {
+            (service.updateTransaction(tx.id, CatatDraft.from(tx).copy(digits = "175000", note = "Belanja")) as LedgerResult.Success).value
+        }
+
+        val sekarang = runBlocking { local.transactions.find(tx.id) }!!
+        assertEquals(rupiah(175_000), sekarang.amount)
+        assertEquals("Belanja", sekarang.note)
+        assertEquals(tx.createdAtMillis, sekarang.createdAtMillis)
+        assertEquals(9_000L, sekarang.updatedAtMillis)
+        assertEquals(rupiah(325_000), runBlocking { local.accounts.balance(account().id) })
+
+        runBlocking { service.restore(before) }
+        assertEquals(tx, runBlocking { local.transactions.find(tx.id) })
+    }
+
+    @Test
+    fun `ubah nominal pemasukan lewat detail menghitung ulang potret di database`() {
+        standard()
+        val income = income(1_000_000).transaction
+
+        runBlocking { service.updateTransaction(income.id, CatatDraft.from(income).copy(digits = "2000000")) }
+
+        assertEquals(listOf(200_000L, 600_000L, 1_200_000L), entryAmounts(income.id))
+        assertEquals(rupiah(2_000_000), runBlocking { local.transactions.find(income.id) }!!.amount)
+    }
+
+    @Test
+    fun `hapus lalu pulihkan pemasukan mengembalikan transaksi dan potret alokasinya`() {
+        standard()
+        val income = income(1_000_000).transaction
+        val snapshot = runBlocking { service.snapshotOf(income.id) }!!
+
+        runBlocking { service.delete(income.id) }
+        assertNull(runBlocking { local.transactions.find(income.id) })
+        assertTrue(runBlocking { db.transactions().entriesOf(income.id.value) }.isEmpty())
+
+        runBlocking { service.restore(snapshot) }
+        assertEquals(income, runBlocking { local.transactions.find(income.id) })
+        assertEquals(listOf(100_000L, 300_000L, 600_000L), entryAmounts(income.id))
+    }
+
+    @Test
+    fun `konteks ubah memuat akun terarsip yang dipakai transaksi dari database`() {
+        standard()
+        val bank = Account(AccountId("bank"), "Bank", AccountKind.BANK, rupiah(0), sortOrder = 1)
+        runBlocking { local.accounts.save(bank) }
+        val tx = expense(1_000, accountId = bank.id)
+        runBlocking { local.accounts.save(bank.copy(archived = true)) }
+
+        val biasa = runBlocking { CatatContextLoader(local.accounts, local.rooms, local.transactions).load() }
+        val ubah = runBlocking { CatatContextLoader(local.accounts, local.rooms, local.transactions).load(tx) }
+
+        assertTrue(biasa.accounts.none { it.id == bank.id })
+        assertTrue(ubah.accounts.any { it.id == bank.id })
+    }
+
+    @Test
+    fun `banner jatah saat mengubah tidak menghitung pengeluaran lama dua kali`() {
+        standard()
+        income(1_000_000)
+        val tx = expense(500_000)
+        val keluarga = room("Keluarga").id
+
+        assertNull(runBlocking { service.budgetWarning(keluarga, rupiah(600_000), day, excluding = tx.id) })
+        assertNotNull(runBlocking { service.budgetWarning(keluarga, rupiah(600_000), day) })
     }
 }

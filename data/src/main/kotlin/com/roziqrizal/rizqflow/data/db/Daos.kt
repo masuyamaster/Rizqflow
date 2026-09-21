@@ -32,6 +32,9 @@ interface AccountDao {
     @Query("SELECT * FROM account WHERE archived = 0 ORDER BY sort_order")
     suspend fun active(): List<AccountEntity>
 
+    @Query("SELECT * FROM account ORDER BY sort_order")
+    suspend fun all(): List<AccountEntity>
+
     /** Saldo menurut catatan: saldo awal + pemasukan - pengeluaran +/- transfer. */
     @Query(
         """
@@ -59,6 +62,12 @@ interface RoomDao {
 
     @Query("SELECT * FROM room WHERE archived = 0 ORDER BY sort_order")
     suspend fun active(): List<RoomEntity>
+
+    @Query("SELECT * FROM room ORDER BY sort_order")
+    suspend fun all(): List<RoomEntity>
+
+    @Query("SELECT * FROM category ORDER BY room_id, sort_order")
+    suspend fun allCategories(): List<CategoryEntity>
 
     @Upsert
     suspend fun upsertRule(rule: AllocationRuleEntity)

@@ -37,6 +37,9 @@ interface AccountRepository {
     /** Akun yang belum diarsipkan, berurutan. */
     suspend fun activeAccounts(): List<Account>
 
+    /** Semua akun termasuk yang terarsip: riwayat transaksi tetap menampilkan nama akunnya. */
+    suspend fun allAccounts(): List<Account>
+
     suspend fun save(account: Account)
 
     /** Saldo menurut catatan: saldo awal + pemasukan - pengeluaran +/- transfer. */
@@ -46,6 +49,12 @@ interface AccountRepository {
 interface RoomRepository {
     /** Ruang yang belum diarsipkan, berurutan menurut prioritas. */
     suspend fun activeRooms(): List<Room>
+
+    /** Semua ruang termasuk yang terarsip (untuk riwayat). */
+    suspend fun allRooms(): List<Room>
+
+    /** Semua kategori termasuk yang terarsip (untuk riwayat). */
+    suspend fun allCategories(): List<Category>
 
     suspend fun find(id: RoomId): Room?
 
@@ -77,6 +86,9 @@ interface TransactionRepository {
 
     /** Menyimpan pengeluaran atau transfer. */
     suspend fun save(transaction: MoneyTransaction)
+
+    /** Menimpa pengeluaran atau transfer yang sudah ada (untuk pemasukan pakai [replaceIncome]). */
+    suspend fun update(transaction: MoneyTransaction)
 
     /** Mengganti pemasukan dan seluruh potret alokasinya (atomik). */
     suspend fun replaceIncome(transaction: MoneyTransaction, entries: List<AllocationEntry>)

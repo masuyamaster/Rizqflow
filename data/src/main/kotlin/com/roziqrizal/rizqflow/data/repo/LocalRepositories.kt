@@ -46,6 +46,8 @@ class LocalAccountRepository(private val db: RizqflowDatabase) : AccountReposito
 
     override suspend fun activeAccounts(): List<Account> = db.accounts().active().map { it.toDomain() }
 
+    override suspend fun allAccounts(): List<Account> = db.accounts().all().map { it.toDomain() }
+
     override suspend fun save(account: Account) = db.accounts().upsert(account.toEntity())
 
     override suspend fun balance(id: AccountId): Money {
@@ -56,6 +58,10 @@ class LocalAccountRepository(private val db: RizqflowDatabase) : AccountReposito
 
 class LocalRoomRepository(private val db: RizqflowDatabase) : RoomRepository {
     override suspend fun activeRooms(): List<Room> = db.rooms().active().map { it.toDomain() }
+
+    override suspend fun allRooms(): List<Room> = db.rooms().all().map { it.toDomain() }
+
+    override suspend fun allCategories(): List<Category> = db.rooms().allCategories().map { it.toDomain() }
 
     override suspend fun find(id: RoomId): Room? = db.rooms().find(id.value)?.toDomain()
 
@@ -96,6 +102,8 @@ class LocalTransactionRepository(private val db: RizqflowDatabase) : Transaction
     }
 
     override suspend fun save(transaction: MoneyTransaction) = db.transactions().insert(transaction.toEntity())
+
+    override suspend fun update(transaction: MoneyTransaction) = db.transactions().update(transaction.toEntity())
 
     override suspend fun replaceIncome(transaction: MoneyTransaction, entries: List<AllocationEntry>) {
         db.withTransaction {
