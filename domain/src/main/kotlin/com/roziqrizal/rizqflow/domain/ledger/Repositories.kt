@@ -5,6 +5,7 @@ import com.roziqrizal.rizqflow.domain.model.AccountId
 import com.roziqrizal.rizqflow.domain.model.CategoryId
 import com.roziqrizal.rizqflow.domain.model.RoomId
 import com.roziqrizal.rizqflow.domain.model.TransactionId
+import com.roziqrizal.rizqflow.domain.model.TransactionKind
 import com.roziqrizal.rizqflow.domain.money.Money
 import java.time.LocalDate
 
@@ -62,6 +63,9 @@ interface RoomRepository {
     suspend fun replaceRules(rules: List<AllocationRule>)
 }
 
+/** Jatah dan terpakai per ruang untuk satu rentang hari. Ruang tanpa baris dianggap nol. */
+data class RoomTotals(val allocated: Map<RoomId, Money>, val spent: Map<RoomId, Money>)
+
 interface TransactionRepository {
     suspend fun find(id: TransactionId): MoneyTransaction?
 
@@ -82,4 +86,10 @@ interface TransactionRepository {
 
     /** Transaksi antara dua hari (inklusif), terbaru dulu. */
     suspend fun between(from: LocalDate, to: LocalDate): List<MoneyTransaction>
+
+    /** Transaksi yang terakhir dicatat ([kind] null = jenis apa pun); dasar bawaan akun dan ruang di Catat. */
+    suspend fun latest(kind: TransactionKind?): MoneyTransaction?
+
+    /** Jatah (alokasi dari pemasukan) dan terpakai (pengeluaran) per ruang antara dua hari (inklusif). */
+    suspend fun roomTotals(from: LocalDate, to: LocalDate): RoomTotals
 }

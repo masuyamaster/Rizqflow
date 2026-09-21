@@ -129,4 +129,17 @@ class InMemoryLedger : WorkspaceRepository, AccountRepository, RoomRepository, T
     override suspend fun between(from: LocalDate, to: LocalDate) = transactionRows.values
         .filter { it.occurredOn in from..to }
         .sortedWith(compareByDescending<MoneyTransaction> { it.occurredOn }.thenByDescending { it.createdAtMillis })
+
+    override suspend fun latest(kind: TransactionKind?): MoneyTransaction? =
+        transactionRows.values.filter { kind == null || it.kind == kind }.maxByOrNull { it.createdAtMillis }
+
+    override suspend fun roomTotals(from: LocalDate, to: LocalDate): RoomTotals {
+        val inRange = transactionRows.values.filter { it.occurredOn in from..to }
+        val incomeIds = inRange.filter { it.kind == TransactionKind.INCOME }.map { it.id }.toSet()
+        val allocated = entryRows.values.filter { it.incomeId in incomeIds }.groupBy { it.roomId }
+            .mapValues { (_, list) -> list.fold(Money.zero()) { a, e -> a + e.amount } }
+        val spent = inRange.filter { it.kind == TransactionKind.EXPENSE }.groupBy { it.roomId!! }
+            .mapValues { (_, list) -> list.fold(Money.zero()) { a, e -> a + e.amount } }
+        return RoomTotals(allocated, spent)
+    }
 }

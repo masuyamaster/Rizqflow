@@ -42,6 +42,8 @@ class LedgerFixture(plans: Set<Plan> = emptySet()) {
         return a
     }
 
+    fun incomeCommand(amount: Long) = NewIncome(Money.rupiah(amount), account.id, "Gaji", today)
+
     fun income(amount: Long, source: String? = "Gaji", note: String? = null, accountId: AccountId = account.id) =
         runSuspend { ledger.recordIncome(NewIncome(Money.rupiah(amount), accountId, source, today, note)) }
 }

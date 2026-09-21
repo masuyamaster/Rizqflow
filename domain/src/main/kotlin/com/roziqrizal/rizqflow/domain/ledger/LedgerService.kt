@@ -11,6 +11,7 @@ import com.roziqrizal.rizqflow.domain.model.TransactionKind
 import com.roziqrizal.rizqflow.domain.model.TransactionOrigin
 import com.roziqrizal.rizqflow.domain.money.Money
 import java.time.LocalDate
+import java.time.YearMonth
 
 /** Alasan sebuah perintah ditolak. Layar memetakannya ke pesan; tidak ada yang berupa galat program. */
 enum class LedgerError {
@@ -49,6 +50,8 @@ data class NewIncome(
     val occurredOn: LocalDate,
     val note: String? = null,
     val origin: TransactionOrigin = TransactionOrigin.MANUAL,
+    /** "Ubah sekali ini" (S07): pembagian khusus untuk pemasukan ini; null memakai aturan alokasi sekarang. Aturan tidak berubah. */
+    val overrideRules: List<AllocationRule>? = null,
 )
 
 data class NewExpense(
@@ -69,6 +72,9 @@ data class NewTransfer(
     val note: String? = null,
 )
 
+/** Jatah ruang bulan itu terlampaui bila pengeluaran disimpan: [spentAfter] sudah termasuk pengeluaran yang sedang dicatat. */
+data class BudgetWarning(val room: Room, val allocated: Money, val spentAfter: Money)
+
 /** Pemasukan yang tersimpan beserta hasil alokasinya, termasuk bagian yang belum dialirkan. */
 data class IncomeReceipt(val transaction: MoneyTransaction, val allocation: AllocationResult)
 
@@ -88,8 +94,9 @@ class LedgerService(
     private val nowMillis: () -> Long,
 ) {
 
-    /** Pratinjau S07: bagaimana [amount] akan dialirkan dengan aturan sekarang. Tidak menyimpan apa pun. */
-    suspend fun previewIncome(amount: Money): AllocationResult = AllocationEngine.allocate(amount, rooms.rules())
+    /** Pratinjau S07: bagaimana [amount] akan dialirkan dengan aturan sekarang (atau [rules] bila diberikan). Tidak menyimpan apa pun. */
+    suspend fun previewIncome(amount: Money, rules: List<AllocationRule>? = null): AllocationResult =
+        AllocationEngine.allocate(amount, rules ?: rooms.rules())
 
     suspend fun recordIncome(command: NewIncome): LedgerResult<IncomeReceipt> {
         if (!command.amount.isPositive) return failure(LedgerError.AMOUNT_NOT_POSITIVE)
@@ -97,7 +104,8 @@ class LedgerService(
         val source = cleanSource(command.source) ?: return failure(LedgerError.SOURCE_TOO_LONG)
         checkAccount(command.accountId, command.amount)?.let { return failure(it) }
 
-        val rules = rooms.rules()
+        val rules = command.overrideRules ?: rooms.rules()
+        if (command.overrideRules != null && !overrideIsValid(rules)) return failure(LedgerError.RULES_INVALID)
         val allocation = AllocationEngine.allocate(command.amount, rules)
         val now = nowMillis()
         val transaction = MoneyTransaction(
@@ -190,6 +198,27 @@ class LedgerService(
         transactions.find(id) ?: return failure(LedgerError.TRANSACTION_NOT_FOUND)
         transactions.delete(id)
         return LedgerResult.Success(Unit)
+    }
+
+    /** Pembagian sekali ini: ruang aktif, tanpa ganda, dan tidak melebihi 100% (sisanya menjadi belum dialirkan). */
+    private suspend fun overrideIsValid(rules: List<AllocationRule>): Boolean {
+        if (rules.map { it.roomId }.toSet().size != rules.size) return false
+        if (rules.sumOf { it.share.value } > com.roziqrizal.rizqflow.domain.allocation.BasisPoints.FULL) return false
+        return rules.all { rooms.find(it.roomId)?.archived == false }
+    }
+
+    /**
+     * Banner lembut S06 (F3): pengeluaran ini membuat terpakai bulan itu melewati jatah ruang. Hanya
+     * bila jatah bulan itu ada (di atas nol); bulan tanpa pemasukan tidak memunculkan banner terus-menerus.
+     * Tidak pernah menghalangi menyimpan. Bulan mengikuti kalender Masehi.
+     */
+    suspend fun budgetWarning(roomId: RoomId, amount: Money, date: LocalDate): BudgetWarning? {
+        val room = rooms.find(roomId) ?: return null
+        val month = YearMonth.from(date)
+        val totals = transactions.roomTotals(month.atDay(1), month.atEndOfMonth())
+        val allocated = totals.allocated[roomId] ?: Money.zero(amount.currency)
+        val spentAfter = (totals.spent[roomId] ?: Money.zero(amount.currency)) + amount
+        return if (allocated.isPositive && spentAfter > allocated) BudgetWarning(room, allocated, spentAfter) else null
     }
 
     private suspend fun checkAccount(id: AccountId, amount: Money): LedgerError? {

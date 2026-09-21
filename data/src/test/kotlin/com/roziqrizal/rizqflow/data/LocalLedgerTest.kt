@@ -10,6 +10,7 @@ import com.roziqrizal.rizqflow.domain.allocation.BasisPoints
 import com.roziqrizal.rizqflow.domain.entitlement.PlanEntitlements
 import com.roziqrizal.rizqflow.domain.ledger.Account
 import com.roziqrizal.rizqflow.domain.ledger.AllocationEntry
+import com.roziqrizal.rizqflow.domain.ledger.CatatContextLoader
 import com.roziqrizal.rizqflow.domain.ledger.Category
 import com.roziqrizal.rizqflow.domain.ledger.FirstAccount
 import com.roziqrizal.rizqflow.domain.ledger.IncomeReceipt
@@ -20,6 +21,7 @@ import com.roziqrizal.rizqflow.domain.ledger.NewExpense
 import com.roziqrizal.rizqflow.domain.ledger.NewIncome
 import com.roziqrizal.rizqflow.domain.ledger.NewRoom
 import com.roziqrizal.rizqflow.domain.ledger.NewTransfer
+import com.roziqrizal.rizqflow.domain.ledger.OneTimeSplit
 import com.roziqrizal.rizqflow.domain.ledger.Room
 import com.roziqrizal.rizqflow.domain.ledger.RoomTemplate
 import com.roziqrizal.rizqflow.domain.ledger.RuleService
@@ -410,5 +412,81 @@ class LocalLedgerTest {
 
         assertEquals(listOf("Dompet"), runBlocking { local.accounts.activeAccounts() }.map { it.name })
         assertNotNull(runBlocking { local.accounts.find(lama.id) })
+    }
+
+    // ------------------------------------------------------------------ Catat: pilihan terakhir, jatah, dan banner
+
+    @Test
+    fun `transaksi terakhir dipilih dari yang paling baru, dan per jenis`() {
+        standard()
+        val pengeluaran = runBlocking {
+            (service.recordExpense(NewExpense(rupiah(1_000), account().id, room("Diri").id, category("Diri", "Belajar").id, day)) as LedgerResult.Success).value
+        }
+        now += 10
+        val pemasukan = income(50_000).transaction
+
+        assertEquals(pemasukan.id, runBlocking { local.transactions.latest(null) }!!.id)
+        assertEquals(pengeluaran.id, runBlocking { local.transactions.latest(TransactionKind.EXPENSE) }!!.id)
+        assertNull(runBlocking { local.transactions.latest(TransactionKind.TRANSFER) })
+    }
+
+    @Test
+    fun `transaksi terakhir pada database kosong tidak ada`() {
+        standard()
+        assertNull(runBlocking { local.transactions.latest(null) })
+    }
+
+    @Test
+    fun `jatah dan terpakai per ruang dihitung per bulan dari database`() {
+        standard()
+        income(1_000_000, on = LocalDate.of(2026, 9, 5))
+        income(2_000_000, on = LocalDate.of(2026, 10, 1))
+        runBlocking {
+            service.recordExpense(NewExpense(rupiah(250_000), account().id, room("Keluarga").id, category("Keluarga", "Sekolah").id, LocalDate.of(2026, 9, 30)))
+            service.recordExpense(NewExpense(rupiah(40_000), account().id, room("Keluarga").id, category("Keluarga", "Sekolah").id, LocalDate.of(2026, 10, 2)))
+        }
+
+        val sept = runBlocking { local.transactions.roomTotals(LocalDate.of(2026, 9, 1), LocalDate.of(2026, 9, 30)) }
+        assertEquals(rupiah(600_000), sept.allocated[room("Keluarga").id])
+        assertEquals(rupiah(100_000), sept.allocated[room("Memberi").id])
+        assertEquals(rupiah(250_000), sept.spent[room("Keluarga").id])
+        assertNull(sept.spent[room("Diri").id], "ruang tanpa pengeluaran tidak punya baris")
+
+        val okt = runBlocking { local.transactions.roomTotals(LocalDate.of(2026, 10, 1), LocalDate.of(2026, 10, 31)) }
+        assertEquals(rupiah(1_200_000), okt.allocated[room("Keluarga").id])
+        assertEquals(rupiah(40_000), okt.spent[room("Keluarga").id])
+    }
+
+    @Test
+    fun `banner jatah dan konteks Catat bekerja di atas Room`() {
+        standard()
+        income(1_000_000)
+        val keluarga = room("Keluarga")
+        runBlocking {
+            service.recordExpense(NewExpense(rupiah(500_000), account().id, keluarga.id, category("Keluarga", "Sekolah").id, day))
+        }
+
+        assertNull(runBlocking { service.budgetWarning(keluarga.id, rupiah(100_000), day) })
+        assertNotNull(runBlocking { service.budgetWarning(keluarga.id, rupiah(100_001), day) })
+
+        val konteks = runBlocking { CatatContextLoader(local.accounts, local.rooms, local.transactions).load() }
+        assertEquals(listOf("Memberi", "Diri", "Keluarga"), konteks.rooms.map { it.name })
+        assertEquals(keluarga.id, konteks.lastRoomId)
+        assertEquals(category("Keluarga", "Sekolah").id, konteks.lastCategoryId)
+        assertEquals(account().id, konteks.lastAccountId)
+        assertEquals(listOf(1_000, 3_000, 6_000), konteks.rules.map { it.share.value })
+    }
+
+    @Test
+    fun `pembagian sekali ini tersimpan sebagai potret di database dan aturan tetap`() {
+        standard()
+        val split = OneTimeSplit.from(runBlocking { local.rooms.rules() }).set(0, 50).set(1, 30)
+
+        val receipt = runBlocking {
+            (service.recordIncome(NewIncome(rupiah(1_000_000), account().id, "Gaji", day, overrideRules = split.toRules())) as LedgerResult.Success).value
+        }
+
+        assertEquals(listOf(500_000L, 300_000L, 200_000L), entryAmounts(receipt.transaction.id))
+        assertEquals(listOf(1_000, 3_000, 6_000), runBlocking { local.rooms.rules() }.map { it.share.value })
     }
 }

@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
+import com.roziqrizal.rizqflow.domain.model.TransactionKind
 
 /** Jumlah per ruang, hasil agregat bulanan. */
 data class RoomTotal(
@@ -105,6 +106,12 @@ interface TransactionDao {
 
     @Query("DELETE FROM allocation_entry WHERE income_id = :incomeId")
     suspend fun deleteEntries(incomeId: String)
+
+    @Query("SELECT * FROM money_transaction ORDER BY created_at DESC, rowid DESC LIMIT 1")
+    suspend fun latest(): TransactionEntity?
+
+    @Query("SELECT * FROM money_transaction WHERE kind = :kind ORDER BY created_at DESC, rowid DESC LIMIT 1")
+    suspend fun latestOfKind(kind: TransactionKind): TransactionEntity?
 
     @Query("SELECT * FROM money_transaction WHERE occurred_on BETWEEN :fromDay AND :toDay ORDER BY occurred_on DESC, created_at DESC")
     suspend fun between(fromDay: Long, toDay: Long): List<TransactionEntity>

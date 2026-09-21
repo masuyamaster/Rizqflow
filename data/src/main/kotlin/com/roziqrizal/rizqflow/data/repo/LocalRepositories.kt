@@ -10,6 +10,7 @@ import com.roziqrizal.rizqflow.domain.ledger.Category
 import com.roziqrizal.rizqflow.domain.ledger.MoneyTransaction
 import com.roziqrizal.rizqflow.domain.ledger.Room
 import com.roziqrizal.rizqflow.domain.ledger.RoomRepository
+import com.roziqrizal.rizqflow.domain.ledger.RoomTotals
 import com.roziqrizal.rizqflow.domain.ledger.TransactionRepository
 import com.roziqrizal.rizqflow.domain.ledger.WorkspaceRepository
 import com.roziqrizal.rizqflow.domain.ledger.WorkspaceSnapshot
@@ -17,6 +18,7 @@ import com.roziqrizal.rizqflow.domain.model.AccountId
 import com.roziqrizal.rizqflow.domain.model.CategoryId
 import com.roziqrizal.rizqflow.domain.model.RoomId
 import com.roziqrizal.rizqflow.domain.model.TransactionId
+import com.roziqrizal.rizqflow.domain.model.TransactionKind
 import com.roziqrizal.rizqflow.domain.money.Money
 import java.time.LocalDate
 
@@ -107,4 +109,13 @@ class LocalTransactionRepository(private val db: RizqflowDatabase) : Transaction
 
     override suspend fun between(from: LocalDate, to: LocalDate): List<MoneyTransaction> =
         db.transactions().between(from.toEpochDay(), to.toEpochDay()).map { it.toDomain() }
+
+    override suspend fun latest(kind: TransactionKind?): MoneyTransaction? =
+        (if (kind == null) db.transactions().latest() else db.transactions().latestOfKind(kind))?.toDomain()
+
+    // Versi 1 hanya rupiah (docs/model-data.md); multi-mata uang (Pro) menambah kolom mata uang di agregat ini.
+    override suspend fun roomTotals(from: LocalDate, to: LocalDate): RoomTotals = RoomTotals(
+        allocated = db.transactions().allocatedPerRoom(from.toEpochDay(), to.toEpochDay()).associate { RoomId(it.roomId) to Money.rupiah(it.total) },
+        spent = db.transactions().spentPerRoom(from.toEpochDay(), to.toEpochDay()).associate { RoomId(it.roomId) to Money.rupiah(it.total) },
+    )
 }
