@@ -283,6 +283,22 @@
     <string name="status_perhatian">Perlu perhatian</string>
     <string name="status_belum">Belum tercapai</string>
 
+    <!-- Detail ruang S11 -->
+    <string name="room_detail_used">Terpakai %1$s</string>
+    <string name="room_detail_of">dari jatah %1$s</string>
+    <string name="room_detail_no_allocation">Belum ada jatah bulan ini. Jatah datang dari rezeki yang dialirkan ke ruang ini.</string>
+    <string name="room_hint_target">Terpenuhi saat terpakai mencapai jatah.</string>
+    <string name="room_hint_mencukupi" formatted="false">Perlu perhatian mulai 85% jatah; terpenuhi bila tidak melebihi jatah di akhir bulan.</string>
+    <string name="room_detail_pos">Pos</string>
+    <string name="room_detail_pos_empty">Belum ada pos di ruang ini.</string>
+    <string name="room_detail_recent">Pengeluaran terbaru</string>
+    <string name="room_detail_recent_empty">Belum ada pengeluaran di ruang ini bulan ini.</string>
+    <string name="room_detail_rules">Atur aturan</string>
+    <string name="room_detail_archive">Arsipkan ruang</string>
+    <string name="room_detail_archive_title">Arsipkan %1$s?</string>
+    <string name="room_detail_archive_body" formatted="false">Ruang ini tidak tampil di Denah dan tidak menerima alokasi baru. Riwayatnya tetap ada dan bisa dipulihkan dari daftar Ruang. Setelah itu aturan alokasi perlu diatur ulang supaya total kembali 100%.</string>
+    <string name="room_detail_archived_note">Ruang ini diarsipkan. Riwayatnya tetap tampil.</string>
+
     <!-- Ruang S10 dan Aturan alokasi S12 -->
     <string name="room_title">Ruang</string>
     <string name="room_empty">Belum ada ruang. Pakai pola Tiga hak (Memberi, Diri, Keluarga) atau tambah ruangmu sendiri.</string>

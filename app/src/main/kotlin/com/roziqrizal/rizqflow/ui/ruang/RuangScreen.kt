@@ -90,6 +90,8 @@ fun RuangScreen(
     notifier: Notifier,
     onOpenRules: () -> Unit,
     onChanged: () -> Unit,
+    /** Mengetuk baris ruang membuka Detail ruang (S11). */
+    onOpenRoom: (RoomId) -> Unit = {},
 ) {
     var overview by remember { mutableStateOf<RoomOverview?>(null) }
     var localVersion by remember { mutableIntStateOf(0) }
@@ -148,14 +150,15 @@ fun RuangScreen(
                     entry = entry,
                     canMoveUp = index > 0,
                     canMoveDown = index < current.active.lastIndex,
+                    onOpen = { onOpenRoom(entry.room.id) },
                     onMove = { delta -> scope.launch { workspace.rules.moveRoom(entry.room.id, delta); changed() } },
                     onArchive = {
                         scope.launch {
-                            workspace.rules.archiveRoom(entry.room.id)
+                            val snapshot = (workspace.rules.archiveWithUndo(entry.room.id) as? LedgerResult.Success)?.value ?: return@launch
                             changed()
                             val undo = notifier.show(context.getString(R.string.room_archived, entry.room.name), context.getString(R.string.action_undo))
                             if (undo) {
-                                workspace.rules.restoreRoom(entry.room.id)
+                                workspace.rules.undoArchive(snapshot)
                                 changed()
                             }
                         }
@@ -295,6 +298,7 @@ private fun RoomRow(
     canMoveDown: Boolean,
     onMove: (Int) -> Unit,
     onArchive: () -> Unit,
+    onOpen: () -> Unit,
 ) {
     val spacing = MaterialTheme.spacing
     var menuOpen by remember { mutableStateOf(false) }
@@ -305,7 +309,7 @@ private fun RoomRow(
         horizontalArrangement = Arrangement.spacedBy(spacing.s2),
     ) {
         RoomTile(room.iconKey, room.colorSlot, size = 44)
-        Column(modifier = Modifier.weight(1f)) {
+        Column(modifier = Modifier.weight(1f).clickable(role = Role.Button, onClick = onOpen)) {
             Text(room.name, style = MaterialTheme.typography.titleSmall)
             Text(
                 "${stringResource(kindLabel(room.kind))} · ${formatPercent(entry.shareBp)}",

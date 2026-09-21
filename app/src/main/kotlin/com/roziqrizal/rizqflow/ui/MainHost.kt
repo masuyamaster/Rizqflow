@@ -10,7 +10,11 @@ import com.roziqrizal.rizqflow.domain.allocation.AllocationRule
 import com.roziqrizal.rizqflow.ui.denah.DenahScreen
 import com.roziqrizal.rizqflow.ui.kelola.KelolaScreen
 import com.roziqrizal.rizqflow.ui.kelola.manageErrorText
+import com.roziqrizal.rizqflow.domain.ledger.ArchiveUndo
 import com.roziqrizal.rizqflow.ui.ruang.AturanScreen
+import com.roziqrizal.rizqflow.ui.ruang.RoomDetailScreen
+import com.roziqrizal.rizqflow.domain.model.RoomId
+import java.time.YearMonth
 import com.roziqrizal.rizqflow.ui.ruang.RuangScreen
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
@@ -77,6 +81,8 @@ fun MainHost(
     var kelola by rememberSaveable { mutableStateOf(false) }
     var quick by rememberSaveable { mutableStateOf(false) }
     var demoSheet by rememberSaveable { mutableStateOf(false) }
+    var roomDetail by rememberSaveable { mutableStateOf<String?>(null) }
+    var roomMonth by rememberSaveable { mutableStateOf("") }
     var handledQuick by rememberSaveable { mutableIntStateOf(0) }
     LaunchedEffect(quickCatatRequest) {
         if (quickCatatRequest > handledQuick) {
@@ -106,6 +112,17 @@ fun MainHost(
         scope.launch {
             if (notifier.show(context.getString(R.string.rules_saved), undoLabel)) {
                 workspace.rules.restoreRules(previous)
+                version++
+            }
+        }
+    }
+
+    // Berjalan di scope MainHost: layar Detail ruang sudah tertutup saat ruangnya diarsipkan.
+    fun announceRoomArchived(undo: ArchiveUndo) {
+        version++
+        scope.launch {
+            if (notifier.show(context.getString(R.string.room_archived, undo.room.name), undoLabel)) {
+                workspace.rules.undoArchive(undo)
                 version++
             }
         }
@@ -185,10 +202,14 @@ fun MainHost(
             DenahScreen(
                 workspace, refreshKey = version, onCatat = { catat = true }, onOpenRules = { aturan = true }, onChanged = { version++ },
                 demo = demo, onDemoClick = { demoSheet = true }, onTryDemo = onEnterDemo,
+                onOpenRoom = { id, month -> roomMonth = month.toString(); roomDetail = id.value },
             )
         },
         ruangContent = {
-            RuangScreen(workspace, refreshKey = version, notifier = notifier, onOpenRules = { aturan = true }, onChanged = { version++ })
+            RuangScreen(
+                workspace, refreshKey = version, notifier = notifier, onOpenRules = { aturan = true }, onChanged = { version++ },
+                onOpenRoom = { id -> roomMonth = YearMonth.now().toString(); roomDetail = id.value },
+            )
         },
         onOpenRules = { aturan = true },
         onOpenManage = { kelola = true },
@@ -256,6 +277,23 @@ fun MainHost(
                 )
                 // Layar ini menutupi Scaffold beserta snackbar-nya, jadi ia membawa SnackbarHost sendiri.
                 SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 80.dp))
+            }
+        }
+    } else if (roomDetail != null) {
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            Box {
+                RoomDetailScreen(
+                    workspace = workspace,
+                    roomId = RoomId(roomDetail.orEmpty()),
+                    month = YearMonth.parse(roomMonth),
+                    refreshKey = version,
+                    notifier = notifier,
+                    onClose = { roomDetail = null },
+                    onOpenTransaction = { editId = it.value },
+                    onOpenRules = { aturan = true },
+                    onArchived = ::announceRoomArchived,
+                )
+                SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp))
             }
         }
     }

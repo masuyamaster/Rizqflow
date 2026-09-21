@@ -100,7 +100,7 @@ Logika bisnis yang benar dan teruji sebelum ada layar.
 ## Tahap 4 — Dashboard Denah (In Progress)
 
 - [x] Denah: ringkasan, grid ruang, perlu perhatian (S05): rezeki bulan ini dengan bar pembagian, kartu ruang (cincin, sisa, status ikon plus teks), Perlu perhatian maksimal 3 butir, navigator bulan, keadaan kosong; teruji di emulator (2026-09-21). Belum ada: tanggal Hijriyah dan butir haul (Tahap 5), butir saldo belum dicocokkan (Tahap 6), mode demo dari keadaan kosong (S22), kartu bisa dibuka ke S11
-- [ ] Detail ruang (S11)
+- [x] Detail ruang (S11): cincin progres, terpakai dari jatah, status ikon plus teks dengan penjelasan arti per tipe, pos dengan batang (pembanding: irisan jatah menurut bobot, kosong = seluruh jatah ruang), lima pengeluaran terbaru yang bisa dibuka ke Detail transaksi, Atur aturan, dan Arsipkan ruang dengan konfirmasi dan Urungkan yang mengembalikan urutan dan persentase; dibuka dari kartu di Denah dan baris di Ruang (2026-09-21). Kartu Zakat untuk ruang Memberi menunggu Tahap 5
 - [x] Logika status ruang per tipe dan tesnya: `RoomStatusRules` (ambang 85% Mencukupi, batas inklusif) dan `DenahLoader` (rezeki bulan itu, belum dialirkan, kartu per ruang, butir Perlu perhatian maksimal 3), 18 tes (2026-09-21). Menunggu konfirmasi: penilaian Mencukupi di akhir bulan dan label bulan lalu yang belum tercapai
 - [ ] State tepi: bulan kosong, banyak ruang, font besar, mode gelap. Sudah dicek di emulator untuk Denah: bulan kosong, font 200% (satu kolom), mode gelap; belum: lebih dari 6 ruang
 

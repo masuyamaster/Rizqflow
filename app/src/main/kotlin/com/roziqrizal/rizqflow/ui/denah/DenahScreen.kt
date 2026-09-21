@@ -54,6 +54,7 @@ import com.roziqrizal.rizqflow.domain.ledger.LedgerResult
 import com.roziqrizal.rizqflow.domain.ledger.RoomCard
 import com.roziqrizal.rizqflow.domain.ledger.RoomStatus
 import com.roziqrizal.rizqflow.domain.ledger.RoomTemplate
+import com.roziqrizal.rizqflow.domain.model.RoomId
 import com.roziqrizal.rizqflow.ui.RizqflowIcons
 import com.roziqrizal.rizqflow.ui.RoomTile
 import com.roziqrizal.rizqflow.ui.formatMonth
@@ -90,6 +91,8 @@ fun DenahScreen(
     demo: Boolean = false,
     onDemoClick: () -> Unit = {},
     onTryDemo: () -> Unit = {},
+    /** Kartu ruang dibuka ke Detail ruang (S11) untuk bulan yang sedang dilihat. */
+    onOpenRoom: (RoomId, YearMonth) -> Unit = { _, _ -> },
 ) {
     val today = remember { LocalDate.now() }
     val currentMonth = remember(today) { YearMonth.from(today) }
@@ -144,7 +147,7 @@ fun DenahScreen(
                 }
             })
         } else {
-            RoomGrid(data.cards)
+            RoomGrid(data.cards) { onOpenRoom(it, month) }
         }
 
         if (month == currentMonth) {
@@ -229,13 +232,13 @@ private fun AllocationBar(data: DenahOverview) {
 // ---------------------------------------------------------------------------------- kartu ruang
 
 @Composable
-private fun RoomGrid(cards: List<RoomCard>) {
+private fun RoomGrid(cards: List<RoomCard>, onOpen: (RoomId) -> Unit) {
     val spacing = MaterialTheme.spacing
     val columns = if (LocalDensity.current.fontScale >= ONE_COLUMN_FONT_SCALE) 1 else 2
     Column(verticalArrangement = Arrangement.spacedBy(spacing.s3)) {
         cards.chunked(columns).forEach { row ->
             Row(horizontalArrangement = Arrangement.spacedBy(spacing.s3)) {
-                row.forEach { card -> RoomCardView(card, Modifier.weight(1f)) }
+                row.forEach { card -> RoomCardView(card, Modifier.weight(1f)) { onOpen(card.room.id) } }
                 repeat(columns - row.size) { Spacer(Modifier.weight(1f)) }
             }
         }
@@ -243,7 +246,7 @@ private fun RoomGrid(cards: List<RoomCard>) {
 }
 
 @Composable
-private fun RoomCardView(card: RoomCard, modifier: Modifier) {
+private fun RoomCardView(card: RoomCard, modifier: Modifier, onClick: () -> Unit) {
     val spacing = MaterialTheme.spacing
     val color = MaterialTheme.rizqflow.room(card.room.colorSlot)
     val progress = card.progressBp
@@ -257,6 +260,7 @@ private fun RoomCardView(card: RoomCard, modifier: Modifier) {
     Column(
         modifier = modifier
             .background(MaterialTheme.colorScheme.surfaceContainerLow, RoundedCornerShape(16.dp))
+            .clickable(role = Role.Button, onClick = onClick)
             .padding(spacing.s3)
             .semantics(mergeDescendants = true) {},
         verticalArrangement = Arrangement.spacedBy(spacing.s2),
@@ -286,7 +290,7 @@ private fun RoomCardView(card: RoomCard, modifier: Modifier) {
     }
 }
 
-private fun statusLabel(status: RoomStatus): Int = when (status) {
+internal fun statusLabel(status: RoomStatus): Int = when (status) {
     RoomStatus.MENUNGGU -> R.string.status_menunggu
     RoomStatus.BERJALAN -> R.string.status_berjalan
     RoomStatus.TERPENUHI -> R.string.status_terpenuhi
@@ -294,7 +298,7 @@ private fun statusLabel(status: RoomStatus): Int = when (status) {
     RoomStatus.BELUM_TERCAPAI -> R.string.status_belum
 }
 
-private fun statusIcon(status: RoomStatus): ImageVector = when (status) {
+internal fun statusIcon(status: RoomStatus): ImageVector = when (status) {
     RoomStatus.TERPENUHI -> RizqflowIcons.Centang
     RoomStatus.PERLU_PERHATIAN -> RizqflowIcons.Peringatan
     RoomStatus.BELUM_TERCAPAI -> RizqflowIcons.Lingkaran
@@ -302,7 +306,7 @@ private fun statusIcon(status: RoomStatus): ImageVector = when (status) {
 }
 
 @Composable
-private fun statusTint(status: RoomStatus): Color = when (status) {
+internal fun statusTint(status: RoomStatus): Color = when (status) {
     RoomStatus.TERPENUHI -> MaterialTheme.rizqflow.statusGood
     RoomStatus.PERLU_PERHATIAN -> MaterialTheme.rizqflow.statusWarning
     else -> MaterialTheme.colorScheme.onSurfaceVariant
