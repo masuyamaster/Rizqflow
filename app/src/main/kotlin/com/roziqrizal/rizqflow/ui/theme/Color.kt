@@ -122,7 +122,9 @@ internal val RizqflowLightExtra = RizqflowExtraColors(
     room3 = Color(0xFF2A9A80),
     roomNeutral = Sage,
     statusGood = Color(0xFF0CA30C),
-    statusWarning = Color(0xFFFAB219),
+    // Lebih gelap dari statusWarning mode gelap: FAB219 hanya kontras ~1,6:1 terhadap latar
+    // warning-nya sendiri di mode terang (di bawah 3:1 WCAG untuk ikon bermakna); B45309 ~4,8:1.
+    statusWarning = Color(0xFFB45309),
     statusSerious = Color(0xFFEC835A),
     statusCritical = Color(0xFFD03B3B),
 )

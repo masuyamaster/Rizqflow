@@ -1,6 +1,7 @@
 package com.roziqrizal.rizqflow.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import com.roziqrizal.rizqflow.ui.TopTab
 import kotlin.math.max
 import kotlin.math.min
@@ -79,11 +80,27 @@ class RizqflowTokensTest {
     }
 
     @Test
-    fun `warna status sama di kedua mode`() {
+    fun `warna status sama di kedua mode kecuali statusWarning`() {
         assertEquals(RizqflowLightExtra.statusGood, RizqflowDarkExtra.statusGood)
-        assertEquals(RizqflowLightExtra.statusWarning, RizqflowDarkExtra.statusWarning)
         assertEquals(RizqflowLightExtra.statusSerious, RizqflowDarkExtra.statusSerious)
         assertEquals(RizqflowLightExtra.statusCritical, RizqflowDarkExtra.statusCritical)
+        // Pengecualian disengaja (2026-09-22): FAB219 di mode terang kontrasnya cuma ~1,6:1
+        // terhadap latar warning-nya sendiri (di bawah 3:1 WCAG untuk ikon bermakna); mode gelap
+        // tetap dengan warna yang sama karena kontrasnya sudah baik (~10:1) di sana.
+        assertNotEquals(RizqflowLightExtra.statusWarning, RizqflowDarkExtra.statusWarning)
+    }
+
+    @Test
+    fun `ikon peringatan kontras 3 banding 1 terhadap latar polos dan latar warning-nya sendiri`() {
+        // Pita peringatan (Row, Aturan, Onboarding, Catat) mewarnai latarnya dengan statusWarning
+        // 16% alpha di atas background; ikonnya sendiri berwarna statusWarning penuh di atas itu.
+        val warningBand = RizqflowLightExtra.statusWarning.copy(alpha = 0.16f).compositeOver(light.background)
+        assertTrue(contrast(RizqflowLightExtra.statusWarning, light.surfaceContainerLowest) >= 3.0, "latar polos mode terang")
+        assertTrue(contrast(RizqflowLightExtra.statusWarning, warningBand) >= 3.0, "latar pita peringatan mode terang")
+
+        val warningBandDark = RizqflowDarkExtra.statusWarning.copy(alpha = 0.16f).compositeOver(dark.background)
+        assertTrue(contrast(RizqflowDarkExtra.statusWarning, dark.surfaceContainer) >= 3.0, "latar polos mode gelap")
+        assertTrue(contrast(RizqflowDarkExtra.statusWarning, warningBandDark) >= 3.0, "latar pita peringatan mode gelap")
     }
 
     @Test
