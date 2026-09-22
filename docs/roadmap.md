@@ -132,7 +132,8 @@ Pembeda utama produk.
 - [ ] Impor CSV dari Transaksi Harian Notion
 - [ ] Mode gelap, skala font, aksesibilitas
 - [ ] Lokalisasi Indonesia dan Inggris
-- [ ] Pengingat malam dengan balasan langsung dan tindakan "Tidak ada" (S26); juga jadi tempat pengingat haul yang digeser dari Tahap 5
+- [x] Pengingat malam dengan balasan langsung dan tindakan "Tidak ada" (S26): jam dan aktif/tidak bisa diatur, WorkManager menjadwalkan satu notifikasi per hari, balasan semacam "kopi 25000" tersimpan sebagai pengeluaran (ruang dan kategori pengeluaran terakhir), izin notifikasi Android 13+ diminta sekali setelah transaksi pertama tersimpan; teruji di emulator ujung ke ujung termasuk kedua aksi notifikasi (2026-09-22)
+- [ ] Pengingat haul: pemicu khusus di infrastruktur notifikasi S26 untuk haul yang genap atau mendekati genap (digeser dari Tahap 5); belum dibangun, infra notifikasi hariannya sudah ada
 - [x] Koreksi saldo (S25): menu Lainnya, pilih akun, saldo sebenarnya dibandingkan catatan; selisih lebih kecil dicatat pengeluaran Tak terlacak di ruang usulan (dari pengeluaran terakhir akun itu), lebih besar dicatat pemasukan biasa yang dialirkan seperti pemasukan lain, sama hanya memperbarui tanggal cocok; teruji di emulator untuk akun tunai dan bank (2026-09-22)
 - [ ] Petunjuk hari kosong di daftar transaksi
 - [ ] "Perlu perhatian: saldo belum dicocokkan" di Denah untuk akun yang lama tidak dikoreksi
