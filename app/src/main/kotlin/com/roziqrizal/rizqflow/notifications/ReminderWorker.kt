@@ -16,6 +16,11 @@ import java.time.LocalDate
  * Sekali sehari: membuka ruang kerja akun yang sedang masuk, menampilkan notifikasi bila
  * pengingat aktif dan hari ini belum ditandai "Tidak ada", lalu menjadwalkan lagi untuk besok.
  * Tidak melakukan apa pun bila belum ada akun yang masuk, atau sedang di mode demo.
+ *
+ * Pengingat haul (Tahap 6) menumpang di sini juga, bukan worker terpisah: setiap kali pekerjaan
+ * ini berjalan, ruang Memberi bermode zakat dicek juga (lihat `HaulReminderService`). Efeknya,
+ * pengingat haul hanya jalan bila pengingat malam aktif — sengaja, supaya tidak menduplikasi
+ * infrastruktur penjadwalan yang sudah ada (lihat roadmap Tahap 6).
  */
 class ReminderWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
@@ -27,6 +32,12 @@ class ReminderWorker(context: Context, params: WorkerParameters) : CoroutineWork
             val today = LocalDate.now()
             if (settings.enabled && !workspace.reminder.isTodayDismissed(today) && hasPermission()) {
                 ReminderNotifier.show(applicationContext, accountId)
+            }
+            if (settings.enabled && hasPermission()) {
+                workspace.haulReminder.dueReminders(today).forEach { reminder ->
+                    ReminderNotifier.showHaul(applicationContext, reminder.roomId.value, reminder.status)
+                    workspace.haulReminder.markNotified(reminder)
+                }
             }
             if (settings.enabled) ReminderScheduler.scheduleNext(applicationContext, settings)
         }

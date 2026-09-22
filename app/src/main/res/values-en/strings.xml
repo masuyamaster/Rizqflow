@@ -335,6 +335,14 @@
     <string name="reminder_reply_saved">%1$s recorded as an expense.</string>
     <string name="reminder_dismiss_action">Nothing to record</string>
 
+    <!-- Haul reminder (special trigger in the nightly reminder infrastructure S26, Tahap 6) -->
+    <string name="reminder_haul_channel_name">Haul reminder</string>
+    <string name="reminder_haul_channel_desc">Notification when your zakat haul is approaching or complete</string>
+    <string name="reminder_haul_completed_title">Zakat is now due</string>
+    <string name="reminder_haul_completed_body">Haul is complete. Pay zakat anytime from the Zakat home.</string>
+    <string name="reminder_haul_approaching_title">Haul due in %1$d days</string>
+    <string name="reminder_haul_approaching_body">Zakat is coming due soon. Get your wealth ready.</string>
+
     <!-- CSV export and import (Stage 6) -->
     <string name="menu_csv">Export and import CSV</string>
     <string name="menu_csv_sub">Save all transactions or load from Transaksi Harian</string>

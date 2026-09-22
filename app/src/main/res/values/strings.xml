@@ -337,6 +337,14 @@
     <string name="reminder_reply_saved">%1$s dicatat sebagai pengeluaran.</string>
     <string name="reminder_dismiss_action">Tidak ada</string>
 
+    <!-- Pengingat haul (pemicu khusus di infrastruktur pengingat malam S26, Tahap 6) -->
+    <string name="reminder_haul_channel_name">Pengingat haul</string>
+    <string name="reminder_haul_channel_desc">Notifikasi saat haul zakat mendekati atau sudah genap</string>
+    <string name="reminder_haul_completed_title">Zakat sudah jatuh tempo</string>
+    <string name="reminder_haul_completed_body">Haul zakat genap. Tunaikan kapan saja lewat Beranda Zakat.</string>
+    <string name="reminder_haul_approaching_title">Haul zakat %1$d hari lagi</string>
+    <string name="reminder_haul_approaching_body">Menuju jatuh tempo zakat. Siapkan harta yang akan ditunaikan.</string>
+
     <!-- Ekspor dan impor CSV (Tahap 6) -->
     <string name="menu_csv">Ekspor dan impor CSV</string>
     <string name="menu_csv_sub">Simpan semua transaksi atau muat dari Transaksi Harian</string>

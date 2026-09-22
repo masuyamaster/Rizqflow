@@ -14,6 +14,7 @@ import androidx.core.app.RemoteInput
 import androidx.core.content.ContextCompat
 import com.roziqrizal.rizqflow.MainActivity
 import com.roziqrizal.rizqflow.R
+import com.roziqrizal.rizqflow.domain.zakat.HaulStatus
 
 /** Menyusun dan menampilkan notifikasi pengingat malam (S26) beserta aksi Balas dan Tidak ada. */
 object ReminderNotifier {
@@ -24,6 +25,10 @@ object ReminderNotifier {
     const val ACTION_DISMISS = "com.roziqrizal.rizqflow.action.REMINDER_DISMISS"
     const val REMOTE_INPUT_KEY = "reminder_reply"
 
+    /** Pemicu khusus haul (Tahap 6): channel dan id notifikasi terpisah, tapi menumpang worker dan izin yang sama. */
+    private const val CHANNEL_ID_HAUL = "reminder_haul"
+    private const val NOTIFICATION_ID_HAUL_BASE = 2610
+
     fun ensureChannel(context: Context) {
         val manager = context.getSystemService(NotificationManager::class.java) ?: return
         val channel = NotificationChannel(
@@ -31,6 +36,16 @@ object ReminderNotifier {
             context.getString(R.string.reminder_channel_name),
             NotificationManager.IMPORTANCE_LOW,
         ).apply { description = context.getString(R.string.reminder_channel_desc) }
+        manager.createNotificationChannel(channel)
+    }
+
+    private fun ensureHaulChannel(context: Context) {
+        val manager = context.getSystemService(NotificationManager::class.java) ?: return
+        val channel = NotificationChannel(
+            CHANNEL_ID_HAUL,
+            context.getString(R.string.reminder_haul_channel_name),
+            NotificationManager.IMPORTANCE_DEFAULT,
+        ).apply { description = context.getString(R.string.reminder_haul_channel_desc) }
         manager.createNotificationChannel(channel)
     }
 
@@ -80,6 +95,44 @@ object ReminderNotifier {
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
         NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, notification)
+    }
+
+    /**
+     * Haul genap atau mendekati genap (ambang [com.roziqrizal.rizqflow.domain.zakat.HaulReminderService.APPROACHING_THRESHOLD_DAYS]
+     * hari): satu notifikasi per ruang Memberi bermode zakat, tanpa aksi Balas/Tidak ada (beda
+     * konteks dari pengingat malam), tanpa mengganggu notifikasi pengingat malam yang mungkin
+     * tampil hari yang sama karena channel dan id-nya terpisah.
+     */
+    fun showHaul(context: Context, roomId: String, status: HaulStatus) {
+        if (!canNotify(context)) return
+        ensureHaulChannel(context)
+
+        val title: String
+        val body: String
+        when (status) {
+            is HaulStatus.Completed -> {
+                title = context.getString(R.string.reminder_haul_completed_title)
+                body = context.getString(R.string.reminder_haul_completed_body)
+            }
+
+            is HaulStatus.Running -> {
+                title = context.getString(R.string.reminder_haul_approaching_title, status.daysLeft.toInt())
+                body = context.getString(R.string.reminder_haul_approaching_body)
+            }
+
+            HaulStatus.BelowNisab -> return
+        }
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID_HAUL)
+            .setSmallIcon(R.drawable.ic_quick_catat)
+            .setContentTitle(title)
+            .setContentText(body)
+            .setContentIntent(openIntent(context))
+            .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .build()
+
+        NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_HAUL_BASE + (roomId.hashCode() and 0xFF), notification)
     }
 
     private fun canNotify(context: Context): Boolean =
