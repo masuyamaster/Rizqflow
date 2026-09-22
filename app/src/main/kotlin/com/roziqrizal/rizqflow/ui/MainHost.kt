@@ -16,6 +16,8 @@ import com.roziqrizal.rizqflow.ui.ruang.RoomDetailScreen
 import com.roziqrizal.rizqflow.ui.about.AboutScreen
 import com.roziqrizal.rizqflow.ui.reconciliation.ReconciliationScreen
 import com.roziqrizal.rizqflow.ui.reminder.ReminderSettingsScreen
+import com.roziqrizal.rizqflow.ui.security.SecuritySettingsScreen
+import com.roziqrizal.rizqflow.domain.auth.AppLockService
 import com.roziqrizal.rizqflow.ui.zakat.ZakatFlow
 import com.roziqrizal.rizqflow.domain.model.RoomId
 import java.time.YearMonth
@@ -74,6 +76,7 @@ import com.roziqrizal.rizqflow.notifications.ReminderScheduler
 @Composable
 fun MainHost(
     workspace: AccountWorkspace,
+    appLock: AppLockService,
     account: AccountUi,
     onConnectGmail: () -> Unit,
     onSignOut: () -> Unit,
@@ -99,6 +102,7 @@ fun MainHost(
     var reconcileAccount by rememberSaveable { mutableStateOf<String?>(null) }
     var reconcileOpen by rememberSaveable { mutableStateOf(false) }
     var reminderOpen by rememberSaveable { mutableStateOf(false) }
+    var securityOpen by rememberSaveable { mutableStateOf(false) }
     var handledQuick by rememberSaveable { mutableIntStateOf(0) }
     LaunchedEffect(quickCatatRequest) {
         if (quickCatatRequest > handledQuick) {
@@ -280,7 +284,13 @@ fun MainHost(
             reconcileOpen = true
         },
         onOpenReminder = { reminderOpen = true },
+        onOpenSecurity = { securityOpen = true },
     )
+    if (securityOpen) {
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            SecuritySettingsScreen(service = appLock, onClose = { securityOpen = false })
+        }
+    }
     if (aboutOpen) {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             AboutScreen(notifier = notifier, onClose = { aboutOpen = false })

@@ -87,6 +87,7 @@ fun RizqflowApp(
     onOpenAbout: (() -> Unit)? = null,
     onOpenReconciliation: (() -> Unit)? = null,
     onOpenReminder: (() -> Unit)? = null,
+    onOpenSecurity: (() -> Unit)? = null,
 ) {
     val nav = rememberNavController()
     val backStack by nav.currentBackStackEntryAsState()
@@ -142,7 +143,7 @@ fun RizqflowApp(
             TopTab.entries.forEach { tab ->
                 composable(tab.route) {
                     if (tab == TopTab.Lainnya && account != null) {
-                        LainnyaScreen(account, onConnectGmail, onSignOut, onDismissNotice, onOpenRules, onOpenManage, demo, onToggleDemo, onOpenAbout, onOpenReconciliation, onOpenReminder)
+                        LainnyaScreen(account, onConnectGmail, onSignOut, onDismissNotice, onOpenRules, onOpenManage, demo, onToggleDemo, onOpenAbout, onOpenReconciliation, onOpenReminder, onOpenSecurity)
                     } else if (tab == TopTab.Transaksi && transaksiContent != null) {
                         transaksiContent()
                     } else if (tab == TopTab.Ruang && ruangContent != null) {
@@ -220,6 +221,7 @@ private fun LainnyaScreen(
     onOpenAbout: (() -> Unit)? = null,
     onOpenReconciliation: (() -> Unit)? = null,
     onOpenReminder: (() -> Unit)? = null,
+    onOpenSecurity: (() -> Unit)? = null,
 ) {
     val spacing = MaterialTheme.spacing
     Column(
@@ -247,6 +249,7 @@ private fun LainnyaScreen(
         if (onOpenAbout != null) MenuRow(stringResource(R.string.menu_about), stringResource(R.string.menu_about_sub), onOpenAbout)
         if (onOpenReconciliation != null) MenuRow(stringResource(R.string.menu_reconcile), stringResource(R.string.menu_reconcile_sub), onOpenReconciliation)
         if (onOpenReminder != null) MenuRow(stringResource(R.string.menu_reminder), stringResource(R.string.menu_reminder_sub), onOpenReminder)
+        if (onOpenSecurity != null) MenuRow(stringResource(R.string.menu_security), stringResource(R.string.menu_security_sub), onOpenSecurity)
         Text(
             stringResource(R.string.account_title),
             style = MaterialTheme.typography.titleLarge,

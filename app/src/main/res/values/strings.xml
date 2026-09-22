@@ -299,6 +299,34 @@
     <string name="reminder_reply_saved">%1$s dicatat sebagai pengeluaran.</string>
     <string name="reminder_dismiss_action">Tidak ada</string>
 
+    <!-- Kunci aplikasi S19 (Tahap 6) -->
+    <string name="lock_title">Terkunci</string>
+    <string name="lock_wrong_pin">PIN salah, %1$d percobaan tersisa</string>
+    <string name="lock_locked_out">Terlalu banyak percobaan. Coba lagi dalam %1$d detik</string>
+    <string name="lock_use_biometric">Pakai sidik jari</string>
+    <string name="lock_biometric_title">Buka Rizqflow</string>
+    <string name="lock_biometric_subtitle">Gunakan sidik jari atau wajah</string>
+    <string name="lock_biometric_use_pin">Pakai PIN</string>
+    <string name="menu_security">Keamanan</string>
+    <string name="menu_security_sub">PIN, sidik jari, dan kunci otomatis</string>
+    <string name="security_title">Keamanan</string>
+    <string name="security_body">PIN dan sidik jari menutup akses ke aplikasi ini di perangkatmu. Datamu tetap tersimpan di perangkat baik kunci ini aktif atau tidak.</string>
+    <string name="security_enable_pin">Aktifkan kunci PIN</string>
+    <string name="security_change_pin">Ubah PIN</string>
+    <string name="security_disable_pin">Matikan kunci</string>
+    <string name="security_biometric">Sidik jari atau wajah</string>
+    <string name="security_biometric_unavailable">Tidak tersedia di perangkat ini</string>
+    <string name="security_auto_lock">Kunci otomatis</string>
+    <string name="security_auto_lock_immediately">Segera</string>
+    <string name="security_auto_lock_1min">Setelah 1 menit</string>
+    <string name="security_auto_lock_5min">Setelah 5 menit</string>
+    <string name="security_auto_lock_15min">Setelah 15 menit</string>
+    <string name="security_enter_current_pin">Masukkan PIN sekarang</string>
+    <string name="security_enter_new_pin">Buat PIN baru</string>
+    <string name="security_confirm_new_pin">Ketik ulang PIN baru</string>
+    <string name="security_pin_mismatch">PIN tidak cocok, coba lagi</string>
+    <string name="security_locked_out">Terlalu banyak percobaan. Coba lagi sebentar lagi</string>
+
     <!-- Tentang dan disclaimer S23 (Tahap 5) -->
     <string name="menu_about">Tentang</string>
     <string name="menu_about_sub">Privasi, asumsi fikih, dan lisensi</string>
