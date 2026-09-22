@@ -15,6 +15,7 @@ import com.roziqrizal.rizqflow.ui.ruang.AturanScreen
 import com.roziqrizal.rizqflow.ui.ruang.RoomDetailScreen
 import com.roziqrizal.rizqflow.ui.about.AboutScreen
 import com.roziqrizal.rizqflow.ui.reconciliation.ReconciliationScreen
+import com.roziqrizal.rizqflow.ui.reminder.ReminderSettingsScreen
 import com.roziqrizal.rizqflow.ui.zakat.ZakatFlow
 import com.roziqrizal.rizqflow.domain.model.RoomId
 import java.time.YearMonth
@@ -56,6 +57,13 @@ import com.roziqrizal.rizqflow.ui.catat.SavedInfo
 import com.roziqrizal.rizqflow.ui.transaksi.TransaksiScreen
 import com.roziqrizal.rizqflow.workspace.AccountWorkspace
 import kotlinx.coroutines.launch
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import com.roziqrizal.rizqflow.notifications.ReminderScheduler
 
 /**
  * Menu utama beserta layar Catat di atasnya. Catat menutupi menu utama (bukan menggantinya)
@@ -90,6 +98,7 @@ fun MainHost(
     var aboutOpen by rememberSaveable { mutableStateOf(false) }
     var reconcileAccount by rememberSaveable { mutableStateOf<String?>(null) }
     var reconcileOpen by rememberSaveable { mutableStateOf(false) }
+    var reminderOpen by rememberSaveable { mutableStateOf(false) }
     var handledQuick by rememberSaveable { mutableIntStateOf(0) }
     LaunchedEffect(quickCatatRequest) {
         if (quickCatatRequest > handledQuick) {
@@ -102,6 +111,30 @@ fun MainHost(
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val undoLabel = context.getString(R.string.action_undo)
+
+    // Pengingat malam (S26): jadwalkan ulang setiap ruang kerja dibuka (juga menutupi kasus
+    // reboot bila WorkManager sendiri belum sempat menjadwalkan lagi), tapi tidak untuk mode demo.
+    LaunchedEffect(workspace, demo) {
+        if (!demo) {
+            val settings = workspace.reminder.settings()
+            if (settings.enabled) ReminderScheduler.scheduleNext(context, settings)
+        }
+    }
+
+    // Izin notifikasi Android 13+ diminta sekali, setelah transaksi pertama disimpan (bukan di
+    // awal onboarding); version bertambah tepat setelah tiap transaksi tersimpan.
+    val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {}
+    LaunchedEffect(workspace, version, demo) {
+        if (!demo &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED &&
+            !workspace.reminder.hasRequestedNotificationPermission() &&
+            workspace.repositories.transactions.latest(null) != null
+        ) {
+            workspace.reminder.markNotificationPermissionRequested()
+            notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+        }
+    }
 
     // Snackbar untuk layar mana pun; hasilnya true bila tombol aksinya ditekan.
     val notifier = remember(snackbar) {
@@ -246,10 +279,16 @@ fun MainHost(
             reconcileAccount = null
             reconcileOpen = true
         },
+        onOpenReminder = { reminderOpen = true },
     )
     if (aboutOpen) {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             AboutScreen(notifier = notifier, onClose = { aboutOpen = false })
+        }
+    }
+    if (reminderOpen) {
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            ReminderSettingsScreen(workspace = workspace, onClose = { reminderOpen = false })
         }
     }
     if (reconcileOpen) {
