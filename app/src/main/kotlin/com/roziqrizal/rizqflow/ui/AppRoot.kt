@@ -28,6 +28,7 @@ import com.roziqrizal.rizqflow.domain.auth.AuthProviderType
 import com.roziqrizal.rizqflow.ui.login.LoginScreen
 import com.roziqrizal.rizqflow.ui.login.RegisterScreen
 import com.roziqrizal.rizqflow.ui.security.AppLockScreen
+import com.roziqrizal.rizqflow.ui.theme.ThemePreference
 import kotlinx.coroutines.launch
 
 /**
@@ -35,7 +36,13 @@ import kotlinx.coroutines.launch
  * riwayat masuk. Selama [AuthUiState.Loading] splash sistem masih menutupi layar.
  */
 @Composable
-fun AppRoot(controller: AuthController, appLock: AppLockService, showDebugLogin: Boolean, quickCatatRequest: Int = 0) {
+fun AppRoot(
+    controller: AuthController,
+    appLock: AppLockService,
+    themePreference: ThemePreference,
+    showDebugLogin: Boolean,
+    quickCatatRequest: Int = 0,
+) {
     val state by controller.state.collectAsState()
     var registering by rememberSaveable { mutableStateOf(false) }
     var demo by rememberSaveable { mutableStateOf(false) }
@@ -114,6 +121,7 @@ fun AppRoot(controller: AuthController, appLock: AppLockService, showDebugLogin:
                             MainHost(
                                 workspace = workspace,
                                 appLock = appLock,
+                                themePreference = themePreference,
                                 account = AccountUi(
                                     identifier = s.session.identifier,
                                     local = s.session.provider == AuthProviderType.PASSWORD,

@@ -40,10 +40,7 @@ val RizqflowShapes = Shapes(
     large = RoundedCornerShape(20.dp),
 )
 
-/**
- * Tema aplikasi. Mengikuti mode gelap sistem; tidak ada pengaturan tema sendiri di versi ini
- * (pilihan Terang, Gelap, Otomatis ada di layar Tampilan, Tahap 6).
- */
+/** Otomatis (bawaan) mengikuti mode gelap sistem; layar Tampilan bisa memaksa terang atau gelap lewat [ThemeMode]. */
 @Composable
 fun RizqflowTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -60,6 +57,14 @@ fun RizqflowTheme(
             content = content,
         )
     }
+}
+
+/** Menerjemahkan pilihan layar Tampilan ke gelap/terang sungguhan; [ThemeMode.SYSTEM] mengikuti sistem. */
+@Composable
+fun ThemeMode.resolveDarkTheme(): Boolean = when (this) {
+    ThemeMode.SYSTEM -> isSystemInDarkTheme()
+    ThemeMode.LIGHT -> false
+    ThemeMode.DARK -> true
 }
 
 /** Warna identitas ruang dan status: `MaterialTheme.rizqflow.room(1)`. */

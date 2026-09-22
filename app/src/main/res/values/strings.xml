@@ -320,6 +320,15 @@
     <string name="csv_import_row_transfer">Baris %1$s: transfer %2$s</string>
     <string name="csv_import_row_skipped">Baris %1$s: dilewati</string>
 
+    <!-- Tampilan: pilihan tema (Tahap 6) -->
+    <string name="menu_tampilan">Tampilan</string>
+    <string name="menu_tampilan_sub">Tema terang, gelap, atau ikuti sistem</string>
+    <string name="tampilan_title">Tampilan</string>
+    <string name="tampilan_body">Otomatis mengikuti pengaturan gelap/terang perangkatmu.</string>
+    <string name="tampilan_system">Otomatis</string>
+    <string name="tampilan_light">Terang</string>
+    <string name="tampilan_dark">Gelap</string>
+
     <!-- Kunci aplikasi S19 (Tahap 6) -->
     <string name="lock_title">Terkunci</string>
     <string name="lock_wrong_pin">PIN salah, %1$d percobaan tersisa</string>

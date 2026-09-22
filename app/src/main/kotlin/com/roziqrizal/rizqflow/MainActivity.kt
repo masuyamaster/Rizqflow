@@ -1,12 +1,16 @@
 package com.roziqrizal.rizqflow
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.view.WindowManager
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.fragment.app.FragmentActivity
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import kotlinx.coroutines.flow.MutableStateFlow
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
@@ -22,6 +26,8 @@ import com.roziqrizal.rizqflow.domain.auth.LocalAccountService
 import com.roziqrizal.rizqflow.domain.auth.Pbkdf2PasswordHasher
 import com.roziqrizal.rizqflow.ui.AppRoot
 import com.roziqrizal.rizqflow.ui.theme.RizqflowTheme
+import com.roziqrizal.rizqflow.ui.theme.ThemePreference
+import com.roziqrizal.rizqflow.ui.theme.resolveDarkTheme
 import java.util.UUID
 
 /**
@@ -70,10 +76,25 @@ class MainActivity : FragmentActivity() {
         controller.start()
 
         val appLock = AppLockService(SharedPrefsSecurityStore(this), Pbkdf2PasswordHasher())
+        val themePreference = ThemePreference(this)
 
         setContent {
-            RizqflowTheme {
-                AppRoot(controller = controller, appLock = appLock, showDebugLogin = BuildConfig.DEBUG, quickCatatRequest = quickCatatRequests.collectAsState().value)
+            val mode by themePreference.mode.collectAsState()
+            val darkTheme = mode.resolveDarkTheme()
+            // enableEdgeToEdge dipanggil sekali di onCreate hanya cocok untuk mode Otomatis; layar
+            // Tampilan bisa memaksa terang/gelap berbeda dari sistem, jadi gaya bar sistem dihitung ulang.
+            LaunchedEffect(darkTheme) {
+                val style = if (darkTheme) SystemBarStyle.dark(Color.TRANSPARENT) else SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+                enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
+            }
+            RizqflowTheme(darkTheme = darkTheme) {
+                AppRoot(
+                    controller = controller,
+                    appLock = appLock,
+                    themePreference = themePreference,
+                    showDebugLogin = BuildConfig.DEBUG,
+                    quickCatatRequest = quickCatatRequests.collectAsState().value,
+                )
             }
         }
     }
