@@ -1,0 +1,162 @@
+package com.roziqrizal.rizqflow.domain.zakat
+
+import com.roziqrizal.rizqflow.domain.allocation.BasisPoints
+import com.roziqrizal.rizqflow.domain.calendar.HijriCalendar
+import com.roziqrizal.rizqflow.domain.calendar.UmmAlQuraCalendar
+import com.roziqrizal.rizqflow.domain.ledger.LedgerError
+import com.roziqrizal.rizqflow.domain.ledger.LedgerResult
+import com.roziqrizal.rizqflow.domain.ledger.LedgerService
+import com.roziqrizal.rizqflow.domain.ledger.NewExpense
+import com.roziqrizal.rizqflow.domain.ledger.Room
+import com.roziqrizal.rizqflow.domain.ledger.RoomRepository
+import com.roziqrizal.rizqflow.domain.ledger.RoomTemplates
+import com.roziqrizal.rizqflow.domain.ledger.TransactionRepository
+import com.roziqrizal.rizqflow.domain.ledger.failure
+import com.roziqrizal.rizqflow.domain.model.AccountId
+import com.roziqrizal.rizqflow.domain.model.GoldPriceSource
+import com.roziqrizal.rizqflow.domain.model.RoomId
+import com.roziqrizal.rizqflow.domain.model.TransactionId
+import com.roziqrizal.rizqflow.domain.model.TransactionKind
+import com.roziqrizal.rizqflow.domain.model.WealthKind
+import com.roziqrizal.rizqflow.domain.money.Currency
+import com.roziqrizal.rizqflow.domain.money.Money
+import java.time.LocalDate
+import java.time.YearMonth
+
+/** Satu baris harta atau pengurang yang belum disimpan (S15). [id] null berarti baris baru. */
+data class NewWealthItem(val id: String? = null, val kind: WealthKind, val label: String, val value: Money, val goldMilligrams: Long? = null)
+
+/** Satu baris riwayat zakat (S14) beserta nominal yang tercatat di transaksinya. */
+data class ZakatPaymentRow(val payment: ZakatPayment, val amount: Money)
+
+/** Isi S14 Beranda Zakat untuk satu ruang Memberi. */
+data class GivingOverview(
+    val room: Room,
+    val status: GivingStatus,
+    val goldPrice: GoldPrice?,
+    val items: List<WealthItem>,
+    val payments: List<ZakatPaymentRow>,
+) {
+    /** Modul zakat belum pernah diisi sama sekali: S14 menampilkan kartu "Mulai dengan mengisi harta". */
+    val neverSetUp: Boolean get() = room.givingMode == ZakatHaulHijriStrategy.ID && items.isEmpty()
+}
+
+/**
+ * Modul Memberi (S14 sampai S17): menilai ruang Memberi lewat [GivingStrategy] yang sedang aktif,
+ * menyimpan profil harta, dan menunaikan zakat sebagai pengeluaran biasa di ruang itu (F5). Status
+ * haul tidak pernah disimpan; selalu dihitung ulang dari riwayat [WealthCheck] dan [ZakatPayment]
+ * lewat [HaulTracker], persis seperti saldo akun dihitung ulang dari transaksi.
+ */
+class ZakatService(
+    private val rooms: RoomRepository,
+    private val transactions: TransactionRepository,
+    private val zakat: ZakatRepository,
+    private val ledger: LedgerService,
+    private val newId: () -> String,
+    private val calendar: HijriCalendar = UmmAlQuraCalendar(),
+    private val assumptions: ZakatAssumptions = ZakatAssumptions(),
+) {
+    /** null bila [roomId] tidak ada. */
+    suspend fun overview(roomId: RoomId, today: LocalDate): GivingOverview? {
+        val room = rooms.find(roomId) ?: return null
+        val profile = zakat.activeProfile()
+        val items = profile?.let { zakat.items(it.id) }.orEmpty()
+        val price = zakat.latestGoldPrice()
+        val netWealth = if (profile == null) null else netWealthOf(items, price?.perGram?.currency ?: Money.zero().currency)
+
+        val month = YearMonth.from(today)
+        val income = transactions.between(month.atDay(1), month.atEndOfMonth())
+            .filter { it.kind == TransactionKind.INCOME }
+            .fold(Money.zero()) { total, tx -> total + tx.amount }
+
+        val events = buildEvents(profile)
+        val strategy = strategyFor(room.givingMode, profile?.haulBreakPolicy ?: HaulBreakPolicy.RESET_WHEN_BELOW_NISAB)
+        val status = strategy.evaluate(GivingContext(today, income, price?.perGram, netWealth, events))
+
+        val paymentRows = profile?.let { zakat.payments(it.id) }.orEmpty()
+            .sortedByDescending { it.day }
+            .map { payment -> ZakatPaymentRow(payment, transactions.find(payment.transactionId)?.amount ?: Money.zero()) }
+
+        return GivingOverview(room, status, price, items, paymentRows)
+    }
+
+    /** Ruang lain (persentase donasi) atau zakat mal (nisab dan haul); disimpan di ruang itu sendiri. */
+    suspend fun setGivingMode(roomId: RoomId, mode: String): LedgerResult<Unit> {
+        require(mode == PercentageGivingStrategy.ID || mode == ZakatHaulHijriStrategy.ID) { "Mode tidak dikenal: $mode" }
+        val room = rooms.find(roomId) ?: return failure(LedgerError.ROOM_NOT_FOUND)
+        rooms.saveRooms(listOf(room.copy(givingMode = mode)))
+        return LedgerResult.Success(Unit)
+    }
+
+    /**
+     * Menyimpan seluruh daftar harta sekaligus (S15). [goldPricePerGram] wajib karena nisab selalu
+     * dinilai dalam emas, dipakai juga untuk menghitung ulang nilai baris `GOLD` dari gramnya.
+     * Menyimpan otomatis mencatat pemeriksaan harta hari ini, dasar penghitungan haul.
+     */
+    suspend fun saveWealth(items: List<NewWealthItem>, goldPricePerGram: Money, today: LocalDate): LedgerResult<Unit> {
+        if (!goldPricePerGram.isPositive) return failure(LedgerError.GOLD_PRICE_REQUIRED)
+        if (items.any { it.label.isBlank() || it.label.length > WealthItem.LABEL_MAX || it.value.isNegative }) {
+            return failure(LedgerError.INVALID_WEALTH_ITEM)
+        }
+
+        val profile = zakat.activeProfile() ?: ZakatProfile(newId(), DEFAULT_PROFILE_NAME).also { zakat.saveProfile(it) }
+        zakat.saveGoldPrice(GoldPrice(today, goldPricePerGram, GoldPriceSource.MANUAL))
+
+        val now = System.currentTimeMillis()
+        val resolved = items.map { draft ->
+            val value = if (draft.kind == WealthKind.GOLD) ZakatCalculator.goldValue(goldPricePerGram, draft.goldMilligrams ?: 0) else draft.value
+            WealthItem(draft.id ?: newId(), profile.id, draft.kind, draft.label.trim(), value, draft.goldMilligrams, now)
+        }
+        zakat.replaceItems(profile.id, resolved)
+
+        val netWealth = netWealthOf(resolved, goldPricePerGram.currency)
+        zakat.saveCheck(WealthCheck(newId(), profile.id, today, netWealth, ZakatCalculator.nisab(goldPricePerGram, assumptions)))
+        return LedgerResult.Success(Unit)
+    }
+
+    /**
+     * Menunaikan zakat: pengeluaran kategori sistem `Zakat mal` di ruang Memberi, lalu haul baru
+     * mulai dihitung dari hari ini (F5). Boleh dipanggil sebelum haul genap (S17: "tunaikan lebih awal").
+     */
+    suspend fun payZakat(roomId: RoomId, accountId: AccountId, amount: Money, date: LocalDate, note: String? = null): LedgerResult<TransactionId> {
+        val room = rooms.find(roomId) ?: return failure(LedgerError.ROOM_NOT_FOUND)
+        val category = rooms.categories(roomId).firstOrNull { it.name == RoomTemplates.ZAKAT }
+            ?: return failure(LedgerError.ZAKAT_CATEGORY_MISSING)
+        val profile = zakat.activeProfile() ?: ZakatProfile(newId(), DEFAULT_PROFILE_NAME).also { zakat.saveProfile(it) }
+
+        val recorded = ledger.recordExpense(NewExpense(amount, accountId, room.id, category.id, date, note))
+        val transaction = when (recorded) {
+            is LedgerResult.Success -> recorded.value
+            is LedgerResult.Failure -> return recorded
+        }
+        zakat.savePayment(ZakatPayment(newId(), profile.id, date, transaction.id))
+        return LedgerResult.Success(transaction.id)
+    }
+
+    private fun strategyFor(mode: String?, haulBreakPolicy: HaulBreakPolicy): GivingStrategy = when (mode) {
+        PercentageGivingStrategy.ID -> PercentageGivingStrategy(PERCENTAGE_MODE_RATE)
+        else -> ZakatHaulHijriStrategy(HaulTracker(calendar, assumptions.copy(haulBreakPolicy = haulBreakPolicy)))
+    }
+
+    private fun netWealthOf(items: List<WealthItem>, currency: Currency): Money {
+        val assets = items.filter { it.kind != WealthKind.DEDUCTION }.map { it.value }
+        val deductions = items.filter { it.kind == WealthKind.DEDUCTION }.map { it.value }
+        return ZakatCalculator.netWealth(assets, deductions, currency)
+    }
+
+    private suspend fun buildEvents(profile: ZakatProfile?): List<HaulEvent> {
+        if (profile == null) return emptyList()
+        val checks = zakat.checks(profile.id).map { HaulEvent.WealthChecked(it.day, it.netWealth, it.nisab) }
+        val payments = zakat.payments(profile.id).map { HaulEvent.ZakatPaid(it.day) }
+        // Pada hari yang sama, pemeriksaan mendahului pembayaran: haul baru dievaluasi dari nilai
+        // harta hari itu dulu, baru direset oleh pembayaran (urutan stabil menurut hari).
+        return (checks + payments).sortedBy { it.date }
+    }
+
+    companion object {
+        private const val DEFAULT_PROFILE_NAME = "Utama"
+
+        /** Bawaan mode persentase donasi (S14): 10% dari rezeki bulan itu, sama seperti pola Tiga hak. */
+        private val PERCENTAGE_MODE_RATE = BasisPoints.percent(10)
+    }
+}

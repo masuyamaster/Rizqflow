@@ -322,6 +322,17 @@ class RoomManagementTest {
         assertTrue(kategori.last().isSystem)
     }
 
+    @Test
+    fun `ruang Menunaikan baru juga mendapat kategori sistem Zakat mal`() {
+        val f = LedgerFixture().standard()
+        val id = (runSuspend { f.rules.addRoom(NewRoom("Sedekah kantor", RoomKind.MENUNAIKAN, "heart", 4)) } as LedgerResult.Success).value
+
+        val kategori = runSuspend { f.store.categories(id) }
+
+        assertEquals(listOf("Lain-lain", RoomTemplates.ZAKAT, RoomTemplates.UNTRACKED), kategori.map { it.name })
+        assertTrue(kategori[1].isSystem && kategori[2].isSystem)
+    }
+
     private fun rule(f: LedgerFixture, room: String, percent: Int) = AllocationRule(f.room(room).id, BasisPoints.percent(percent))
 
     // ------------------------------------------------------------------ draf aturan (S12)

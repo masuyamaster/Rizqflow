@@ -160,8 +160,15 @@ class RuleService(
             sortOrder = (active.maxOfOrNull { it.sortOrder } ?: -1) + 1,
         )
         val other = Category(CategoryId(newId()), room.id, OTHER_CATEGORY, sortOrder = 0)
-        val untracked = Category(CategoryId(newId()), room.id, RoomTemplates.UNTRACKED, isSystem = true, sortOrder = 1)
-        rooms.addRoom(room, listOf(other, untracked))
+        // Ruang Menunaikan lain (mis. dibuat manual, bukan lewat pola Tiga hak) tetap butuh kategori Zakat mal
+        // supaya Tunaikan zakat (S17) selalu punya tujuan; lihat WorkspaceSetup untuk pola bawaan.
+        val zakat = if (command.kind == RoomKind.MENUNAIKAN) {
+            listOf(Category(CategoryId(newId()), room.id, RoomTemplates.ZAKAT, isSystem = true, sortOrder = 1))
+        } else {
+            emptyList()
+        }
+        val untracked = Category(CategoryId(newId()), room.id, RoomTemplates.UNTRACKED, isSystem = true, sortOrder = 1 + zakat.size)
+        rooms.addRoom(room, listOf(other) + zakat + listOf(untracked))
         return LedgerResult.Success(room.id)
     }
 

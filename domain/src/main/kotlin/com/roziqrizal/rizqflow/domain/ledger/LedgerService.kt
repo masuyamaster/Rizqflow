@@ -43,6 +43,11 @@ enum class LedgerError {
     RULES_NOT_100_PERCENT,
     RULES_INVALID,
     WORKSPACE_NOT_EMPTY,
+
+    /** Ruang Menunaikan tidak (lagi) punya kategori sistem Zakat mal; seharusnya tidak pernah terjadi. */
+    ZAKAT_CATEGORY_MISSING,
+    INVALID_WEALTH_ITEM,
+    GOLD_PRICE_REQUIRED,
 }
 
 sealed interface LedgerResult<out T> {
