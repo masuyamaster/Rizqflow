@@ -97,14 +97,16 @@ Logika bisnis yang benar dan teruji sebelum ada layar.
 
 **Status 2026-09-21:** semua kriteria terpenuhi: onboarding, catat pemasukan dan pengeluaran dan transfer, ubah aturan alokasi, kelola akun dan kategori dan favorit, dan mode demo berjalan di emulator tanpa jaringan; data tersimpan di Room; tiap layar punya keadaan kosong. Yang ditunda ke tahap lain tercatat di butir masing-masing di atas.
 
-## Tahap 4 — Dashboard Denah (In Progress)
+## Tahap 4 — Dashboard Denah (Selesai)
 
 - [x] Denah: ringkasan, grid ruang, perlu perhatian (S05): rezeki bulan ini dengan bar pembagian, kartu ruang (cincin, sisa, status ikon plus teks), Perlu perhatian maksimal 3 butir, navigator bulan, keadaan kosong; teruji di emulator (2026-09-21). Belum ada: tanggal Hijriyah dan butir haul (Tahap 5), butir saldo belum dicocokkan (Tahap 6), mode demo dari keadaan kosong (S22), kartu bisa dibuka ke S11
 - [x] Detail ruang (S11): cincin progres, terpakai dari jatah, status ikon plus teks dengan penjelasan arti per tipe, pos dengan batang (pembanding: irisan jatah menurut bobot, kosong = seluruh jatah ruang), lima pengeluaran terbaru yang bisa dibuka ke Detail transaksi, Atur aturan, dan Arsipkan ruang dengan konfirmasi dan Urungkan yang mengembalikan urutan dan persentase; dibuka dari kartu di Denah dan baris di Ruang (2026-09-21). Kartu Zakat untuk ruang Memberi menunggu Tahap 5
 - [x] Logika status ruang per tipe dan tesnya: `RoomStatusRules` (ambang 85% Mencukupi, batas inklusif) dan `DenahLoader` (rezeki bulan itu, belum dialirkan, kartu per ruang, butir Perlu perhatian maksimal 3), 18 tes (2026-09-21). Menunggu konfirmasi: penilaian Mencukupi di akhir bulan dan label bulan lalu yang belum tercapai
-- [ ] State tepi: bulan kosong, banyak ruang, font besar, mode gelap. Sudah dicek di emulator untuk Denah: bulan kosong, font 200% (satu kolom), mode gelap; belum: lebih dari 6 ruang
+- [x] State tepi: bulan kosong, banyak ruang, font besar, mode gelap (2026-09-22). Dicek di emulator untuk Denah dan daftar Ruang dengan 7 ruang (paket Pro sementara untuk melewati batas 5, lalu dikembalikan ke gratis): grid dua kolom tetap rapi dengan baris ganjil, satu kolom di font 200%, terbaca di mode gelap, ringkasan Pembagian rezeki membungkus benar. Temuan sekalian: menurunkan paket dari Pro ke gratis saat ruang aktif melebihi batas tidak menghapus ruang yang sudah ada, hanya memblokir tambahan baru dengan pesan "Batas ruang paket gratis tercapai" — perilaku yang benar
 
 **Selesai bila:** status benar untuk ketiga tipe ruang; semua state punya tampilan; terbaca di font 200% dan mode gelap.
+
+**Status 2026-09-22:** semua kriteria terpenuhi dan teruji di emulator termasuk kasus tepi >5/>6 ruang. Kartu Zakat (Memberi) dan butir haul/saldo di Denah menunggu Tahap 5 dan 6 seperti tercatat di atas.
 
 ## Tahap 5 — Modul Memberi: zakat dan haul (Backlog)
 
