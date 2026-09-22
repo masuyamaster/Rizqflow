@@ -1,18 +1,27 @@
 package com.roziqrizal.rizqflow.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.roziqrizal.rizqflow.R
 import com.roziqrizal.rizqflow.domain.auth.AccountStorage
 import com.roziqrizal.rizqflow.domain.auth.AppLockService
 import androidx.compose.runtime.collectAsState
@@ -62,7 +71,19 @@ fun AppRoot(
         contentColor = MaterialTheme.colorScheme.onBackground,
     ) {
         when (val s = state) {
-            AuthUiState.Loading -> Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
+            // Warna latar disamakan dengan ic_launcher_background (bukan token tema) supaya
+            // menyatu tanpa kedipan dengan splash sistem, yang memakai warna itu juga.
+            AuthUiState.Loading -> Box(
+                modifier = Modifier.fillMaxSize().background(colorResource(R.color.ic_launcher_background)),
+                contentAlignment = Alignment.Center,
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_rizqflow_wordmark),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp),
+                    contentScale = ContentScale.FillWidth,
+                )
+            }
 
             is AuthUiState.SignedOut -> if (registering) {
                 BackHandler(enabled = s.busy == null) { openRegister(false) }
