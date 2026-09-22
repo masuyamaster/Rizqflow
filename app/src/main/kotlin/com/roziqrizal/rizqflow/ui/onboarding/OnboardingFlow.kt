@@ -305,7 +305,7 @@ private fun PersenScreen(draft: OnboardingDraft, onChange: (OnboardingDraft) -> 
                             OutlinedButton(
                                 onClick = { onChange(draft.stepPercent(index, -1)) },
                                 enabled = percent > 0,
-                                modifier = Modifier.size(44.dp).semantics { contentDescription = "$lessLabel $name" },
+                                modifier = Modifier.size(48.dp).semantics { contentDescription = "$lessLabel $name" },
                                 contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
                             ) { Text("−") }
                             Slider(
@@ -324,7 +324,7 @@ private fun PersenScreen(draft: OnboardingDraft, onChange: (OnboardingDraft) -> 
                             OutlinedButton(
                                 onClick = { onChange(draft.stepPercent(index, 1)) },
                                 enabled = percent < ShareEditor.maxFor(draft.percents, index),
-                                modifier = Modifier.size(44.dp).semantics { contentDescription = "$moreLabel $name" },
+                                modifier = Modifier.size(48.dp).semantics { contentDescription = "$moreLabel $name" },
                                 contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
                             ) { Text("+") }
                         }

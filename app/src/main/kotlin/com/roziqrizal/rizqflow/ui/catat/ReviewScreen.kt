@@ -147,7 +147,7 @@ internal fun ReviewScreen(
                             OutlinedButton(
                                 onClick = { onStep(index, -1) },
                                 enabled = percent > 0 && !busy,
-                                modifier = Modifier.size(44.dp).semantics { contentDescription = "$lessLabel $name" },
+                                modifier = Modifier.size(48.dp).semantics { contentDescription = "$lessLabel $name" },
                                 contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
                             ) { Text("−") }
                             Slider(
@@ -167,7 +167,7 @@ internal fun ReviewScreen(
                             OutlinedButton(
                                 onClick = { onStep(index, 1) },
                                 enabled = percent < ShareEditor.maxFor(split.percents, index) && !busy,
-                                modifier = Modifier.size(44.dp).semantics { contentDescription = "$moreLabel $name" },
+                                modifier = Modifier.size(48.dp).semantics { contentDescription = "$moreLabel $name" },
                                 contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
                             ) { Text("+") }
                         }
@@ -176,7 +176,7 @@ internal fun ReviewScreen(
                             stringResource(R.string.onb_persen_auto),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(start = 44.dp),
+                            modifier = Modifier.padding(start = 48.dp),
                         )
                     }
                 }

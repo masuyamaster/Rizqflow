@@ -228,7 +228,7 @@ private fun RulesEditor(
                             OutlinedButton(
                                 onClick = { draft = draft.step(index, -1) },
                                 enabled = basisPoints > 0 && !busy,
-                                modifier = Modifier.size(44.dp).semantics { contentDescription = "$lessLabel ${room.name}" },
+                                modifier = Modifier.size(48.dp).semantics { contentDescription = "$lessLabel ${room.name}" },
                                 contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
                             ) { Text("−") }
                             Slider(
@@ -249,7 +249,7 @@ private fun RulesEditor(
                             OutlinedButton(
                                 onClick = { draft = draft.step(index, 1) },
                                 enabled = basisPoints < 10_000 && !busy,
-                                modifier = Modifier.size(44.dp).semantics { contentDescription = "$moreLabel ${room.name}" },
+                                modifier = Modifier.size(48.dp).semantics { contentDescription = "$moreLabel ${room.name}" },
                                 contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
                             ) { Text("+") }
                         }
