@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Notifikasi pengingat malam (S26); wajib diminta saat dijalankan di Android 13+. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <!-- allowBackup dimatikan: salinan otomatis tidak boleh keluar dari kendali pengguna.
          Cadangan dibuat lewat backup terenkripsi milik aplikasi (lihat docs/konsep.md). -->
     <application
+        android:name=".RizqflowApplication"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -36,6 +40,11 @@
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
+
+        <!-- Aksi notifikasi pengingat malam (Balas, Tidak ada): dipicu lewat PendingIntent, bukan intent tersirat. -->
+        <receiver
+            android:name=".notifications.ReminderActionReceiver"
+            android:exported="false" />
     </application>
 
 </manifest>
