@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -116,7 +117,14 @@ fun RoomDetailScreen(
     Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).safeDrawingPadding()) {
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(start = spacing.s3, end = spacing.s5, top = spacing.s2)) {
             TextButton(onClick = onClose) { Text(stringResource(R.string.onb_back)) }
-            Text(formatMonth(data.month), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f).padding(end = spacing.s2), maxLines = 1)
+            Text(
+                formatMonth(data.month),
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f).padding(end = spacing.s2),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
         Column(
             modifier = Modifier
@@ -286,8 +294,14 @@ private fun RecentRow(row: RoomTransaction, today: LocalDate, onClick: () -> Uni
         horizontalArrangement = Arrangement.spacedBy(spacing.s3),
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(tx.note ?: row.categoryName, style = MaterialTheme.typography.titleSmall, maxLines = 1)
-            Text("${formatDate(tx.occurredOn, today)} · ${row.categoryName}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+            Text(tx.note ?: row.categoryName, style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            Text(
+                "${formatDate(tx.occurredOn, today)} · ${row.categoryName}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
         Text("−" + formatRupiah(tx.amount).removePrefix("Rp "), style = MaterialTheme.typography.titleSmall)
         Icon(RizqflowIcons.PanahKanan, contentDescription = null, modifier = Modifier.size(18.dp))

@@ -1,6 +1,7 @@
 package com.roziqrizal.rizqflow.ui.catat
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -539,7 +540,7 @@ private fun ModeTabs(mode: CatatMode, canTransfer: Boolean, onMode: (CatatMode) 
                 colors = rizqflowSegmentedColors(),
                 // Dengan satu akun, Transfer nonaktif; penjelasannya tampil di bawah saat tab ini dipilih.
                 enabled = value != CatatMode.TRANSFER || canTransfer,
-                label = { Text(stringResource(label), maxLines = 1) },
+                label = { Text(stringResource(label), maxLines = 1, overflow = TextOverflow.Ellipsis) },
             )
         }
     }
