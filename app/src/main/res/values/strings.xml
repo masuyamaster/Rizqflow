@@ -259,6 +259,26 @@
     <string name="manage_err_system">Kategori sistem tidak bisa diubah.</string>
     <string name="manage_err_favorite_limit">Favorit sudah 6, yang paling banyak. Hapus satu dulu.</string>
 
+    <!-- Koreksi saldo S25 (Tahap 6) -->
+    <string name="menu_reconcile">Koreksi saldo</string>
+    <string name="menu_reconcile_sub">Cocokkan catatan dengan saldo sebenarnya</string>
+    <string name="reconcile_title">Koreksi saldo</string>
+    <string name="reconcile_recorded">Menurut catatan</string>
+    <string name="reconcile_actual">Saldo sebenarnya</string>
+    <string name="reconcile_difference">Selisih</string>
+    <string name="reconcile_match">Catatan cocok dengan saldo</string>
+    <string name="reconcile_short">Belum tercatat sebagai pengeluaran.</string>
+    <string name="reconcile_over">Belum tercatat sebagai pemasukan.</string>
+    <string name="reconcile_file_as">Catat sebagai</string>
+    <string name="reconcile_category_fixed">Kategori: Tak terlacak</string>
+    <string name="reconcile_room">Ruang</string>
+    <string name="reconcile_income_note">Dicatat sebagai pemasukan dan dialirkan seperti pemasukan lain.</string>
+    <string name="reconcile_save">Catat selisih</string>
+    <string name="reconcile_search_self">Cari sendiri dulu</string>
+    <string name="reconcile_saved_match">Catatan cocok dengan saldo.</string>
+    <string name="reconcile_saved_expense">%1$s dicatat sebagai pengeluaran.</string>
+    <string name="reconcile_saved_income">%1$s dicatat sebagai pemasukan.</string>
+
     <!-- Tentang dan disclaimer S23 (Tahap 5) -->
     <string name="menu_about">Tentang</string>
     <string name="menu_about_sub">Privasi, asumsi fikih, dan lisensi</string>

@@ -14,6 +14,7 @@ import com.roziqrizal.rizqflow.domain.ledger.ArchiveUndo
 import com.roziqrizal.rizqflow.ui.ruang.AturanScreen
 import com.roziqrizal.rizqflow.ui.ruang.RoomDetailScreen
 import com.roziqrizal.rizqflow.ui.about.AboutScreen
+import com.roziqrizal.rizqflow.ui.reconciliation.ReconciliationScreen
 import com.roziqrizal.rizqflow.ui.zakat.ZakatFlow
 import com.roziqrizal.rizqflow.domain.model.RoomId
 import java.time.YearMonth
@@ -87,6 +88,8 @@ fun MainHost(
     var roomMonth by rememberSaveable { mutableStateOf("") }
     var zakatRoom by rememberSaveable { mutableStateOf<String?>(null) }
     var aboutOpen by rememberSaveable { mutableStateOf(false) }
+    var reconcileAccount by rememberSaveable { mutableStateOf<String?>(null) }
+    var reconcileOpen by rememberSaveable { mutableStateOf(false) }
     var handledQuick by rememberSaveable { mutableIntStateOf(0) }
     LaunchedEffect(quickCatatRequest) {
         if (quickCatatRequest > handledQuick) {
@@ -127,6 +130,25 @@ fun MainHost(
         scope.launch {
             if (notifier.show(context.getString(R.string.room_archived, undo.room.name), undoLabel)) {
                 workspace.rules.undoArchive(undo)
+                version++
+            }
+        }
+    }
+
+    fun announceReconciled(transactionId: TransactionId?, diff: com.roziqrizal.rizqflow.domain.money.Money) {
+        version++
+        if (transactionId == null) {
+            scope.launch { notifier.show(context.getString(R.string.reconcile_saved_match)) }
+            return
+        }
+        val message = if (diff.isNegative) {
+            context.getString(R.string.reconcile_saved_expense, formatRupiah(diff.abs()))
+        } else {
+            context.getString(R.string.reconcile_saved_income, formatRupiah(diff))
+        }
+        scope.launch {
+            if (notifier.show(message, undoLabel)) {
+                workspace.ledger.delete(transactionId)
                 version++
             }
         }
@@ -220,10 +242,28 @@ fun MainHost(
         demo = demo,
         onToggleDemo = { if (demo) demoSheet = true else onEnterDemo() },
         onOpenAbout = { aboutOpen = true },
+        onOpenReconciliation = {
+            reconcileAccount = null
+            reconcileOpen = true
+        },
     )
     if (aboutOpen) {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             AboutScreen(notifier = notifier, onClose = { aboutOpen = false })
+        }
+    }
+    if (reconcileOpen) {
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            ReconciliationScreen(
+                workspace = workspace,
+                initialAccountId = reconcileAccount?.let { com.roziqrizal.rizqflow.domain.model.AccountId(it) },
+                notifier = notifier,
+                onClose = { reconcileOpen = false },
+                onCorrected = { txId, diff ->
+                    reconcileOpen = false
+                    announceReconciled(txId, diff)
+                },
+            )
         }
     }
     if (demoSheet && demo) {
