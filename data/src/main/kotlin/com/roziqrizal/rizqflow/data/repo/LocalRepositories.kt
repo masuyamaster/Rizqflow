@@ -154,6 +154,8 @@ class LocalTransactionRepository(private val db: RizqflowDatabase) : Transaction
     override suspend fun latest(kind: TransactionKind?): MoneyTransaction? =
         (if (kind == null) db.transactions().latest() else db.transactions().latestOfKind(kind))?.toDomain()
 
+    override suspend fun latestExpenseRoom(accountId: AccountId): RoomId? = db.transactions().latestExpenseRoom(accountId.value)?.let(::RoomId)
+
     // Versi 1 hanya rupiah (docs/model-data.md); multi-mata uang (Pro) menambah kolom mata uang di agregat ini.
     override suspend fun roomTotals(from: LocalDate, to: LocalDate): RoomTotals = RoomTotals(
         allocated = db.transactions().allocatedPerRoom(from.toEpochDay(), to.toEpochDay()).associate { RoomId(it.roomId) to Money.rupiah(it.total) },

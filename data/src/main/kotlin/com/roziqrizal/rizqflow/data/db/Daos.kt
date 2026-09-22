@@ -125,6 +125,10 @@ interface TransactionDao {
     @Query("SELECT * FROM money_transaction WHERE kind = :kind ORDER BY created_at DESC, rowid DESC LIMIT 1")
     suspend fun latestOfKind(kind: TransactionKind): TransactionEntity?
 
+    /** Ruang dari pengeluaran terakhir di akun ini; dasar ruang usulan Koreksi saldo (S25). */
+    @Query("SELECT room_id FROM money_transaction WHERE kind = 'EXPENSE' AND account_id = :accountId ORDER BY created_at DESC, rowid DESC LIMIT 1")
+    suspend fun latestExpenseRoom(accountId: String): String?
+
     @Query("SELECT * FROM money_transaction WHERE occurred_on BETWEEN :fromDay AND :toDay ORDER BY occurred_on DESC, created_at DESC")
     suspend fun between(fromDay: Long, toDay: Long): List<TransactionEntity>
 
