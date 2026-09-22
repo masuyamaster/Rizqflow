@@ -126,7 +126,7 @@ Pembeda utama produk.
 
 ## Tahap 6 — Keamanan, data, dan polish (In Progress)
 
-- [x] Kunci PIN dan biometrik (S19): PIN 6 angka diketik dua kali, lima kali salah menahan sementara 30 detik tanpa menghapus data, biometrik hanya bisa aktif setelah ada PIN dan bila tersedia di perangkat, kunci otomatis (segera/1/5/15 menit) diperiksa lewat lifecycle Activity saat kembali dari latar belakang, start dingin selalu terkunci bila ada PIN; menu Lainnya > Keamanan untuk ubah PIN dan matikan kunci (keduanya minta PIN sekarang dulu); teruji ujung ke ujung di emulator termasuk lockout dan kedua mode kunci otomatis (2026-09-22)
+- [x] Kunci PIN dan biometrik (S19): PIN 6 angka diketik dua kali, lima kali salah menahan sementara 30 detik tanpa menghapus data, biometrik hanya bisa aktif setelah ada PIN dan bila tersedia di perangkat, kunci otomatis (segera/1/5/15 menit) diperiksa lewat lifecycle Activity saat kembali dari latar belakang, start dingin selalu terkunci bila ada PIN, FLAG_SECURE menyembunyikan nominal di tampilan aplikasi terakhir dan tangkapan layar; menu Lainnya > Keamanan untuk ubah PIN dan matikan kunci (keduanya minta PIN sekarang dulu); teruji ujung ke ujung di emulator termasuk lockout, kedua mode kunci otomatis, dan tampilan aplikasi terakhir (2026-09-22)
 - [ ] Backup dan restore terenkripsi (S20)
 - [ ] Ekspor CSV
 - [ ] Impor CSV dari Transaksi Harian Notion
