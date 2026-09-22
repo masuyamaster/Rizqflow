@@ -15,6 +15,7 @@ import com.roziqrizal.rizqflow.ui.ruang.AturanScreen
 import com.roziqrizal.rizqflow.ui.ruang.RoomDetailScreen
 import com.roziqrizal.rizqflow.ui.about.AboutScreen
 import com.roziqrizal.rizqflow.ui.reconciliation.ReconciliationScreen
+import com.roziqrizal.rizqflow.ui.csv.CsvScreen
 import com.roziqrizal.rizqflow.ui.reminder.ReminderSettingsScreen
 import com.roziqrizal.rizqflow.ui.security.SecuritySettingsScreen
 import com.roziqrizal.rizqflow.domain.auth.AppLockService
@@ -103,6 +104,7 @@ fun MainHost(
     var reconcileOpen by rememberSaveable { mutableStateOf(false) }
     var reminderOpen by rememberSaveable { mutableStateOf(false) }
     var securityOpen by rememberSaveable { mutableStateOf(false) }
+    var csvOpen by rememberSaveable { mutableStateOf(false) }
     var handledQuick by rememberSaveable { mutableIntStateOf(0) }
     LaunchedEffect(quickCatatRequest) {
         if (quickCatatRequest > handledQuick) {
@@ -285,10 +287,20 @@ fun MainHost(
         },
         onOpenReminder = { reminderOpen = true },
         onOpenSecurity = { securityOpen = true },
+        onOpenCsv = { csvOpen = true },
     )
     if (securityOpen) {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             SecuritySettingsScreen(service = appLock, onClose = { securityOpen = false })
+        }
+    }
+    if (csvOpen) {
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            Box {
+                CsvScreen(workspace = workspace, notifier = notifier, onClose = { csvOpen = false })
+                // Layar ini menutupi Scaffold beserta snackbar-nya, jadi ia membawa SnackbarHost sendiri.
+                SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp))
+            }
         }
     }
     if (aboutOpen) {

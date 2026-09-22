@@ -299,6 +299,27 @@
     <string name="reminder_reply_saved">%1$s dicatat sebagai pengeluaran.</string>
     <string name="reminder_dismiss_action">Tidak ada</string>
 
+    <!-- Ekspor dan impor CSV (Tahap 6) -->
+    <string name="menu_csv">Ekspor dan impor CSV</string>
+    <string name="menu_csv_sub">Simpan semua transaksi atau muat dari Transaksi Harian</string>
+    <string name="csv_title">Ekspor dan impor CSV</string>
+    <string name="csv_export_title">Ekspor</string>
+    <string name="csv_export_body">Menyimpan seluruh transaksimu ke satu berkas CSV yang bisa dibuka di aplikasi lain.</string>
+    <string name="csv_export_action">Ekspor semua transaksi</string>
+    <string name="csv_export_done">%1$d transaksi disimpan ke berkas.</string>
+    <string name="csv_import_title">Impor</string>
+    <string name="csv_import_body">Memuat CSV yang diekspor dari Transaksi Harian di Notion. Pasangan pemasukan/pengeluaran yang cocok otomatis disatukan jadi transfer; baris yang akun atau kategorinya tidak dikenali dilewati dan dijelaskan alasannya.</string>
+    <string name="csv_import_action">Pilih berkas CSV</string>
+    <string name="csv_import_read_error">Berkas tidak bisa dibaca. Pastikan formatnya CSV.</string>
+    <string name="csv_import_preview_title">Pratinjau impor</string>
+    <string name="csv_import_summary">%1$d siap diimpor, %2$d dilewati</string>
+    <string name="csv_import_confirm">Impor %1$d transaksi</string>
+    <string name="csv_import_done">%1$d transaksi diimpor, %2$d dilewati.</string>
+    <string name="csv_import_row_income">Baris %1$s: pemasukan %2$s</string>
+    <string name="csv_import_row_expense">Baris %1$s: pengeluaran %2$s</string>
+    <string name="csv_import_row_transfer">Baris %1$s: transfer %2$s</string>
+    <string name="csv_import_row_skipped">Baris %1$s: dilewati</string>
+
     <!-- Kunci aplikasi S19 (Tahap 6) -->
     <string name="lock_title">Terkunci</string>
     <string name="lock_wrong_pin">PIN salah, %1$d percobaan tersisa</string>
