@@ -48,6 +48,9 @@ enum class LedgerError {
     ZAKAT_CATEGORY_MISSING,
     INVALID_WEALTH_ITEM,
     GOLD_PRICE_REQUIRED,
+
+    /** Ruang yang dipilih tidak (lagi) punya kategori sistem Tak terlacak; seharusnya tidak pernah terjadi. */
+    UNTRACKED_CATEGORY_MISSING,
 }
 
 sealed interface LedgerResult<out T> {

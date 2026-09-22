@@ -114,6 +114,9 @@ interface TransactionRepository {
     /** Transaksi yang terakhir dicatat ([kind] null = jenis apa pun); dasar bawaan akun dan ruang di Catat. */
     suspend fun latest(kind: TransactionKind?): MoneyTransaction?
 
+    /** Ruang dari pengeluaran terakhir di akun ini; null bila akun itu belum pernah punya pengeluaran. Dasar Koreksi saldo (S25). */
+    suspend fun latestExpenseRoom(accountId: AccountId): RoomId?
+
     /** Jatah (alokasi dari pemasukan) dan terpakai (pengeluaran) per ruang antara dua hari (inklusif). */
     suspend fun roomTotals(from: LocalDate, to: LocalDate): RoomTotals
 }
