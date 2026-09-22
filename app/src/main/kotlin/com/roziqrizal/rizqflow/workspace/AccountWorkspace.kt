@@ -8,6 +8,7 @@ import com.roziqrizal.rizqflow.domain.ledger.FavoriteService
 import com.roziqrizal.rizqflow.domain.ledger.LedgerService
 import com.roziqrizal.rizqflow.domain.ledger.ManagementService
 import com.roziqrizal.rizqflow.domain.ledger.ReconciliationService
+import com.roziqrizal.rizqflow.domain.ledger.ReminderService
 import com.roziqrizal.rizqflow.domain.ledger.RuleService
 import com.roziqrizal.rizqflow.domain.ledger.WorkspaceSetup
 import com.roziqrizal.rizqflow.domain.zakat.ZakatService
@@ -32,6 +33,7 @@ class AccountWorkspace private constructor(private val local: LocalLedger) : Aut
     val favorites = FavoriteService(local.favorites, local.accounts, local.rooms, ledger, newId, System::currentTimeMillis)
     val zakat = ZakatService(local.rooms, local.transactions, local.zakat, ledger, newId)
     val reconciliation = ReconciliationService(local.accounts, local.rooms, local.transactions, ledger)
+    val reminder = ReminderService(local.settings, local.accounts, local.rooms, local.transactions, ledger)
     val demo = DemoData(setup, ledger, management, favorites, local.rooms)
 
     override fun close() = local.close()
