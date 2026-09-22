@@ -68,6 +68,7 @@ import com.roziqrizal.rizqflow.ui.RizqflowIcons
 import com.roziqrizal.rizqflow.ui.RoomTile
 import com.roziqrizal.rizqflow.ui.formatPercent
 import com.roziqrizal.rizqflow.ui.roomIcon
+import com.roziqrizal.rizqflow.ui.roomIconLabel
 import com.roziqrizal.rizqflow.ui.theme.rizqflow
 import com.roziqrizal.rizqflow.ui.theme.rizqflowFilterChipColors
 import com.roziqrizal.rizqflow.ui.theme.spacing
@@ -418,7 +419,7 @@ private fun AddRoomSheet(onCancel: () -> Unit, onAdd: suspend (NewRoom) -> Ledge
                 FilterChip(
                     selected = icon == key,
                     onClick = { icon = key },
-                    label = { Icon(roomIcon(key), contentDescription = key, modifier = Modifier.size(20.dp)) },
+                    label = { Icon(roomIcon(key), contentDescription = stringResource(roomIconLabel(key)), modifier = Modifier.size(20.dp)) },
                     colors = rizqflowFilterChipColors(),
                 )
             }

@@ -491,6 +491,11 @@
     <string name="room_new_name_hint">Contoh: Liburan</string>
     <string name="room_new_kind">Peran</string>
     <string name="room_new_icon">Ikon</string>
+    <string name="icon_heart">Hati</string>
+    <string name="icon_sprout">Tunas</string>
+    <string name="icon_home">Rumah</string>
+    <string name="icon_star">Bintang</string>
+    <string name="icon_bolt">Petir</string>
     <string name="room_new_confirm">Tambah</string>
     <string name="room_err_limit">Batas ruang paket gratis tercapai. Ruang tak terbatas ada di Rizqflow Pro.</string>
     <string name="room_err_taken">Sudah ada ruang dengan nama itu.</string>

@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.roziqrizal.rizqflow.R
 import com.roziqrizal.rizqflow.ui.theme.rizqflow
 
 /** Pilihan ikon untuk ruang baru (S10); kunci disimpan di database. */
@@ -24,6 +25,16 @@ internal fun roomIcon(key: String): ImageVector = when (key) {
     "star" -> RizqflowIcons.Bintang
     "bolt" -> RizqflowIcons.Petir
     else -> RizqflowIcons.Ruang
+}
+
+/** Nama ikon dalam Bahasa Indonesia untuk TalkBack; kunci itu sendiri (mis. "heart") bukan teks yang layak dibacakan. */
+internal fun roomIconLabel(key: String): Int = when (key) {
+    "heart" -> R.string.icon_heart
+    "sprout" -> R.string.icon_sprout
+    "home" -> R.string.icon_home
+    "star" -> R.string.icon_star
+    "bolt" -> R.string.icon_bolt
+    else -> R.string.tab_ruang
 }
 
 /** Petak ikon ruang berwarna identitas ruangnya (slot 1 sampai 3; slot lain netral). */
