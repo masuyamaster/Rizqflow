@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Icon splash screen (bukan adaptive icon, jadi tidak kena mask lingkaran launcher) -- wordmark satu baris, ukuran lega di slot 240dp. -->
+<!-- Icon splash screen (bukan adaptive icon, jadi tidak kena mask lingkaran launcher): wordmark satu baris, ukuran lega di slot 240dp. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="240dp"
     android:height="240dp"
