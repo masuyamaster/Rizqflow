@@ -9,8 +9,12 @@ data class HijriDate(val year: Int, val month: Int, val day: Int) {
         require(day in 1..30) { "Hari Hijriyah harus 1 sampai 30, bukan $day" }
     }
 
-    /** Contoh: `8 Dzulhijjah 1447`. */
-    fun format(): String = "$day ${MONTH_NAMES[month - 1]} $year"
+    /**
+     * Contoh: `8 Dzulhijjah 1447`. [monthNames] boleh diganti kaller (mis. dari string-array
+     * `R.array.hijri_months` di `:app`) supaya nama bulan mengikuti bahasa tampilan; baku ke
+     * nama Indonesia karena `:domain` tidak boleh bergantung pada resource Android.
+     */
+    fun format(monthNames: List<String> = MONTH_NAMES): String = "$day ${monthNames[month - 1]} $year"
 
     companion object {
         private val MONTH_NAMES = listOf(

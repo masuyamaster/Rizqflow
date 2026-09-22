@@ -9,6 +9,11 @@ import kotlin.test.assertEquals
 class FormatTest {
 
     private val nbsp = " "
+    private val idMonths = listOf("Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des")
+    private val enMonths = listOf("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+
+    private fun formatDateId(date: LocalDate, today: LocalDate) =
+        formatDateWith(date, today, todayLabel = "Hari ini", yesterdayLabel = "Kemarin", monthNames = idMonths)
 
     @Test
     fun `angka kecil tanpa pemisah`() {
@@ -51,32 +56,44 @@ class FormatTest {
     @Test
     fun `tanggal hari ini dan kemarin disebut dengan katanya`() {
         val today = LocalDate.of(2026, 9, 21)
-        assertEquals("Hari ini", formatDate(today, today))
-        assertEquals("Kemarin", formatDate(today.minusDays(1), today))
+        assertEquals("Hari ini", formatDateId(today, today))
+        assertEquals("Kemarin", formatDateId(today.minusDays(1), today))
     }
 
     @Test
     fun `tanggal lain memakai singkatan bulan Indonesia`() {
         val today = LocalDate.of(2026, 9, 21)
-        assertEquals("19 Sep 2026", formatDate(LocalDate.of(2026, 9, 19), today))
-        assertEquals("1 Jan 2026", formatDate(LocalDate.of(2026, 1, 1), today))
-        assertEquals("31 Des 2025", formatDate(LocalDate.of(2025, 12, 31), today))
-        assertEquals("15 Mei 2026", formatDate(LocalDate.of(2026, 5, 15), today))
-        assertEquals("30 Agu 2026", formatDate(LocalDate.of(2026, 8, 30), today))
+        assertEquals("19 Sep 2026", formatDateId(LocalDate.of(2026, 9, 19), today))
+        assertEquals("1 Jan 2026", formatDateId(LocalDate.of(2026, 1, 1), today))
+        assertEquals("31 Des 2025", formatDateId(LocalDate.of(2025, 12, 31), today))
+        assertEquals("15 Mei 2026", formatDateId(LocalDate.of(2026, 5, 15), today))
+        assertEquals("30 Agu 2026", formatDateId(LocalDate.of(2026, 8, 30), today))
     }
 
     @Test
     fun `kemarin dikenali juga saat melewati batas bulan dan tahun`() {
-        assertEquals("Kemarin", formatDate(LocalDate.of(2026, 8, 31), LocalDate.of(2026, 9, 1)))
-        assertEquals("Kemarin", formatDate(LocalDate.of(2025, 12, 31), LocalDate.of(2026, 1, 1)))
+        assertEquals("Kemarin", formatDateId(LocalDate.of(2026, 8, 31), LocalDate.of(2026, 9, 1)))
+        assertEquals("Kemarin", formatDateId(LocalDate.of(2025, 12, 31), LocalDate.of(2026, 1, 1)))
     }
 
     @Test
     fun `bulan untuk navigator memakai singkatan Indonesia`() {
-        assertEquals("Sep 2026", formatMonth(YearMonth.of(2026, 9)))
-        assertEquals("Jan 2027", formatMonth(YearMonth.of(2027, 1)))
-        assertEquals("Agu 2026", formatMonth(YearMonth.of(2026, 8)))
-        assertEquals("Des 2025", formatMonth(YearMonth.of(2025, 12)))
+        assertEquals("Sep 2026", formatMonthWith(YearMonth.of(2026, 9), idMonths))
+        assertEquals("Jan 2027", formatMonthWith(YearMonth.of(2027, 1), idMonths))
+        assertEquals("Agu 2026", formatMonthWith(YearMonth.of(2026, 8), idMonths))
+        assertEquals("Des 2025", formatMonthWith(YearMonth.of(2025, 12), idMonths))
+    }
+
+    @Test
+    fun `label dan nama bulan mengikuti parameter, bukan dikunci ke bahasa Indonesia`() {
+        val today = LocalDate.of(2026, 9, 21)
+        assertEquals("Today", formatDateWith(today, today, todayLabel = "Today", yesterdayLabel = "Yesterday", monthNames = enMonths))
+        assertEquals("Yesterday", formatDateWith(today.minusDays(1), today, todayLabel = "Today", yesterdayLabel = "Yesterday", monthNames = enMonths))
+        assertEquals(
+            "15 May 2026",
+            formatDateWith(LocalDate.of(2026, 5, 15), today, todayLabel = "Today", yesterdayLabel = "Yesterday", monthNames = enMonths),
+        )
+        assertEquals("Aug 2026", formatMonthWith(YearMonth.of(2026, 8), enMonths))
     }
 
     @Test

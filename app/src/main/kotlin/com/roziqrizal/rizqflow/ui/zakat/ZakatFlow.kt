@@ -36,6 +36,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.roziqrizal.rizqflow.R
@@ -78,6 +79,7 @@ fun ZakatFlow(workspace: AccountWorkspace, roomId: RoomId, notifier: Notifier, o
     var payOpen by rememberSaveable { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val spacing = MaterialTheme.spacing
+    val hijriMonths = stringArrayResource(R.array.hijri_months).toList()
 
     LaunchedEffect(roomId, version) { overview = workspace.zakat.overview(roomId, today) }
     BackHandler(onBack = onClose)
@@ -128,7 +130,7 @@ fun ZakatFlow(workspace: AccountWorkspace, roomId: RoomId, notifier: Notifier, o
                         ) {
                             Column {
                                 Text(formatDate(row.payment.day, today), style = MaterialTheme.typography.bodyLarge)
-                                Text(UmmAlQuraCalendar().toHijri(row.payment.day).format(), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(UmmAlQuraCalendar().toHijri(row.payment.day).format(hijriMonths), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                             Text(formatRupiah(row.amount), style = MaterialTheme.typography.titleSmall)
                         }
@@ -229,6 +231,7 @@ private fun PercentageCard(target: Money) {
 private fun ZakatCard(status: GivingStatus.Zakat, goldPrice: com.roziqrizal.rizqflow.domain.zakat.GoldPrice?, onUpdateWealth: () -> Unit, onPay: () -> Unit) {
     val spacing = MaterialTheme.spacing
     val today = remember { LocalDate.now() }
+    val hijriMonths = stringArrayResource(R.array.hijri_months).toList()
     Column(
         modifier = Modifier
             .padding(top = spacing.s4)
@@ -253,7 +256,7 @@ private fun ZakatCard(status: GivingStatus.Zakat, goldPrice: com.roziqrizal.rizq
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
-                    stringResource(R.string.zakat_status_due, UmmAlQuraCalendar().toHijri(haul.due).format()),
+                    stringResource(R.string.zakat_status_due, UmmAlQuraCalendar().toHijri(haul.due).format(hijriMonths)),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

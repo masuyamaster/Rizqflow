@@ -2,6 +2,39 @@
 <resources>
     <string name="app_name">Rizqflow</string>
 
+    <!-- Format tanggal dan bulan (Format.kt) -->
+    <string name="date_today">Hari ini</string>
+    <string name="date_yesterday">Kemarin</string>
+    <string-array name="month_abbrev">
+        <item>Jan</item>
+        <item>Feb</item>
+        <item>Mar</item>
+        <item>Apr</item>
+        <item>Mei</item>
+        <item>Jun</item>
+        <item>Jul</item>
+        <item>Agu</item>
+        <item>Sep</item>
+        <item>Okt</item>
+        <item>Nov</item>
+        <item>Des</item>
+    </string-array>
+    <!-- Nama bulan Hijriyah (HijriDate.format() di :domain, dilewatkan lewat R.array.hijri_months) -->
+    <string-array name="hijri_months">
+        <item>Muharram</item>
+        <item>Safar</item>
+        <item>Rabiul Awal</item>
+        <item>Rabiul Akhir</item>
+        <item>Jumadil Awal</item>
+        <item>Jumadil Akhir</item>
+        <item>Rajab</item>
+        <item>Syaban</item>
+        <item>Ramadhan</item>
+        <item>Syawal</item>
+        <item>Dzulqa\'dah</item>
+        <item>Dzulhijjah</item>
+    </string-array>
+
     <!-- Tab utama -->
     <string name="tab_denah">Denah</string>
     <string name="tab_transaksi">Transaksi</string>
