@@ -89,6 +89,7 @@ fun RizqflowApp(
     onOpenReminder: (() -> Unit)? = null,
     onOpenSecurity: (() -> Unit)? = null,
     onOpenCsv: (() -> Unit)? = null,
+    onOpenBackup: (() -> Unit)? = null,
     onOpenTampilan: (() -> Unit)? = null,
 ) {
     val nav = rememberNavController()
@@ -145,7 +146,7 @@ fun RizqflowApp(
             TopTab.entries.forEach { tab ->
                 composable(tab.route) {
                     if (tab == TopTab.Lainnya && account != null) {
-                        LainnyaScreen(account, onConnectGmail, onSignOut, onDismissNotice, onOpenRules, onOpenManage, demo, onToggleDemo, onOpenAbout, onOpenReconciliation, onOpenReminder, onOpenSecurity, onOpenCsv, onOpenTampilan)
+                        LainnyaScreen(account, onConnectGmail, onSignOut, onDismissNotice, onOpenRules, onOpenManage, demo, onToggleDemo, onOpenAbout, onOpenReconciliation, onOpenReminder, onOpenSecurity, onOpenCsv, onOpenBackup, onOpenTampilan)
                     } else if (tab == TopTab.Transaksi && transaksiContent != null) {
                         transaksiContent()
                     } else if (tab == TopTab.Ruang && ruangContent != null) {
@@ -225,6 +226,7 @@ private fun LainnyaScreen(
     onOpenReminder: (() -> Unit)? = null,
     onOpenSecurity: (() -> Unit)? = null,
     onOpenCsv: (() -> Unit)? = null,
+    onOpenBackup: (() -> Unit)? = null,
     onOpenTampilan: (() -> Unit)? = null,
 ) {
     val spacing = MaterialTheme.spacing
@@ -255,6 +257,7 @@ private fun LainnyaScreen(
         if (onOpenReminder != null) MenuRow(stringResource(R.string.menu_reminder), stringResource(R.string.menu_reminder_sub), onOpenReminder)
         if (onOpenSecurity != null) MenuRow(stringResource(R.string.menu_security), stringResource(R.string.menu_security_sub), onOpenSecurity)
         if (onOpenCsv != null) MenuRow(stringResource(R.string.menu_csv), stringResource(R.string.menu_csv_sub), onOpenCsv)
+        if (onOpenBackup != null) MenuRow(stringResource(R.string.menu_backup), stringResource(R.string.menu_backup_sub), onOpenBackup)
         if (onOpenTampilan != null) MenuRow(stringResource(R.string.menu_tampilan), stringResource(R.string.menu_tampilan_sub), onOpenTampilan)
         Text(
             stringResource(R.string.account_title),

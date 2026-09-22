@@ -11,6 +11,7 @@ import com.roziqrizal.rizqflow.data.repo.LocalTransactionRepository
 import com.roziqrizal.rizqflow.data.repo.LocalWorkspaceRepository
 import com.roziqrizal.rizqflow.data.repo.LocalZakatRepository
 import com.roziqrizal.rizqflow.domain.auth.AccountStorage
+import java.io.File
 
 /**
  * Ruang kerja data satu akun: satu database beserta repositorinya (diputuskan 2026-09-21).
@@ -25,6 +26,17 @@ class LocalLedger(val db: RizqflowDatabase) : AutoCloseable {
     val favorites = LocalFavoriteRepository(db)
     val zakat = LocalZakatRepository(db)
     val settings = LocalSettingsRepository(db)
+
+    /** Berkas SQLite di balik database ini, dipakai apa adanya untuk cadangan (S20). */
+    val databaseFile: File get() = File(db.openHelper.writableDatabase.path!!)
+
+    /**
+     * Menyatukan perubahan yang masih di berkas `-wal` (Room memakai mode WAL) ke berkas utama,
+     * supaya [databaseFile] menjadi salinan yang lengkap tanpa perlu menutup koneksi ini.
+     */
+    fun checkpoint() {
+        db.openHelper.writableDatabase.query("PRAGMA wal_checkpoint(FULL)").use { it.moveToFirst() }
+    }
 
     override fun close() = db.close()
 

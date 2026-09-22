@@ -15,6 +15,7 @@ import com.roziqrizal.rizqflow.ui.ruang.AturanScreen
 import com.roziqrizal.rizqflow.ui.ruang.RoomDetailScreen
 import com.roziqrizal.rizqflow.ui.about.AboutScreen
 import com.roziqrizal.rizqflow.ui.reconciliation.ReconciliationScreen
+import com.roziqrizal.rizqflow.ui.backup.BackupScreen
 import com.roziqrizal.rizqflow.ui.csv.CsvScreen
 import com.roziqrizal.rizqflow.ui.reminder.ReminderSettingsScreen
 import com.roziqrizal.rizqflow.ui.security.SecuritySettingsScreen
@@ -85,6 +86,8 @@ fun MainHost(
     onConnectGmail: () -> Unit,
     onSignOut: () -> Unit,
     onDismissNotice: () -> Unit,
+    /** Menutup ruang kerja ini, menimpa berkas databasenya dengan cadangan yang sudah didekripsi, dan membuka ulang (S20). */
+    onRestoreBackup: (ByteArray) -> Unit = {},
     /** Bertambah setiap ada permintaan Catat kilat dari luar (pintasan ikon, tile). */
     quickCatatRequest: Int = 0,
     /** Mode demo (S22): memakai data contoh yang terpisah dari data pengguna. */
@@ -108,6 +111,7 @@ fun MainHost(
     var reminderOpen by rememberSaveable { mutableStateOf(false) }
     var securityOpen by rememberSaveable { mutableStateOf(false) }
     var csvOpen by rememberSaveable { mutableStateOf(false) }
+    var backupOpen by rememberSaveable { mutableStateOf(false) }
     var tampilanOpen by rememberSaveable { mutableStateOf(false) }
     var handledQuick by rememberSaveable { mutableIntStateOf(0) }
     LaunchedEffect(quickCatatRequest) {
@@ -292,6 +296,7 @@ fun MainHost(
         onOpenReminder = { reminderOpen = true },
         onOpenSecurity = { securityOpen = true },
         onOpenCsv = { csvOpen = true },
+        onOpenBackup = { backupOpen = true },
         onOpenTampilan = { tampilanOpen = true },
     )
     if (tampilanOpen) {
@@ -309,6 +314,22 @@ fun MainHost(
             Box {
                 CsvScreen(workspace = workspace, notifier = notifier, onClose = { csvOpen = false })
                 // Layar ini menutupi Scaffold beserta snackbar-nya, jadi ia membawa SnackbarHost sendiri.
+                SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp))
+            }
+        }
+    }
+    if (backupOpen) {
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            Box {
+                BackupScreen(
+                    workspace = workspace,
+                    notifier = notifier,
+                    onClose = { backupOpen = false },
+                    onRestored = {
+                        backupOpen = false
+                        onRestoreBackup(it)
+                    },
+                )
                 SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp))
             }
         }

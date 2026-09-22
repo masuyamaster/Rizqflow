@@ -320,6 +320,31 @@
     <string name="csv_import_row_transfer">Baris %1$s: transfer %2$s</string>
     <string name="csv_import_row_skipped">Baris %1$s: dilewati</string>
 
+    <!-- Backup dan restore terenkripsi S20 (Tahap 6) -->
+    <string name="menu_backup">Backup dan data</string>
+    <string name="menu_backup_sub">Cadangkan atau pulihkan seluruh data, terenkripsi</string>
+    <string name="backup_title">Backup dan data</string>
+    <string name="backup_last_none">Belum pernah dicadangkan di perangkat ini.</string>
+    <string name="backup_last_at">Cadangan terakhir: %1$s, di perangkat ini.</string>
+    <string name="backup_section_title">Cadangan terenkripsi</string>
+    <string name="backup_create_action">Cadangkan sekarang</string>
+    <string name="backup_restore_action">Pulihkan dari berkas</string>
+    <string name="backup_footer">Data hanya ada di perangkat ini. Cadangkan secara berkala, terutama sebelum berganti perangkat.</string>
+    <string name="backup_sheet_title">Cadangkan data</string>
+    <string name="backup_password_label">Sandi</string>
+    <string name="backup_password_repeat_label">Ulangi sandi</string>
+    <string name="backup_password_hint">Sandi tidak bisa dipulihkan. Tanpa sandi ini, cadangan tidak bisa dibuka.</string>
+    <string name="backup_password_too_short">Sandi minimal 6 karakter</string>
+    <string name="backup_password_mismatch">Kedua sandi tidak sama</string>
+    <string name="backup_save_share_action">Simpan dan bagikan</string>
+    <string name="backup_done">Cadangan tersimpan.</string>
+    <string name="backup_failed">Cadangan gagal dibuat. Coba lagi.</string>
+    <string name="backup_restore_confirm_title">Timpa data sekarang?</string>
+    <string name="backup_restore_confirm_body">Semua data di perangkat ini akan diganti isi cadangan. Tindakan ini tidak bisa diurungkan.</string>
+    <string name="backup_restore_confirm_action">Timpa dan pulihkan</string>
+    <string name="backup_restore_wrong_password">Sandi salah atau berkas rusak. Data sekarang tidak disentuh.</string>
+    <string name="backup_restore_read_error">Berkas tidak bisa dibaca.</string>
+
     <!-- Tampilan: pilihan tema (Tahap 6) -->
     <string name="menu_tampilan">Tampilan</string>
     <string name="menu_tampilan_sub">Tema terang, gelap, atau ikuti sistem</string>

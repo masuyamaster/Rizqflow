@@ -115,11 +115,13 @@ fun AppRoot(
                     WorkspaceHost(
                         accountId = if (demo) AccountStorage.DEMO_ACCOUNT_ID else s.session.accountId,
                         onDemoFailed = { demo = false },
-                    ) { workspace ->
-                        // Berganti antara data asli dan demo memulai menu utama dari awal (tab, layar terbuka).
+                    ) { workspace, restoreFromBackup ->
+                        // Berganti antara data asli dan demo (atau setelah pulihkan cadangan) memulai
+                        // menu utama dari awal (tab, layar terbuka): ruang kerjanya objek yang berbeda.
                         key(workspace) {
                             MainHost(
                                 workspace = workspace,
+                                onRestoreBackup = restoreFromBackup,
                                 appLock = appLock,
                                 themePreference = themePreference,
                                 account = AccountUi(
