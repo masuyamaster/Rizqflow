@@ -8,6 +8,7 @@ import com.roziqrizal.rizqflow.data.repo.LocalFavoriteRepository
 import com.roziqrizal.rizqflow.data.repo.LocalRoomRepository
 import com.roziqrizal.rizqflow.data.repo.LocalTransactionRepository
 import com.roziqrizal.rizqflow.data.repo.LocalWorkspaceRepository
+import com.roziqrizal.rizqflow.data.repo.LocalZakatRepository
 import com.roziqrizal.rizqflow.domain.auth.AccountStorage
 
 /**
@@ -21,6 +22,7 @@ class LocalLedger(val db: RizqflowDatabase) : AutoCloseable {
     val rooms = LocalRoomRepository(db)
     val transactions = LocalTransactionRepository(db)
     val favorites = LocalFavoriteRepository(db)
+    val zakat = LocalZakatRepository(db)
 
     override fun close() = db.close()
 

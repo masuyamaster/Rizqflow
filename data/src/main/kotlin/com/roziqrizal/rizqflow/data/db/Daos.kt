@@ -177,6 +177,46 @@ interface FavoriteDao {
 }
 
 @Dao
+interface ZakatDao {
+    @Query("SELECT * FROM zakat_profile WHERE archived = 0 LIMIT 1")
+    suspend fun activeProfile(): ZakatProfileEntity?
+
+    @Upsert
+    suspend fun upsertProfile(profile: ZakatProfileEntity)
+
+    @Query("SELECT * FROM wealth_item WHERE profile_id = :profileId")
+    suspend fun items(profileId: String): List<WealthItemEntity>
+
+    @Query("DELETE FROM wealth_item WHERE profile_id = :profileId")
+    suspend fun clearItems(profileId: String)
+
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun insertItems(items: List<WealthItemEntity>)
+
+    @Query("SELECT * FROM gold_price ORDER BY day DESC LIMIT 1")
+    suspend fun latestGoldPrice(): GoldPriceEntity?
+
+    @Upsert
+    suspend fun upsertGoldPrice(price: GoldPriceEntity)
+
+    @Query("SELECT * FROM wealth_check WHERE profile_id = :profileId ORDER BY day")
+    suspend fun checks(profileId: String): List<WealthCheckEntity>
+
+    /** Satu pemeriksaan per hari: baris hari yang sama dihapus dulu supaya tidak menumpuk. */
+    @Query("DELETE FROM wealth_check WHERE profile_id = :profileId AND day = :day")
+    suspend fun clearCheckOfDay(profileId: String, day: Long)
+
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun insertCheck(check: WealthCheckEntity)
+
+    @Query("SELECT * FROM zakat_payment WHERE profile_id = :profileId ORDER BY day DESC")
+    suspend fun payments(profileId: String): List<ZakatPaymentEntity>
+
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun insertPayment(payment: ZakatPaymentEntity)
+}
+
+@Dao
 interface SettingsDao {
     @Upsert
     suspend fun put(setting: AppSettingEntity)
