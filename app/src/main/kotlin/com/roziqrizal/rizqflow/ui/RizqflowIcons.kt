@@ -116,4 +116,7 @@ object RizqflowIcons {
         "M12 10v4.6",
         "M12 17.4h.01",
     )
+
+    /** Haul dan kalender Hijriyah (S14, S16). */
+    val Bulan: ImageVector = strokeIcon("Bulan", "M15.5 3.5a8.5 8.5 0 1 0 5 8.3A6.8 6.8 0 0 1 15.5 3.5z")
 }

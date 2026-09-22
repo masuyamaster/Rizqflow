@@ -13,6 +13,7 @@ import com.roziqrizal.rizqflow.ui.kelola.manageErrorText
 import com.roziqrizal.rizqflow.domain.ledger.ArchiveUndo
 import com.roziqrizal.rizqflow.ui.ruang.AturanScreen
 import com.roziqrizal.rizqflow.ui.ruang.RoomDetailScreen
+import com.roziqrizal.rizqflow.ui.zakat.ZakatFlow
 import com.roziqrizal.rizqflow.domain.model.RoomId
 import java.time.YearMonth
 import com.roziqrizal.rizqflow.ui.ruang.RuangScreen
@@ -83,6 +84,7 @@ fun MainHost(
     var demoSheet by rememberSaveable { mutableStateOf(false) }
     var roomDetail by rememberSaveable { mutableStateOf<String?>(null) }
     var roomMonth by rememberSaveable { mutableStateOf("") }
+    var zakatRoom by rememberSaveable { mutableStateOf<String?>(null) }
     var handledQuick by rememberSaveable { mutableIntStateOf(0) }
     LaunchedEffect(quickCatatRequest) {
         if (quickCatatRequest > handledQuick) {
@@ -279,6 +281,21 @@ fun MainHost(
                 SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 80.dp))
             }
         }
+    } else if (zakatRoom != null) {
+        // Diperiksa sebelum roomDetail: dibuka DARI Detail ruang tanpa menutupnya (roomDetail tetap
+        // terisi), supaya Kembali dari Zakat balik ke Detail ruang, bukan langsung ke Denah atau Ruang.
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            Box {
+                ZakatFlow(
+                    workspace = workspace,
+                    roomId = RoomId(zakatRoom.orEmpty()),
+                    notifier = notifier,
+                    onClose = { zakatRoom = null },
+                    onOpenTransaction = { editId = it.value },
+                )
+                SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp))
+            }
+        }
     } else if (roomDetail != null) {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             Box {
@@ -292,6 +309,7 @@ fun MainHost(
                     onOpenTransaction = { editId = it.value },
                     onOpenRules = { aturan = true },
                     onArchived = ::announceRoomArchived,
+                    onOpenZakat = { zakatRoom = it.value },
                 )
                 SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp))
             }

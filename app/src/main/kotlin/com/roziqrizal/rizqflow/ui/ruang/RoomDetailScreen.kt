@@ -86,6 +86,8 @@ fun RoomDetailScreen(
     onOpenTransaction: (TransactionId) -> Unit,
     onOpenRules: () -> Unit,
     onArchived: (ArchiveUndo) -> Unit,
+    /** Ruang bertipe Menunaikan saja: membuka modul Memberi (S14 sampai S17). */
+    onOpenZakat: (RoomId) -> Unit = {},
 ) {
     val today = remember { LocalDate.now() }
     var detail by remember { mutableStateOf<RoomDetail?>(null) }
@@ -135,6 +137,26 @@ fun RoomDetailScreen(
             }
 
             Summary(data)
+
+            if (room.kind == RoomKind.MENUNAIKAN) {
+                Row(
+                    modifier = Modifier
+                        .padding(top = spacing.s4)
+                        .fillMaxWidth()
+                        .clickable(role = Role.Button) { onOpenZakat(room.id) }
+                        .background(MaterialTheme.colorScheme.surfaceContainerLow, RoundedCornerShape(12.dp))
+                        .padding(spacing.s3),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(spacing.s3),
+                ) {
+                    Icon(RizqflowIcons.Bulan, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(stringResource(R.string.room_detail_zakat_title), style = MaterialTheme.typography.titleSmall)
+                        Text(stringResource(R.string.room_detail_zakat_sub), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    Icon(RizqflowIcons.PanahKanan, contentDescription = null)
+                }
+            }
 
             Text(stringResource(R.string.room_detail_pos), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = spacing.s5, bottom = spacing.s2))
             if (data.categories.isEmpty()) {

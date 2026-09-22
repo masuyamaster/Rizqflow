@@ -259,6 +259,60 @@
     <string name="manage_err_system">Kategori sistem tidak bisa diubah.</string>
     <string name="manage_err_favorite_limit">Favorit sudah 6, yang paling banyak. Hapus satu dulu.</string>
 
+    <!-- Modul Memberi: zakat dan haul S14, S15, S17 (Tahap 5) -->
+    <string name="room_detail_zakat_title">Zakat</string>
+    <string name="room_detail_zakat_sub">Nisab, haul, dan tunaikan zakat</string>
+    <string name="zakat_title">Zakat</string>
+    <string name="zakat_status_below">Belum mencapai nisab</string>
+    <string name="zakat_status_below_hint">Dipantau; haul belum mulai.</string>
+    <string name="zakat_status_running">Haul berjalan</string>
+    <string name="zakat_status_running_day">Hari ke-%1$d dari %2$d</string>
+    <string name="zakat_status_due">Jatuh tempo %1$s</string>
+    <string name="zakat_status_completed">Haul genap</string>
+    <string name="zakat_status_completed_hint">Zakat sudah bisa ditunaikan.</string>
+    <string name="zakat_net_wealth">Harta bersih</string>
+    <string name="zakat_nisab_today">Nisab hari ini</string>
+    <string name="zakat_price_manual">Harga emas: input manual, diperbarui %1$s</string>
+    <string name="zakat_update_wealth">Perbarui nilai harta</string>
+    <string name="zakat_setup_title">Mulai dengan mengisi harta</string>
+    <string name="zakat_setup_incomplete">Lengkapi data harta</string>
+    <string name="zakat_setup_body">Isi harta dan harga emas supaya nisab dan haul bisa dihitung.</string>
+    <string name="zakat_setup_action">Isi harta</string>
+    <string name="zakat_history_title">Riwayat zakat</string>
+    <string name="zakat_history_empty">Belum ada zakat yang ditunaikan.</string>
+    <string name="zakat_donation_toggle">Persentase donasi biasa</string>
+    <string name="zakat_donation_toggle_hint">Tanpa nisab dan haul; donasi sebagai persentase rezeki.</string>
+    <string name="zakat_percentage_target">Target donasi bulan ini</string>
+    <string name="zakat_percentage_hint">%1$s dari rezeki bulan ini (10%%), tanpa nisab dan haul.</string>
+    <string name="zakat_disclaimer" formatted="false">Asumsi: nisab 85 g emas, 2,5%, haul 1 tahun Hijriyah. Bantuan hitung, bukan fatwa.</string>
+    <string name="zakat_tunaikan">Tunaikan zakat</string>
+
+    <string name="wealth_title">Profil harta</string>
+    <string name="wealth_gold_price">Harga emas per gram</string>
+    <string name="wealth_assets">Harta</string>
+    <string name="wealth_deductions">Pengurang</string>
+    <string name="wealth_add">Tambah harta</string>
+    <string name="wealth_net">Harta bersih</string>
+    <string name="wealth_save">Simpan</string>
+    <string name="wealth_label">Nama</string>
+    <string name="wealth_delete">Hapus</string>
+    <string name="wealth_kind_gold">Emas</string>
+    <string name="wealth_kind_cash">Uang dan tabungan</string>
+    <string name="wealth_kind_investment">Investasi</string>
+    <string name="wealth_kind_receivable">Piutang lancar</string>
+    <string name="wealth_kind_deduction">Hutang jangka pendek</string>
+    <string name="wealth_err_gold_price">Isi harga emas per gram dulu.</string>
+    <string name="wealth_err_item">Nama harta tidak boleh kosong.</string>
+
+    <string name="pay_zakat_title">Tunaikan zakat</string>
+    <string name="pay_zakat_due_title">Haul genap</string>
+    <string name="pay_zakat_not_due">Haul belum genap. Kamu tetap bisa menunaikan lebih awal.</string>
+    <string name="pay_zakat_net_wealth">Harta bersih %1$s</string>
+    <string name="pay_zakat_account">Akun sumber</string>
+    <string name="pay_zakat_category">Kategori Zakat mal (Memberi)</string>
+    <string name="pay_zakat_confirm">Tunaikan zakat</string>
+    <string name="pay_zakat_early_note">Jumlah bisa diubah. Bantuan hitung, bukan fatwa.</string>
+
     <!-- Denah S05 -->
     <string name="denah_income">Rezeki bulan ini</string>
     <string name="denah_unallocated">Belum dialirkan: %1$s</string>
