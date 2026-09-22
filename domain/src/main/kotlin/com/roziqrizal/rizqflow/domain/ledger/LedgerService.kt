@@ -51,6 +51,12 @@ enum class LedgerError {
 
     /** Ruang yang dipilih tidak (lagi) punya kategori sistem Tak terlacak; seharusnya tidak pernah terjadi. */
     UNTRACKED_CATEGORY_MISSING,
+
+    /** Jam atau menit pengingat di luar jangkauan sehari. */
+    INVALID_REMINDER_TIME,
+
+    /** Balasan notifikasi malam tidak berbentuk "catatan nominal", mis. "kopi 25000". */
+    QUICK_REPLY_UNREADABLE,
 }
 
 sealed interface LedgerResult<out T> {

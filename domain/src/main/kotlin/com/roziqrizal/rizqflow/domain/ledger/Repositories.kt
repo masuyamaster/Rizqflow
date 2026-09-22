@@ -120,3 +120,14 @@ interface TransactionRepository {
     /** Jatah (alokasi dari pemasukan) dan terpakai (pengeluaran) per ruang antara dua hari (inklusif). */
     suspend fun roomTotals(from: LocalDate, to: LocalDate): RoomTotals
 }
+
+/** Pengaturan generik kunci/nilai dan hari yang ditandai "Tidak ada". Dasar pengingat malam (S26). */
+interface SettingsRepository {
+    suspend fun get(key: String): String?
+
+    suspend fun put(key: String, value: String)
+
+    suspend fun isDayChecked(day: LocalDate): Boolean
+
+    suspend fun markDayChecked(day: LocalDate)
+}
