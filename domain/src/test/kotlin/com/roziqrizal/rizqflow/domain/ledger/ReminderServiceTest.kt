@@ -50,6 +50,18 @@ class ReminderServiceTest {
         assertEquals(LedgerError.INVALID_REMINDER_TIME, runSuspend { x.service.updateSettings(true, -1, 0) }.error())
     }
 
+    // ------------------------------------------------------------------ izin notifikasi
+
+    @Test
+    fun `izin notifikasi belum pernah diminta secara bawaan`() {
+        val x = Fixture()
+
+        assertFalse(runSuspend { x.service.hasRequestedNotificationPermission() })
+        runSuspend { x.service.markNotificationPermissionRequested() }
+
+        assertTrue(runSuspend { x.service.hasRequestedNotificationPermission() })
+    }
+
     // ------------------------------------------------------------------ Tidak ada
 
     @Test

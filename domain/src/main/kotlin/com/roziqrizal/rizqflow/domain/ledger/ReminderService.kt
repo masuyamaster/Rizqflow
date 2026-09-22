@@ -54,6 +54,14 @@ class ReminderService(
     suspend fun dismissToday(today: LocalDate) = settings.markDayChecked(today)
 
     /**
+     * Izin notifikasi Android 13+ diminta sekali, setelah transaksi pertama disimpan (bukan di
+     * awal onboarding). Bendera ini mencegah layar memintanya berulang-ulang.
+     */
+    suspend fun hasRequestedNotificationPermission(): Boolean = settings.get(KEY_PERMISSION_ASKED) == "true"
+
+    suspend fun markNotificationPermissionRequested() = settings.put(KEY_PERMISSION_ASKED, "true")
+
+    /**
      * "kopi 25000" -> catatan "kopi", nominal 25000; titik pemisah ribuan boleh dipakai. Null bila
      * tidak berbentuk "catatan nominal" (tanpa catatan, tanpa nominal, atau nominal nol/negatif).
      */
@@ -94,6 +102,7 @@ class ReminderService(
         private const val KEY_ENABLED = "reminder_enabled"
         private const val KEY_HOUR = "reminder_hour"
         private const val KEY_MINUTE = "reminder_minute"
+        private const val KEY_PERMISSION_ASKED = "reminder_permission_asked"
         private val QUICK_REPLY_PATTERN = Regex("""^(.+?)\s+([\d.]+)$""")
     }
 }
