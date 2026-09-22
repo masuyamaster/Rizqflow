@@ -37,6 +37,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -62,6 +63,7 @@ import com.roziqrizal.rizqflow.domain.model.CategoryId
 import com.roziqrizal.rizqflow.domain.model.RoomId
 import com.roziqrizal.rizqflow.domain.model.TransactionId
 import com.roziqrizal.rizqflow.domain.model.TransactionKind
+import com.roziqrizal.rizqflow.ui.Notifier
 import com.roziqrizal.rizqflow.ui.RizqflowIcons
 import com.roziqrizal.rizqflow.ui.RoomTile
 import com.roziqrizal.rizqflow.ui.formatDate
@@ -73,6 +75,7 @@ import com.roziqrizal.rizqflow.ui.theme.spacing
 import com.roziqrizal.rizqflow.workspace.AccountWorkspace
 import java.time.LocalDate
 import java.time.YearMonth
+import kotlinx.coroutines.launch
 
 /**
  * S08 Daftar transaksi: satu bulan, dikelompokkan per tanggal, dengan cari, filter jenis, dan sheet
@@ -84,14 +87,18 @@ import java.time.YearMonth
 fun TransaksiScreen(
     workspace: AccountWorkspace,
     refreshKey: Int,
+    notifier: Notifier,
     onOpen: (TransactionId) -> Unit,
+    onQuickCatat: () -> Unit,
 ) {
     val today = remember { LocalDate.now() }
     var filter by rememberSaveable(stateSaver = FilterSaver) { mutableStateOf(ListFilter(YearMonth.from(today))) }
     var listing by remember { mutableStateOf<TransactionListing?>(null) }
     var context by remember { mutableStateOf<CatatContext?>(null) }
     var sheetOpen by rememberSaveable { mutableStateOf(false) }
+    var emptyDayHint by remember { mutableStateOf(false) }
     val spacing = MaterialTheme.spacing
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(filter, refreshKey) {
         val repos = workspace.repositories
@@ -100,6 +107,10 @@ fun TransaksiScreen(
     LaunchedEffect(refreshKey) {
         val repos = workspace.repositories
         context = CatatContextLoader(repos.accounts, repos.rooms, repos.transactions).load()
+    }
+    // Petunjuk hari kosong (S08): hanya di daftar tak difilter akun, sama seperti prototipe.
+    LaunchedEffect(refreshKey) {
+        emptyDayHint = workspace.reminder.shouldShowEmptyDayHint(today)
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -158,6 +169,20 @@ fun TransaksiScreen(
                     }
                 }
             }
+
+            if (emptyDayHint && filter.accountId == null) {
+                val dismissedMessage = stringResource(R.string.tx_empty_day_dismissed)
+                EmptyDayHintBanner(
+                    onCatat = onQuickCatat,
+                    onDismiss = {
+                        emptyDayHint = false
+                        scope.launch {
+                            workspace.reminder.dismissEmptyDayHint(today)
+                            notifier.show(dismissedMessage)
+                        }
+                    },
+                )
+            }
         }
 
         val shown = listing
@@ -215,6 +240,41 @@ private fun EmptyState(narrowed: Boolean) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(top = MaterialTheme.spacing.s6).semantics { liveRegion = LiveRegionMode.Polite },
         )
+    }
+}
+
+/**
+ * Petunjuk hari kosong (S08, Tahap 6): banner lembut, tanpa streak dan tanpa warna peringatan —
+ * beda nada dari [WarningBanner] jatah terlampaui di Catat, supaya tidak terasa menghakimi.
+ */
+@Composable
+private fun EmptyDayHintBanner(onCatat: () -> Unit, onDismiss: () -> Unit) {
+    val spacing = MaterialTheme.spacing
+    Row(
+        modifier = Modifier
+            .padding(top = spacing.s2)
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(8.dp))
+            .padding(spacing.s3),
+        horizontalArrangement = Arrangement.spacedBy(spacing.s3),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(RizqflowIcons.Jam, contentDescription = null, tint = MaterialTheme.colorScheme.onSecondaryContainer)
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                stringResource(R.string.tx_empty_day_hint),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSecondaryContainer,
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(spacing.s2), modifier = Modifier.padding(top = spacing.s1)) {
+                TextButton(onClick = onCatat, contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = spacing.s2)) {
+                    Text(stringResource(R.string.tx_empty_day_catat))
+                }
+                TextButton(onClick = onDismiss, contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = spacing.s2)) {
+                    Text(stringResource(R.string.tx_empty_day_none))
+                }
+            }
+        }
     }
 }
 

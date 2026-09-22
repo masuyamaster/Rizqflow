@@ -25,6 +25,10 @@ data class ParsedQuickReply(val note: String, val amount: Money)
  * mengikuti pengeluaran terakhir (dasar yang sama dengan S24 Catat kilat); tanpa pengeluaran
  * sebelumnya, ruang bertipe Mencukupi (dasar yang sama dengan S25 Koreksi saldo). Tidak tahu apa
  * pun soal Android: kapan dan bagaimana notifikasi ditampilkan adalah urusan lapisan app.
+ *
+ * Juga memutuskan petunjuk hari kosong di S08 (Tahap 6): keduanya berbagi penanda hari yang sama
+ * (`day_check`), hanya jalan masuknya beda — notifikasi malam untuk hari ini, petunjuk S08 untuk
+ * kemarin.
  */
 class ReminderService(
     private val settings: SettingsRepository,
@@ -52,6 +56,22 @@ class ReminderService(
 
     /** Tombol "Tidak ada": menandai hari ini sudah dicek tanpa mencatat apa pun. */
     suspend fun dismissToday(today: LocalDate) = settings.markDayChecked(today)
+
+    /**
+     * Petunjuk hari kosong (S08): benar bila kemarin tidak ada pengeluaran tercatat dan kemarin
+     * belum ditandai "Tidak ada" — dari notifikasi malam atau dari petunjuk ini sendiri, keduanya
+     * memakai penanda hari yang sama. Tidak pernah tampil sebelum transaksi pertama, supaya akun
+     * baru tidak langsung disapa petunjuk.
+     */
+    suspend fun shouldShowEmptyDayHint(today: LocalDate): Boolean {
+        if (transactions.latest(null) == null) return false
+        val yesterday = today.minusDays(1)
+        if (settings.isDayChecked(yesterday)) return false
+        return transactions.between(yesterday, yesterday).none { it.kind == TransactionKind.EXPENSE }
+    }
+
+    /** Tombol "Tidak ada" pada petunjuk hari kosong (S08): menandai KEMARIN sudah dicek. */
+    suspend fun dismissEmptyDayHint(today: LocalDate) = settings.markDayChecked(today.minusDays(1))
 
     /**
      * Izin notifikasi Android 13+ diminta sekali, setelah transaksi pertama disimpan (bukan di

@@ -75,6 +75,60 @@ class ReminderServiceTest {
         assertFalse(runSuspend { x.service.isTodayDismissed(x.f.today.plusDays(1)) })
     }
 
+    // ------------------------------------------------------------------ petunjuk hari kosong (S08)
+
+    @Test
+    fun `tanpa transaksi apa pun petunjuk tidak pernah tampil`() {
+        val x = Fixture()
+
+        assertFalse(runSuspend { x.service.shouldShowEmptyDayHint(x.f.today) })
+    }
+
+    @Test
+    fun `kemarin tanpa pengeluaran dan belum dicek menampilkan petunjuk`() {
+        val x = Fixture()
+        runSuspend {
+            x.f.ledger.recordExpense(NewExpense(rupiah(10_000), x.f.account.id, x.f.room("Diri").id, x.f.category("Diri", "Investasi").id, x.f.today.minusDays(3)))
+        }
+
+        assertTrue(runSuspend { x.service.shouldShowEmptyDayHint(x.f.today) })
+    }
+
+    @Test
+    fun `kemarin ada pengeluaran tidak menampilkan petunjuk`() {
+        val x = Fixture()
+        runSuspend {
+            x.f.ledger.recordExpense(NewExpense(rupiah(10_000), x.f.account.id, x.f.room("Diri").id, x.f.category("Diri", "Investasi").id, x.f.today.minusDays(1)))
+        }
+
+        assertFalse(runSuspend { x.service.shouldShowEmptyDayHint(x.f.today) })
+    }
+
+    @Test
+    fun `kemarin ada pemasukan saja tetap menampilkan petunjuk`() {
+        val x = Fixture()
+        runSuspend {
+            x.f.ledger.recordExpense(NewExpense(rupiah(10_000), x.f.account.id, x.f.room("Diri").id, x.f.category("Diri", "Investasi").id, x.f.today.minusDays(3)))
+            x.f.ledger.recordIncome(NewIncome(rupiah(500_000), x.f.account.id, null, x.f.today.minusDays(1)))
+        }
+
+        assertTrue(runSuspend { x.service.shouldShowEmptyDayHint(x.f.today) })
+    }
+
+    @Test
+    fun `tombol Tidak ada pada petunjuk menandai kemarin, bukan hari ini`() {
+        val x = Fixture()
+        runSuspend {
+            x.f.ledger.recordExpense(NewExpense(rupiah(10_000), x.f.account.id, x.f.room("Diri").id, x.f.category("Diri", "Investasi").id, x.f.today.minusDays(3)))
+        }
+
+        runSuspend { x.service.dismissEmptyDayHint(x.f.today) }
+
+        assertFalse(runSuspend { x.service.shouldShowEmptyDayHint(x.f.today) })
+        assertTrue(runSuspend { x.settings.isDayChecked(x.f.today.minusDays(1)) })
+        assertFalse(runSuspend { x.settings.isDayChecked(x.f.today) })
+    }
+
     // ------------------------------------------------------------------ menguraikan balasan
 
     @Test

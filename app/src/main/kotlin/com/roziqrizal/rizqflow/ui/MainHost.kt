@@ -270,7 +270,7 @@ fun MainHost(
         onSignOut = onSignOut,
         onDismissNotice = onDismissNotice,
         snackbarHostState = snackbar,
-        transaksiContent = { TransaksiScreen(workspace, refreshKey = version, onOpen = { editId = it.value }) },
+        transaksiContent = { TransaksiScreen(workspace, refreshKey = version, notifier = notifier, onOpen = { editId = it.value }, onQuickCatat = { quick = true }) },
         denahContent = {
             DenahScreen(
                 workspace, refreshKey = version, onCatat = { catat = true }, onOpenRules = { aturan = true }, onChanged = { version++ },

@@ -181,6 +181,11 @@
     <string name="tx_active_category">Kategori: %1$s</string>
     <string name="tx_empty">Belum ada transaksi. Rezeki dan pengeluaran yang kamu catat akan muncul di sini.</string>
     <string name="tx_no_match">Tidak ada yang cocok dengan pencarianmu.</string>
+    <!-- Petunjuk hari kosong (S08, Tahap 6) -->
+    <string name="tx_empty_day_hint">Kemarin belum ada catatan pengeluaran.</string>
+    <string name="tx_empty_day_catat">Catat sekarang</string>
+    <string name="tx_empty_day_none">Tidak ada</string>
+    <string name="tx_empty_day_dismissed">Kemarin ditandai sudah dicek.</string>
     <string name="tx_income_default">Pemasukan</string>
     <string name="tx_expense_default">Pengeluaran</string>
     <string name="tx_transfer_default">Transfer</string>
