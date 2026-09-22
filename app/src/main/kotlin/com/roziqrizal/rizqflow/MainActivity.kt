@@ -2,9 +2,9 @@ package com.roziqrizal.rizqflow
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.fragment.app.FragmentActivity
 import androidx.compose.runtime.collectAsState
 import kotlinx.coroutines.flow.MutableStateFlow
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -14,7 +14,9 @@ import com.roziqrizal.rizqflow.auth.AuthUiState
 import com.roziqrizal.rizqflow.auth.GoogleAuthProvider
 import com.roziqrizal.rizqflow.auth.GoogleClientId
 import com.roziqrizal.rizqflow.auth.SharedPrefsAccountStore
+import com.roziqrizal.rizqflow.auth.SharedPrefsSecurityStore
 import com.roziqrizal.rizqflow.auth.SharedPrefsSessionStore
+import com.roziqrizal.rizqflow.domain.auth.AppLockService
 import com.roziqrizal.rizqflow.domain.auth.LocalAccountService
 import com.roziqrizal.rizqflow.domain.auth.Pbkdf2PasswordHasher
 import com.roziqrizal.rizqflow.ui.AppRoot
@@ -28,7 +30,7 @@ import java.util.UUID
  * Target SDK 35 ke atas memaksa tampilan edge-to-edge; Scaffold di RizqflowApp yang menghormati
  * inset sistem. Warna ikon bar sistem mengikuti tema terang atau gelap (`enableEdgeToEdge`).
  */
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
     /** Bertambah setiap ada permintaan Catat kilat (pintasan atau tile); layar membandingkannya dengan yang sudah ditangani. */
     private val quickCatatRequests = MutableStateFlow(0)
 
@@ -64,9 +66,11 @@ class MainActivity : ComponentActivity() {
         splash.setKeepOnScreenCondition { controller.state.value is AuthUiState.Loading }
         controller.start()
 
+        val appLock = AppLockService(SharedPrefsSecurityStore(this), Pbkdf2PasswordHasher())
+
         setContent {
             RizqflowTheme {
-                AppRoot(controller = controller, showDebugLogin = BuildConfig.DEBUG, quickCatatRequest = quickCatatRequests.collectAsState().value)
+                AppRoot(controller = controller, appLock = appLock, showDebugLogin = BuildConfig.DEBUG, quickCatatRequest = quickCatatRequests.collectAsState().value)
             }
         }
     }
