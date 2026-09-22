@@ -259,6 +259,32 @@
     <string name="manage_err_system">Kategori sistem tidak bisa diubah.</string>
     <string name="manage_err_favorite_limit">Favorit sudah 6, yang paling banyak. Hapus satu dulu.</string>
 
+    <!-- Tentang dan disclaimer S23 (Tahap 5) -->
+    <string name="menu_about">Tentang</string>
+    <string name="menu_about_sub">Privasi, asumsi fikih, dan lisensi</string>
+    <string name="about_title">Tentang</string>
+    <string name="about_version">Versi %1$s</string>
+    <string name="about_privacy_title">Privasi</string>
+    <string name="about_privacy_body">Data tersimpan di ponsel ini. Tidak ada akun, iklan, atau pelacak.</string>
+    <string name="about_fiqh_title">Asumsi fikih zakat mal</string>
+    <string name="about_fiqh_nisab">Nisab</string>
+    <string name="about_fiqh_nisab_value">85 gram emas</string>
+    <string name="about_fiqh_rate">Tarif</string>
+    <string name="about_fiqh_rate_value" formatted="false">2,5%</string>
+    <string name="about_fiqh_haul">Haul</string>
+    <string name="about_fiqh_haul_value">1 tahun Hijriyah</string>
+    <string name="about_fiqh_source">Sumber: asumsi awal, belum diverifikasi dengan kitab rujukan.</string>
+    <string name="about_disclaimer">Bantuan hitung, bukan fatwa. Konsultasikan dengan ulama atau lembaga zakat tepercaya.</string>
+    <string name="about_privacy_policy">Kebijakan privasi</string>
+    <string name="about_privacy_draft_note">Draf; akan diperbarui sebelum rilis mengikuti kebijakan Play Store.</string>
+    <string name="about_privacy_full">Rizqflow menyimpan seluruh data keuanganmu hanya di penyimpanan aplikasi pada perangkat ini, terpisah untuk tiap akun. Tidak ada server, tidak ada pelacak pihak ketiga, dan tidak ada iklan.\n\nMasuk dengan Google hanya memakai identitasmu (nama, email, foto profil) untuk membuka ruang kerja; kami tidak membaca kontak atau berkasmu. Bila kamu menghubungkan Gmail, akses itu hanya dipakai untuk mengenali struk transaksi dan tidak pernah dikirim ke pihak lain.\n\nMasuk dengan nama pengguna dan sandi menyimpan sandi dalam bentuk hash, bukan teks biasa, dan hanya di perangkatmu.\n\nMenghapus aplikasi menghapus seluruh datamu tanpa cadangan di tempat lain. Ekspor dan cadangan terenkripsi menyusul di versi berikutnya.</string>
+    <string name="about_licenses">Lisensi pihak ketiga</string>
+    <string name="about_licenses_note">Rizqflow dibangun dengan pustaka sumber terbuka berikut.</string>
+    <string name="about_feedback">Kirim masukan</string>
+    <string name="about_feedback_email" translatable="false">roziqrizal881992@gmail.com</string>
+    <string name="about_feedback_subject">Masukan Rizqflow %1$s</string>
+    <string name="about_feedback_error">Tidak ada aplikasi email di perangkat ini.</string>
+
     <!-- Modul Memberi: zakat dan haul S14, S15, S17 (Tahap 5) -->
     <string name="room_detail_zakat_title">Zakat</string>
     <string name="room_detail_zakat_sub">Nisab, haul, dan tunaikan zakat</string>

@@ -13,6 +13,7 @@ import com.roziqrizal.rizqflow.ui.kelola.manageErrorText
 import com.roziqrizal.rizqflow.domain.ledger.ArchiveUndo
 import com.roziqrizal.rizqflow.ui.ruang.AturanScreen
 import com.roziqrizal.rizqflow.ui.ruang.RoomDetailScreen
+import com.roziqrizal.rizqflow.ui.about.AboutScreen
 import com.roziqrizal.rizqflow.ui.zakat.ZakatFlow
 import com.roziqrizal.rizqflow.domain.model.RoomId
 import java.time.YearMonth
@@ -85,6 +86,7 @@ fun MainHost(
     var roomDetail by rememberSaveable { mutableStateOf<String?>(null) }
     var roomMonth by rememberSaveable { mutableStateOf("") }
     var zakatRoom by rememberSaveable { mutableStateOf<String?>(null) }
+    var aboutOpen by rememberSaveable { mutableStateOf(false) }
     var handledQuick by rememberSaveable { mutableIntStateOf(0) }
     LaunchedEffect(quickCatatRequest) {
         if (quickCatatRequest > handledQuick) {
@@ -217,7 +219,13 @@ fun MainHost(
         onOpenManage = { kelola = true },
         demo = demo,
         onToggleDemo = { if (demo) demoSheet = true else onEnterDemo() },
+        onOpenAbout = { aboutOpen = true },
     )
+    if (aboutOpen) {
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            AboutScreen(notifier = notifier, onClose = { aboutOpen = false })
+        }
+    }
     if (demoSheet && demo) {
         ModalBottomSheet(onDismissRequest = { demoSheet = false }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
             Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp).padding(bottom = 24.dp)) {
