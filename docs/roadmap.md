@@ -124,7 +124,7 @@ Pembeda utama produk.
 
 **Status 2026-09-22:** semua kriteria terpenuhi (flow F5 teruji lewat ZakatTest dan emulator, disclaimer ringkas dan layar Tentang lengkap tampil, modul bisa dimatikan lewat sakelar persentase donasi tanpa kehilangan data). Satu butir eksplisit tersisa di daftar tugas: pengingat haul (notifikasi), digeser ke Tahap 6 karena butuh infrastruktur notifikasi yang sama dengan S26.
 
-## Tahap 6 — Keamanan, data, dan polish (Backlog)
+## Tahap 6 — Keamanan, data, dan polish (In Progress)
 
 - [ ] Kunci PIN dan biometrik (S19)
 - [ ] Backup dan restore terenkripsi (S20)
@@ -132,8 +132,10 @@ Pembeda utama produk.
 - [ ] Impor CSV dari Transaksi Harian Notion
 - [ ] Mode gelap, skala font, aksesibilitas
 - [ ] Lokalisasi Indonesia dan Inggris
-- [ ] Pengingat malam dengan balasan langsung dan tindakan "Tidak ada" (S26)
-- [ ] Koreksi saldo (S25) dan petunjuk hari kosong di daftar transaksi
+- [ ] Pengingat malam dengan balasan langsung dan tindakan "Tidak ada" (S26); juga jadi tempat pengingat haul yang digeser dari Tahap 5
+- [x] Koreksi saldo (S25): menu Lainnya, pilih akun, saldo sebenarnya dibandingkan catatan; selisih lebih kecil dicatat pengeluaran Tak terlacak di ruang usulan (dari pengeluaran terakhir akun itu), lebih besar dicatat pemasukan biasa yang dialirkan seperti pemasukan lain, sama hanya memperbarui tanggal cocok; teruji di emulator untuk akun tunai dan bank (2026-09-22)
+- [ ] Petunjuk hari kosong di daftar transaksi
+- [ ] "Perlu perhatian: saldo belum dicocokkan" di Denah untuk akun yang lama tidak dikoreksi
 
 **Selesai bila:** PIN/biometrik tidak bisa dilewati; backup lalu restore di perangkat lain menghasilkan data identik; koreksi saldo mencatat selisih dengan benar untuk akun tunai, e-wallet, dan bank.
 
