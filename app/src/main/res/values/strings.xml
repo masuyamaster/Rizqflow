@@ -526,6 +526,7 @@
     <string name="denah_att_over">%1$s sudah lewat jatah: %2$s dari %3$s</string>
     <string name="denah_att_near">%1$s hampir lewat jatah: %2$s terpakai</string>
     <string name="denah_att_unallocated">%1$s rezeki belum dialirkan ke ruang mana pun</string>
+    <string name="denah_att_reconcile">Saldo %1$s belum dicocokkan %2$d hari</string>
     <string name="status_menunggu">Menunggu</string>
     <string name="status_berjalan">Berjalan</string>
     <string name="status_terpenuhi">Terpenuhi</string>

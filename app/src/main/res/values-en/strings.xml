@@ -523,6 +523,7 @@
     <string name="denah_att_over">%1$s is over budget: %2$s of %3$s</string>
     <string name="denah_att_near">%1$s is almost over budget: %2$s used</string>
     <string name="denah_att_unallocated">%1$s of rezeki hasn\'t flowed into any room yet</string>
+    <string name="denah_att_reconcile">%1$s balance hasn\'t been reconciled in %2$d days</string>
     <string name="status_menunggu">Waiting</string>
     <string name="status_berjalan">In progress</string>
     <string name="status_terpenuhi">Fulfilled</string>

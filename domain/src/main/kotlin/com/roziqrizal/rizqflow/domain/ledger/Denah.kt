@@ -7,6 +7,7 @@ import com.roziqrizal.rizqflow.domain.money.sum
 import java.math.BigInteger
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.temporal.ChronoUnit
 
 /**
  * Status satu ruang pada satu bulan (S05, S11). Selalu ditampilkan sebagai ikon plus teks, bukan warna saja.
@@ -84,6 +85,9 @@ sealed interface AttentionItem {
 
     /** Ada rezeki bulan ini yang belum dialirkan ke ruang mana pun. */
     data class Unallocated(val amount: Money) : AttentionItem
+
+    /** Saldo akun sudah pernah dicocokkan (S25), tapi sudah lebih dari [DenahLoader.STALE_RECONCILE_DAYS] hari. */
+    data class AccountNotReconciled(val account: Account, val daysSince: Int) : AttentionItem
 }
 
 /**
@@ -113,6 +117,7 @@ data class DenahOverview(
 class DenahLoader(
     private val rooms: RoomRepository,
     private val transactions: TransactionRepository,
+    private val accounts: AccountRepository,
 ) {
     suspend fun load(month: YearMonth, today: LocalDate): DenahOverview {
         val from = month.atDay(1)
@@ -129,11 +134,11 @@ class DenahLoader(
             val spent = totals.spent[room.id] ?: Money.zero()
             RoomCard(room, allocated, spent, RoomStatusRules.progressBp(allocated, spent), RoomStatusRules.statusOf(room.kind, allocated, spent, monthOver))
         }
-        return DenahOverview(month, income, unallocated, cards, if (month == current) attentionFor(cards, unallocated) else emptyList())
+        return DenahOverview(month, income, unallocated, cards, if (month == current) attentionFor(cards, unallocated, today) else emptyList())
     }
 
-    /** Urutan: ruang yang sudah lewat jatah, lalu yang mendekati, lalu rezeki belum dialirkan. */
-    private fun attentionFor(cards: List<RoomCard>, unallocated: Money): List<AttentionItem> {
+    /** Urutan: ruang yang sudah lewat jatah, lalu yang mendekati, rezeki belum dialirkan, lalu saldo akun lama tidak dicocokkan. */
+    private suspend fun attentionFor(cards: List<RoomCard>, unallocated: Money, today: LocalDate): List<AttentionItem> {
         val over = cards.filter { it.isOver && it.room.kind == RoomKind.MENCUKUPI }
             .sortedByDescending { it.progressBp }
             .map { AttentionItem.RoomOverLimit(it.room, it.allocated, it.spent) }
@@ -141,6 +146,19 @@ class DenahLoader(
             .sortedByDescending { it.progressBp }
             .map { AttentionItem.RoomNearLimit(it.room, it.progressBp ?: 0) }
         val loose = if (unallocated.isPositive) listOf(AttentionItem.Unallocated(unallocated)) else emptyList()
-        return (over + near + loose).take(DenahOverview.MAX_ATTENTION)
+        // Akun yang belum pernah dicocokkan tidak ditandai: baru mulai "berumur" sejak koreksi pertamanya.
+        val stale = accounts.activeAccounts()
+            .mapNotNull { account ->
+                val last = account.lastReconciledOn ?: return@mapNotNull null
+                val days = ChronoUnit.DAYS.between(last, today).toInt()
+                if (days > STALE_RECONCILE_DAYS) AttentionItem.AccountNotReconciled(account, days) else null
+            }
+            .sortedByDescending { it.daysSince }
+        return (over + near + loose + stale).take(DenahOverview.MAX_ATTENTION)
+    }
+
+    companion object {
+        /** Ambang "lama tidak dikoreksi" (docs/ui-flow.md): lebih dari 7 hari sejak S25 terakhir. */
+        const val STALE_RECONCILE_DAYS = 7
     }
 }

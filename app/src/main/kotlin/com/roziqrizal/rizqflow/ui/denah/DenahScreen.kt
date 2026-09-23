@@ -54,6 +54,7 @@ import com.roziqrizal.rizqflow.domain.ledger.LedgerResult
 import com.roziqrizal.rizqflow.domain.ledger.RoomCard
 import com.roziqrizal.rizqflow.domain.ledger.RoomStatus
 import com.roziqrizal.rizqflow.domain.ledger.RoomTemplate
+import com.roziqrizal.rizqflow.domain.model.AccountId
 import com.roziqrizal.rizqflow.domain.model.RoomId
 import com.roziqrizal.rizqflow.ui.RizqflowIcons
 import com.roziqrizal.rizqflow.ui.RoomTile
@@ -93,6 +94,8 @@ fun DenahScreen(
     onTryDemo: () -> Unit = {},
     /** Kartu ruang dibuka ke Detail ruang (S11) untuk bulan yang sedang dilihat. */
     onOpenRoom: (RoomId, YearMonth) -> Unit = { _, _ -> },
+    /** Butir "saldo belum dicocokkan" membuka Koreksi saldo (S25) untuk akun itu. */
+    onOpenReconciliation: (AccountId) -> Unit = {},
 ) {
     val today = remember { LocalDate.now() }
     val currentMonth = remember(today) { YearMonth.from(today) }
@@ -104,7 +107,7 @@ fun DenahScreen(
 
     LaunchedEffect(month, refreshKey, localVersion) {
         val repos = workspace.repositories
-        denah = DenahLoader(repos.rooms, repos.transactions).load(month, today)
+        denah = DenahLoader(repos.rooms, repos.transactions, repos.accounts).load(month, today)
     }
 
     Column(
@@ -156,7 +159,7 @@ fun DenahScreen(
                 Text(stringResource(R.string.denah_attention_none), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             } else {
                 Column(verticalArrangement = Arrangement.spacedBy(spacing.s2)) {
-                    data.attention.forEach { item -> AttentionRow(item, onOpenRules) }
+                    data.attention.forEach { item -> AttentionRow(item, onOpenRules, onOpenReconciliation) }
                 }
             }
         }
@@ -330,26 +333,32 @@ private fun NoRoomsCard(onApply: () -> Unit) {
 // ---------------------------------------------------------------------------------- perlu perhatian
 
 @Composable
-private fun AttentionRow(item: AttentionItem, onOpenRules: () -> Unit) {
+private fun AttentionRow(item: AttentionItem, onOpenRules: () -> Unit, onOpenReconciliation: (AccountId) -> Unit) {
     val spacing = MaterialTheme.spacing
     val text = when (item) {
         is AttentionItem.RoomOverLimit -> stringResource(R.string.denah_att_over, item.room.name, formatRupiah(item.spent), formatRupiah(item.allocated))
         is AttentionItem.RoomNearLimit -> stringResource(R.string.denah_att_near, item.room.name, formatPercent(item.progressBp / 100 * 100))
         is AttentionItem.Unallocated -> stringResource(R.string.denah_att_unallocated, formatRupiah(item.amount))
+        is AttentionItem.AccountNotReconciled -> stringResource(R.string.denah_att_reconcile, item.account.name, item.daysSince)
     }
-    // Rezeki yang belum dialirkan berujung di Aturan alokasi; butir ruang menunggu detail ruang (S11).
-    val opensRules = item is AttentionItem.Unallocated
+    // Rezeki yang belum dialirkan berujung di Aturan alokasi; saldo lama berujung di Koreksi saldo (S25);
+    // butir ruang menunggu detail ruang (S11).
+    val onClick: (() -> Unit)? = when (item) {
+        is AttentionItem.Unallocated -> onOpenRules
+        is AttentionItem.AccountNotReconciled -> { { onOpenReconciliation(item.account.id) } }
+        else -> null
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceContainerLow, RoundedCornerShape(12.dp))
-            .then(if (opensRules) Modifier.clickable(role = Role.Button, onClick = onOpenRules) else Modifier)
+            .then(if (onClick != null) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier)
             .padding(spacing.s3),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(spacing.s3),
     ) {
         Icon(RizqflowIcons.Peringatan, contentDescription = null, tint = MaterialTheme.rizqflow.statusWarning, modifier = Modifier.size(20.dp))
         Text(text, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
-        if (opensRules) Icon(RizqflowIcons.PanahKanan, contentDescription = null, modifier = Modifier.size(20.dp))
+        if (onClick != null) Icon(RizqflowIcons.PanahKanan, contentDescription = null, modifier = Modifier.size(20.dp))
     }
 }

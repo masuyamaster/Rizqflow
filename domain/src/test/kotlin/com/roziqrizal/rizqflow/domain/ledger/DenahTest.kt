@@ -95,7 +95,7 @@ class DenahTest {
 
     // ------------------------------------------------------------------ pemuat Denah
 
-    private fun loader(f: LedgerFixture) = DenahLoader(f.store, f.store)
+    private fun loader(f: LedgerFixture) = DenahLoader(f.store, f.store, f.store)
 
     private fun load(f: LedgerFixture, month: YearMonth = sept, today: LocalDate = f.today) = runSuspend { loader(f).load(month, today) }
 
@@ -261,5 +261,67 @@ class DenahTest {
         assertTrue(!denah.hasRooms)
         assertEquals(rupiah(750_000), denah.unallocated)
         assertIs<AttentionItem.Unallocated>(denah.attention.single())
+    }
+
+    // ------------------------------------------------------------------ saldo akun belum dicocokkan
+
+    @Test
+    fun `akun yang belum pernah dicocokkan tidak masuk perlu perhatian`() {
+        val f = LedgerFixture().standard()
+
+        assertTrue(load(f).attention.isEmpty())
+    }
+
+    @Test
+    fun `saldo akun tepat tujuh hari belum jadi perhatian, delapan hari sudah`() {
+        val f = LedgerFixture().standard()
+        runSuspend { f.store.save(f.account.copy(lastReconciledOn = f.today.minusDays(7))) }
+
+        assertTrue(load(f).attention.isEmpty())
+
+        runSuspend { f.store.save(f.account.copy(lastReconciledOn = f.today.minusDays(8))) }
+        val stale = load(f).attention.single()
+
+        assertIs<AttentionItem.AccountNotReconciled>(stale)
+        assertEquals("Dompet", stale.account.name)
+        assertEquals(8, stale.daysSince)
+    }
+
+    @Test
+    fun `saldo akun lama tidak dicocokkan muncul setelah rezeki belum dialirkan`() {
+        val f = LedgerFixture().standard()
+        val keluarga = f.room("Keluarga")
+        runSuspend { f.store.replaceRules(f.store.rules().map { if (it.roomId == keluarga.id) it.copy(share = com.roziqrizal.rizqflow.domain.allocation.BasisPoints.percent(50)) else it }) }
+        f.income(1_000_000)
+        runSuspend { f.store.save(f.account.copy(lastReconciledOn = f.today.minusDays(30))) }
+
+        val denah = load(f)
+
+        assertEquals(2, denah.attention.size)
+        assertIs<AttentionItem.Unallocated>(denah.attention[0])
+        val stale = denah.attention[1]
+        assertIs<AttentionItem.AccountNotReconciled>(stale)
+        assertEquals(30, stale.daysSince)
+    }
+
+    @Test
+    fun `banyak akun lama tidak dicocokkan diurutkan dari yang paling lama`() {
+        val f = LedgerFixture().standard()
+        val kedua = f.addAccount("Bank")
+        runSuspend { f.store.save(f.account.copy(lastReconciledOn = f.today.minusDays(10))) }
+        runSuspend { f.store.save(kedua.copy(lastReconciledOn = f.today.minusDays(20))) }
+
+        val denah = load(f)
+
+        assertEquals(listOf("Bank", "Dompet"), denah.attention.map { (it as AttentionItem.AccountNotReconciled).account.name })
+    }
+
+    @Test
+    fun `akun terarsip tidak ikut ditandai meski lama tidak dicocokkan`() {
+        val f = LedgerFixture().standard()
+        val arsip = f.addAccount("Lama", archived = true)
+        runSuspend { f.store.save(arsip.copy(lastReconciledOn = f.today.minusDays(90))) }
+
+        assertTrue(load(f).attention.isEmpty())
     }
 }

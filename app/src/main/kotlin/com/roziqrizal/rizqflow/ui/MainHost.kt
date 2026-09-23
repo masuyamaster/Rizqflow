@@ -276,6 +276,7 @@ fun MainHost(
                 workspace, refreshKey = version, onCatat = { catat = true }, onOpenRules = { aturan = true }, onChanged = { version++ },
                 demo = demo, onDemoClick = { demoSheet = true }, onTryDemo = onEnterDemo,
                 onOpenRoom = { id, month -> roomMonth = month.toString(); roomDetail = id.value },
+                onOpenReconciliation = { accountId -> reconcileAccount = accountId.value; reconcileOpen = true },
             )
         },
         ruangContent = {

@@ -20,7 +20,7 @@ class DemoDataTest {
         return f
     }
 
-    private fun denah(f: LedgerFixture, month: YearMonth, today: LocalDate) = runSuspend { DenahLoader(f.store, f.store).load(month, today) }
+    private fun denah(f: LedgerFixture, month: YearMonth, today: LocalDate) = runSuspend { DenahLoader(f.store, f.store, f.store).load(month, today) }
 
     @Test
     fun `data contoh memuat tiga ruang tiga akun dan empat favorit`() {
