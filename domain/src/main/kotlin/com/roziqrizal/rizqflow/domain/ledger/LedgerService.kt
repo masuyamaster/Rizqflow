@@ -76,6 +76,12 @@ enum class LedgerError {
 
     /** Profil harta terakhir yang aktif tidak boleh diarsipkan. */
     LAST_PROFILE,
+
+    /** Aturan transaksi berulang yang dimaksud tidak (lagi) ada. */
+    RECURRING_NOT_FOUND,
+
+    /** Jadwal berulang tidak sah: tanggal awal sudah lewat, atau tanggal akhir sebelum tanggal awal. */
+    INVALID_SCHEDULE,
 }
 
 sealed interface LedgerResult<out T> {
@@ -95,6 +101,8 @@ data class NewIncome(
     val origin: TransactionOrigin = TransactionOrigin.MANUAL,
     /** "Ubah sekali ini" (S07): pembagian khusus untuk pemasukan ini; null memakai aturan alokasi sekarang. Aturan tidak berubah. */
     val overrideRules: List<AllocationRule>? = null,
+    /** Pengenal tetap untuk transaksi ini (transaksi berulang memakai satu pengenal per kemunculan); null = dibuatkan baru. */
+    val id: String? = null,
 )
 
 data class NewExpense(
@@ -105,6 +113,8 @@ data class NewExpense(
     val occurredOn: LocalDate,
     val note: String? = null,
     val origin: TransactionOrigin = TransactionOrigin.MANUAL,
+    /** Lihat [NewIncome.id]. */
+    val id: String? = null,
 )
 
 data class NewTransfer(
@@ -113,6 +123,9 @@ data class NewTransfer(
     val to: AccountId,
     val occurredOn: LocalDate,
     val note: String? = null,
+    val origin: TransactionOrigin = TransactionOrigin.MANUAL,
+    /** Lihat [NewIncome.id]. */
+    val id: String? = null,
 )
 
 /** Keadaan satu transaksi beserta potret alokasinya: bahan Urungkan setelah ubah atau hapus. */
@@ -158,7 +171,7 @@ class LedgerService(
         }
         val now = nowMillis()
         val transaction = MoneyTransaction(
-            id = TransactionId(newId()),
+            id = TransactionId(command.id ?: newId()),
             kind = TransactionKind.INCOME,
             amount = command.amount,
             accountId = command.accountId,
@@ -185,7 +198,7 @@ class LedgerService(
 
         val now = nowMillis()
         val transaction = MoneyTransaction(
-            id = TransactionId(newId()),
+            id = TransactionId(command.id ?: newId()),
             kind = TransactionKind.EXPENSE,
             amount = command.amount,
             accountId = command.accountId,
@@ -210,13 +223,14 @@ class LedgerService(
 
         val now = nowMillis()
         val transaction = MoneyTransaction(
-            id = TransactionId(newId()),
+            id = TransactionId(command.id ?: newId()),
             kind = TransactionKind.TRANSFER,
             amount = command.amount,
             accountId = command.from,
             toAccountId = command.to,
             occurredOn = command.occurredOn,
             note = note.value,
+            origin = command.origin,
             createdAtMillis = now,
             updatedAtMillis = now,
         )
