@@ -183,6 +183,9 @@ class DenahLoader(
         return DenahOverview(month, income, unallocated, cards, attentionFor(cards, unallocated, today), safe)
     }
 
+    /** Sisa aman hari ini saja, untuk layar Catat; sama dengan yang tampil di Denah bulan berjalan. */
+    suspend fun safeToSpend(today: LocalDate): SafeToSpend? = load(YearMonth.from(today), today).safeToSpend
+
     /** Urutan: ruang yang sudah lewat jatah, lalu yang mendekati, rezeki belum dialirkan, lalu saldo akun lama tidak dicocokkan. */
     private suspend fun attentionFor(cards: List<RoomCard>, unallocated: Money, today: LocalDate): List<AttentionItem> {
         val over = cards.filter { it.isOver && it.room.kind == RoomKind.MENCUKUPI }

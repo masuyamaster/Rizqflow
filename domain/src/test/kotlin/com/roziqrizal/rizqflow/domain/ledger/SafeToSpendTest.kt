@@ -139,11 +139,37 @@ class SafeToSpendTest {
     @Test
     fun `denah bulan berjalan menyertakan sisa aman dan bulan lain tidak`() {
         val f = LedgerFixture().standard()
-        val denah = runSuspend { DenahLoader(f.store, f.store, f.store).load(java.time.YearMonth.from(f.today), f.today) }
-        val lain = runSuspend { DenahLoader(f.store, f.store, f.store).load(java.time.YearMonth.from(f.today).minusMonths(1), f.today) }
+        f.income(8_500_000)
+        val loader = DenahLoader(f.store, f.store, f.store)
+        val month = java.time.YearMonth.from(f.today)
 
-        assertNull(lain.safeToSpend)
-        // Fixture standar belum punya pemasukan, jadi belum ada jatah yang bisa dibagi.
-        assertNull(denah.safeToSpend)
+        assertNull(runSuspend { loader.load(month.minusMonths(1), f.today) }.safeToSpend)
+        assertNotNull(runSuspend { loader.load(month, f.today) }.safeToSpend)
+        assertNotNull(runSuspend { loader.safeToSpend(f.today) })
+    }
+
+    @Test
+    fun `denah tanpa pemasukan belum punya jatah untuk dibagi`() {
+        val f = LedgerFixture().standard()
+
+        assertNull(runSuspend { DenahLoader(f.store, f.store, f.store).safeToSpend(f.today) })
+    }
+
+    @Test
+    fun `pengeluaran hari ini di ruang mencukupi mengurangi sisa lewat pemuat denah`() {
+        val f = LedgerFixture().standard()
+        f.income(8_500_000)
+        val keluarga = f.room("Keluarga")
+        assertEquals(RoomKind.MENCUKUPI, keluarga.kind)
+        val loader = DenahLoader(f.store, f.store, f.store)
+        val before = assertNotNull(runSuspend { loader.safeToSpend(f.today) })
+
+        runSuspend { f.ledger.recordExpense(NewExpense(rupiah(40_000), f.account.id, keluarga.id, f.category("Keluarga", "Belanja bulanan").id, f.today)) }
+        val after = assertNotNull(runSuspend { loader.safeToSpend(f.today) })
+
+        assertEquals(rupiah(40_000), after.spentToday)
+        // Jatah harian tidak berubah oleh pengeluaran hari ini, hanya sisanya.
+        assertEquals(before.dailyBudget, after.dailyBudget)
+        assertEquals(before.remaining - rupiah(40_000), after.remaining)
     }
 }
