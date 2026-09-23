@@ -9,6 +9,9 @@ import androidx.room.RoomDatabase
  *
  * Versi 2 (2026-09-23): menambah `allocation_rule.cap_amount` untuk aturan alokasi lanjutan
  * (Pro); lihat [MIGRATION_1_2] di Migrations.kt.
+ *
+ * Versi 3 (2026-09-23): menambah tabel `trader_profile` dan `dca_plan` untuk sistem per peran
+ * (Pro); lihat [MIGRATION_2_3].
  */
 @Database(
     entities = [
@@ -26,8 +29,10 @@ import androidx.room.RoomDatabase
         GoldPriceEntity::class,
         WealthCheckEntity::class,
         ZakatPaymentEntity::class,
+        TraderProfileEntity::class,
+        DcaPlanEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = true,
 )
 abstract class RizqflowDatabase : RoomDatabase() {
@@ -37,4 +42,5 @@ abstract class RizqflowDatabase : RoomDatabase() {
     abstract fun settings(): SettingsDao
     abstract fun favorites(): FavoriteDao
     abstract fun zakat(): ZakatDao
+    abstract fun roles(): RoleDao
 }

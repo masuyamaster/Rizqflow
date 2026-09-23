@@ -217,3 +217,36 @@ data class ZakatPaymentEntity(
     val day: Long,
     @ColumnInfo(name = "transaction_id") val transactionId: String,
 )
+
+/**
+ * Peran Trader (versi 3, Pro): modal dan batas risiko per trade untuk satu ruang. Ada barisnya
+ * berarti modul terpasang; ruang punya paling banyak satu peran (dijaga `RoleService`).
+ */
+@Entity(
+    tableName = "trader_profile",
+    foreignKeys = [ForeignKey(RoomEntity::class, ["id"], ["room_id"], onDelete = ForeignKey.CASCADE)],
+)
+data class TraderProfileEntity(
+    @PrimaryKey @ColumnInfo(name = "room_id") val roomId: String,
+    val capital: Long,
+    /** Basis point modal yang boleh hilang per trade. */
+    @ColumnInfo(name = "risk_bp") val riskBp: Int,
+)
+
+/** Peran Investor (versi 3, Pro): jadwal DCA bulanan untuk satu ruang. */
+@Entity(
+    tableName = "dca_plan",
+    foreignKeys = [
+        ForeignKey(RoomEntity::class, ["id"], ["room_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(AccountEntity::class, ["id"], ["account_id"], onDelete = ForeignKey.RESTRICT),
+        ForeignKey(CategoryEntity::class, ["id"], ["category_id"], onDelete = ForeignKey.RESTRICT),
+    ],
+    indices = [Index("account_id"), Index("category_id")],
+)
+data class DcaPlanEntity(
+    @PrimaryKey @ColumnInfo(name = "room_id") val roomId: String,
+    val amount: Long,
+    @ColumnInfo(name = "day_of_month") val dayOfMonth: Int,
+    @ColumnInfo(name = "account_id") val accountId: String,
+    @ColumnInfo(name = "category_id") val categoryId: String,
+)

@@ -221,6 +221,30 @@ interface ZakatDao {
 }
 
 @Dao
+interface RoleDao {
+    @Query("SELECT * FROM trader_profile WHERE room_id = :roomId")
+    suspend fun trader(roomId: String): TraderProfileEntity?
+
+    @Upsert
+    suspend fun upsertTrader(profile: TraderProfileEntity)
+
+    @Query("SELECT * FROM dca_plan WHERE room_id = :roomId")
+    suspend fun dca(roomId: String): DcaPlanEntity?
+
+    @Upsert
+    suspend fun upsertDca(plan: DcaPlanEntity)
+
+    @Query("SELECT * FROM dca_plan")
+    suspend fun allDca(): List<DcaPlanEntity>
+
+    @Query("DELETE FROM trader_profile WHERE room_id = :roomId")
+    suspend fun deleteTrader(roomId: String)
+
+    @Query("DELETE FROM dca_plan WHERE room_id = :roomId")
+    suspend fun deleteDca(roomId: String)
+}
+
+@Dao
 interface SettingsDao {
     @Upsert
     suspend fun put(setting: AppSettingEntity)

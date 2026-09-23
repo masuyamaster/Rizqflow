@@ -61,6 +61,15 @@ enum class LedgerError {
 
     /** Balasan notifikasi malam tidak berbentuk "catatan nominal", mis. "kopi 25000". */
     QUICK_REPLY_UNREADABLE,
+
+    /** Nominal, modal, persentase risiko, atau tanggal DCA di luar batas yang sah (sistem per peran). */
+    INVALID_ROLE_SETTINGS,
+
+    /** Ruang sudah punya peran lain (Trader atau Investor); lepas dulu sebelum memasang yang baru. */
+    ROLE_CONFLICT,
+
+    /** Ruang belum punya peran yang dibutuhkan aksi ini (mis. mencatat DCA tanpa jadwal). */
+    ROLE_NOT_SET,
 }
 
 sealed interface LedgerResult<out T> {

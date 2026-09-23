@@ -12,6 +12,7 @@ enum class Feature(val requiredPlan: Plan) {
     UNLIMITED_ROOMS(Plan.PRO),
     UNLIMITED_ACCOUNTS(Plan.PRO),
     ADVANCED_ALLOCATION_RULES(Plan.PRO),
+    ROLE_SYSTEMS(Plan.PRO),
     MULTI_ZAKAT_PROFILE(Plan.PRO),
     AUTOMATIC_GOLD_PRICE(Plan.PRO),
     REPORTS_AND_INSIGHTS(Plan.PRO),
