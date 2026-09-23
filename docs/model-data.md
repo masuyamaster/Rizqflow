@@ -119,7 +119,7 @@ Potret alokasi satu pemasukan.
 `key` (kunci utama), `value` (teks). Pengingat (aktif, jam), tema, bahasa, mode Memberi, dan penanda onboarding selesai. PIN **tidak** disimpan di sini (lihat "Keamanan").
 
 ### Modul zakat (S14 sampai S17)
-- **zakat_profile**: `name` (satu profil gratis; multi-profil Pro), `haul_break_policy`, `archived`.
+- **zakat_profile**: `name` (satu profil gratis; multi-profil Pro), `haul_break_policy`, `archived`. Profil pertama (Utama) dibuat otomatis saat harta pertama disimpan; profil tambahan (mis. istri, usaha) butuh Pro (2026-09-23) dan diarsipkan, bukan dihapus, supaya riwayat zakatnya tetap. Urutan profil = urutan pembuatan (rowid), tanpa kolom urutan. Profil dinilai sendiri-sendiri: harta, pemeriksaan, pembayaran, dan haulnya terpisah; harga emas (`gold_price`) dipakai bersama. Profil tanpa `wealth_check` sama sekali belum bisa dinilai (status meminta harta diisi).
 - **wealth_item**: `profile_id`, `kind` (`GOLD`, `CASH_SAVINGS`, `INVESTMENT`, `RECEIVABLE`, `OTHER`, `DEDUCTION`), `label`, `value` (Long; untuk emas nilai saat dihitung), `gold_milligrams` (boleh kosong), `updated_at`.
 - **gold_price**: `day`, `per_gram`, `source` (`MANUAL`, `AUTO`). Riwayat harga supaya nisab lama bisa direkonstruksi.
 - **wealth_check**: `profile_id`, `day`, `net_wealth`, `nisab`. Ini persis `HaulEvent.WealthChecked` di domain; **status haul tidak disimpan**, dihitung ulang oleh `HaulTracker`.

@@ -51,7 +51,7 @@ Aplikasi niche seperti ini kemungkinan menghasilkan uang kecil. Anggap monetisas
 
 ## Yang masih perlu diputuskan
 
-- [ ] **Pengingat haul.** Usulan: untuk satu profil tetap gratis (konsisten dengan prinsip 2), pengingat multi-profil masuk Pro. Di tabel atas, "multi-profil haul dengan pengingat" ada di Pro, jadi butuh konfirmasi.
+- [ ] **Pengingat haul.** Usulan: untuk satu profil tetap gratis (konsisten dengan prinsip 2), pengingat multi-profil masuk Pro. Di tabel atas, "multi-profil haul dengan pengingat" ada di Pro, jadi butuh konfirmasi. **Dipakai sebagai default kerja sejak 2026-09-23** (multi-profil haul diimplementasikan): tanpa Pro hanya profil pertama yang disapa; profil lain tetap tersimpan dan bisa dipakai, hanya pengingatnya diam. Menunggu konfirmasi pemilik.
 - [x] **Batas ruang gratis: 5 ruang** total (3 inti + 2 peran), disetujui pemilik 2026-09-21.
 - [x] **Batas akun gratis: 3 akun** (mis. tunai, bank, dompet digital), disetujui pemilik 2026-09-21. Kategori tidak dibatasi; akun tak terbatas masuk Pro.
 - [x] **Widget catat kilat**: masuk Pro (2026-09-20). Pintasan ikon, tile Quick Settings, dan balasan notifikasi tetap gratis karena mencatat dengan cepat adalah janji utama (lihat "Disiplin mencatat" di [konsep.md](konsep.md)).
