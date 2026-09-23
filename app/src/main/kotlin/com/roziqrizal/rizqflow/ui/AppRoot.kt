@@ -8,6 +8,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -82,7 +83,7 @@ fun AppRoot(
                     painter = painterResource(R.drawable.ic_rizqflow_wordmark),
                     contentDescription = null,
                     // Rasio dikunci (viewport wordmark 5440x1110) supaya gambar mengisi lebar penuh, bukan ukuran bawaan drawable.
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 25.dp).aspectRatio(5440f / 1110f),
+                    modifier = Modifier.padding(horizontal = 5.dp).widthIn(max = 350.dp).fillMaxWidth().aspectRatio(5440f / 1110f),
                     contentScale = ContentScale.FillWidth,
                 )
             }
