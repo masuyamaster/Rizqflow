@@ -124,6 +124,7 @@ Hanya sebagian layar ada di sini; wireframe semua layar S01–S28 (termasuk kead
 - Grid ruang 2 kolom. Kesan denah datang dari tata letak ruang, bukan ilustrasi denah harfiah (lebih mudah dipakai saat ruangnya banyak).
 - "Perlu perhatian" maksimal 3 butir: haul mendekati, ruang hampir melewati jatah, pemasukan belum dialirkan, saldo akun belum dicocokkan lebih dari 7 hari (menuju S25).
 - Tanggal Hijriyah kecil di header bila modul Memberi aktif.
+- Kartu **Sisa aman hari ini** di bawah kartu rezeki, hanya bulan berjalan dan bila ada ruang Mencukupi berjatah (rumus di [konsep.md](konsep.md)). Jatah hari ini terlampaui tampil Rp 0 dengan teks lembut, tanpa merah.
 
 ### S06 Catat transaksi (tab Pengeluaran)
 
@@ -157,6 +158,7 @@ Hanya sebagian layar ada di sini; wireframe semua layar S01–S28 (termasuk kead
 - Numpad memakai tombol `000` sebagai ganti koma, karena rupiah tidak memakai desimal.
 - Pengeluaran yang sering berulang bisa ditandai **Jadikan favorit** (nominal, kategori, ruang, dan akun ikut tersimpan); favorit tampil sebagai chip di S24.
 - Melewati jatah ruang: banner lembut di atas tombol Simpan, tombol tetap aktif.
+- Pengeluaran baru bertanggal hari ini menampilkan baris **Sisa aman hari ini** di bawah nominal; setelah nominal diisi di ruang Mencukupi berubah menjadi **Sisa aman setelah ini** (tidak pernah negatif). Tidak tampil saat mengubah transaksi lama atau bertanggal selain hari ini.
 
 ### S07 Pratinjau alokasi
 
