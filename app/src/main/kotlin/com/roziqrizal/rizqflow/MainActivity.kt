@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.roziqrizal.rizqflow.auth.AuthController
-import com.roziqrizal.rizqflow.auth.AuthUiState
 import com.roziqrizal.rizqflow.auth.GoogleAuthProvider
 import com.roziqrizal.rizqflow.auth.GoogleClientId
 import com.roziqrizal.rizqflow.auth.SharedPrefsAccountStore
@@ -53,7 +52,7 @@ class MainActivity : FragmentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Harus dipanggil sebelum super.onCreate: mengganti tema splash ke tema aplikasi.
-        val splash = installSplashScreen()
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         // Data keuangan: nominal tidak boleh terlihat di tampilan aplikasi terakhir atau tangkapan layar (S19).
@@ -71,8 +70,8 @@ class MainActivity : FragmentActivity() {
             ),
             scope = lifecycleScope,
         )
-        // Splash tetap tampil sampai riwayat masuk terbaca, supaya tidak ada kedipan halaman masuk.
-        splash.setKeepOnScreenCondition { controller.state.value is AuthUiState.Loading }
+        // Splash sistem hanya latar kosong dan menutup begitu frame pertama tergambar; selama riwayat
+        // masuk dibaca, AppRoot menampilkan wordmark penuh (splash sistem tak bisa selebar layar).
         controller.start()
 
         val appLock = AppLockService(SharedPrefsSecurityStore(this), Pbkdf2PasswordHasher())

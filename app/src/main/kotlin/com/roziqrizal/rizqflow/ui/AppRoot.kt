@@ -42,7 +42,7 @@ import kotlinx.coroutines.launch
 
 /**
  * Akar tampilan: splash (sistem) lalu halaman masuk, atau langsung menu utama bila sudah punya
- * riwayat masuk. Selama [AuthUiState.Loading] splash sistem masih menutupi layar.
+ * riwayat masuk. Selama [AuthUiState.Loading] tampil wordmark penuh (splash sistem hanya latar).
  */
 @Composable
 fun AppRoot(
@@ -72,7 +72,7 @@ fun AppRoot(
     ) {
         when (val s = state) {
             // Warna latar disamakan dengan ic_launcher_background (bukan token tema) supaya
-            // menyatu tanpa kedipan dengan splash sistem, yang memakai warna itu juga.
+            // menyatu tanpa kedipan dengan splash sistem (latar kosong), yang memakai warna itu juga.
             AuthUiState.Loading -> Box(
                 modifier = Modifier.fillMaxSize().background(colorResource(R.color.ic_launcher_background)),
                 contentAlignment = Alignment.Center,

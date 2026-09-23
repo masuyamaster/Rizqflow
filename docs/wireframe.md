@@ -929,8 +929,8 @@ Notifikasi malam (di luar aplikasi):
 +--------------------------------+
 ```
 
-- Splash sistem Android: ikon aplikasi di tengah, latar warna token. Tanpa teks dan tanpa tombol.
-- Tetap tampil sampai riwayat masuk terbaca (sekejap), supaya halaman masuk tidak berkedip bagi yang sudah punya riwayat.
+- Splash sistem Android hanya latar warna token (ikonnya kosong, karena Android 12+ memotong ikon dengan topeng lingkaran). Wordmark Rizqflow penuh, hampir selebar layar dan tidak terpotong, ditampilkan layar loading aplikasi di atas latar yang sama. Tanpa tombol.
+- Wordmark tetap tampil sampai riwayat masuk terbaca (sekejap), supaya halaman masuk tidak berkedip bagi yang sudah punya riwayat.
 
 ## S30 Masuk
 
