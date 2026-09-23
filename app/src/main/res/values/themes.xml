@@ -5,11 +5,10 @@
         <item name="android:windowBackground">@color/rf_background</item>
     </style>
 
-    <!-- Splash: latar sama dengan warna latar launcher icon (ic_launcher_background) supaya menyatu; setelah siap beralih ke Theme.Rizqflow. -->
+    <!-- Splash: latar sama dengan warna latar launcher icon (ic_launcher_background) supaya menyatu; ikon splash sistem = ikon aplikasi (seperti Al-Kaukaba), layar splash dengan wordmark besar ada di AppRoot; setelah siap beralih ke Theme.Rizqflow. -->
     <style name="Theme.Rizqflow.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/ic_launcher_background</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
         <item name="postSplashScreenTheme">@style/Theme.Rizqflow</item>
-        <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
 </resources>

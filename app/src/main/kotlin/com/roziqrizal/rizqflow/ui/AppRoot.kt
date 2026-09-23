@@ -1,29 +1,17 @@
 package com.roziqrizal.rizqflow.ui
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.roziqrizal.rizqflow.R
 import com.roziqrizal.rizqflow.domain.auth.AccountStorage
 import com.roziqrizal.rizqflow.domain.auth.AppLockService
 import androidx.compose.runtime.collectAsState
@@ -40,11 +28,14 @@ import com.roziqrizal.rizqflow.ui.login.LoginScreen
 import com.roziqrizal.rizqflow.ui.login.RegisterScreen
 import com.roziqrizal.rizqflow.ui.security.AppLockScreen
 import com.roziqrizal.rizqflow.ui.theme.ThemePreference
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
+private const val SPLASH_MIN_MILLIS = 1500L
 
 /**
  * Akar tampilan: splash (sistem) lalu halaman masuk, atau langsung menu utama bila sudah punya
- * riwayat masuk. Selama [AuthUiState.Loading] tampil wordmark penuh; di Android 12+ splash sistem dimatikan (values-v31) supaya wordmark ini yang pertama terlihat.
+ * riwayat masuk. Selama [AuthUiState.Loading] (dan minimal [SPLASH_MIN_MILLIS]) tampil [SplashContent].
  */
 @Composable
 fun AppRoot(
@@ -57,6 +48,13 @@ fun AppRoot(
     val state by controller.state.collectAsState()
     var registering by rememberSaveable { mutableStateOf(false) }
     var demo by rememberSaveable { mutableStateOf(false) }
+    // Splash ditahan sebentar (seperti Al-Kaukaba) supaya wordmark sempat terlihat; riwayat masuk yang
+    // terbaca cepat langsung menimpanya. Catat kilat dari pintasan/tile tidak menunggu.
+    var splashDone by rememberSaveable { mutableStateOf(quickCatatRequest > 0) }
+    LaunchedEffect(Unit) {
+        delay(SPLASH_MIN_MILLIS)
+        splashDone = true
+    }
     fun openRegister(open: Boolean) {
         controller.clearMessage()
         registering = open
@@ -72,21 +70,8 @@ fun AppRoot(
         color = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground,
     ) {
-        when (val s = state) {
-            // Warna latar disamakan dengan ic_launcher_background (bukan token tema) supaya
-            // menyatu dengan splash sistem di Android 11 ke bawah, yang memakai warna itu juga.
-            AuthUiState.Loading -> Box(
-                modifier = Modifier.fillMaxSize().background(colorResource(R.color.ic_launcher_background)),
-                contentAlignment = Alignment.Center,
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_rizqflow_wordmark),
-                    contentDescription = null,
-                    // Rasio dikunci (viewport wordmark 5440x1110) supaya gambar mengisi lebar penuh, bukan ukuran bawaan drawable.
-                    modifier = Modifier.padding(horizontal = 5.dp).widthIn(max = 350.dp).fillMaxWidth().aspectRatio(5440f / 1110f),
-                    contentScale = ContentScale.FillWidth,
-                )
-            }
+        when (val s = if (splashDone) state else AuthUiState.Loading) {
+            AuthUiState.Loading -> SplashContent()
 
             is AuthUiState.SignedOut -> if (registering) {
                 BackHandler(enabled = s.busy == null) { openRegister(false) }

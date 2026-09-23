@@ -929,7 +929,7 @@ Notifikasi malam (di luar aplikasi):
 +--------------------------------+
 ```
 
-- Android 12+: splash sistem dimatikan (topeng lingkaran memotong ikon, jadi wordmark selebar layar tak muat di sana); jendela aplikasi langsung menampilkan wordmark Rizqflow penuh, hampir selebar layar dan tidak terpotong, di atas warna token, tanpa jeda buatan. Android 11 ke bawah dan ROM yang tetap menampilkan pratinjau: latar jendela (`splash_background`) sudah berisi wordmark yang sama, selebar maksimal 350dp, sehingga logo ada sejak frame pertama dan peralihan ke layar loading tidak melompat. Batasan: splash sistem Android 12+ yang tak bisa dimatikan hanya bisa memuat ikon sekitar 45% lebar layar (terpotong lingkaran), jadi wordmark besar tidak bisa ditaruh di sana. Tanpa tombol.
+- Meniru splash Al-Kaukaba (keputusan pemilik 2026-09-23): splash sistem menampilkan ikon aplikasi di atas warna token (langsung terlihat sejak frame pertama), lalu layar splash Compose (`SplashContent`) menampilkan wordmark besar (lebar maksimal 350dp) di sepertiga atas dan tiga titik berdenyut berwarna tiga bulatan wordmark di bawah. Ditahan minimal 1,5 detik saat aplikasi dibuka (tidak untuk Catat kilat dari pintasan/tile). Wordmark selebar layar tak bisa ditaruh di splash sistem karena ikonnya dipotong topeng lingkaran (Android 12+). Tanpa tombol.
 - Wordmark tetap tampil sampai riwayat masuk terbaca (sekejap), supaya halaman masuk tidak berkedip bagi yang sudah punya riwayat.
 
 ## S30 Masuk
