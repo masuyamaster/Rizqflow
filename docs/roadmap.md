@@ -109,21 +109,22 @@ Logika bisnis yang benar dan teruji sebelum ada layar.
 
 **Status 2026-09-22:** semua kriteria terpenuhi dan teruji di emulator termasuk kasus tepi >5/>6 ruang. Kartu Zakat (Memberi) dan butir haul/saldo di Denah menunggu Tahap 5 dan 6 seperti tercatat di atas.
 
-## Tahap 5 — Modul Memberi: zakat dan haul (Selesai kecuali satu butir)
+## Tahap 5 — Modul Memberi: zakat dan haul (In Progress: menunggu satu keputusan)
 
 Pembeda utama produk.
 
 - [x] Beranda Zakat dan profil harta (S14–S15) (2026-09-22): ZakatService (overview, saveWealth, payZakat) di `:domain` dan `:data`; layar Zakat dengan kartu status, nisab, harga emas, riwayat; Profil harta dengan harga emas per gram, baris bawaan (emas dalam gram, uang dan tabungan, investasi, piutang lancar), harta bebas tambah, dan hutang jangka pendek. Jalan masuk: kartu Zakat di Detail ruang untuk ruang bertipe Menunaikan. Teruji di emulator: isi harta lengkap, nisab dan harta bersih cocok skenario tes, data tersimpan dan termuat ulang benar
 - [x] Kartu haul dan rincian perhitungan (S16) (2026-09-22): digabung ke kartu status S14 (Belum mencapai nisab, Haul berjalan dengan hari ke-n dari total dan jatuh tempo Hijriyah, Haul genap) memakai `HaulTracker`, bukan layar rincian terpisah — penyederhanaan cakupan
 - [x] Tunaikan zakat menjadi transaksi (S17) (2026-09-22): bottom sheet dengan nominal bawaan 2,5% dari harta bersih (bisa diubah), akun sumber, kategori Zakat mal otomatis di ruang itu; menyimpan mencatat pengeluaran biasa dan memulai haul baru. Diuji lewat ZakatTest (Room sungguhan): haul genap sampai tunaikan tersimpan dan haul baru mulai. Belum diuji manual di emulator karena perlu memutar kalender sistem untuk mencapai haul genap
-- [ ] Pengingat haul (notifikasi): menunggu Tahap 6 (izin notifikasi, infrastruktur notifikasi harian dibangun bersama S26, bukan diduplikasi di sini)
+- [x] Pengingat haul (notifikasi): dikerjakan di Tahap 6 (2026-09-22) karena memakai infrastruktur notifikasi S26 yang sama, bukan diduplikasi di sini
+- [ ] Putuskan pengingat haul untuk satu profil: tetap gratis (usulan dan default kerja sejak 2026-09-23) atau Pro; menunggu konfirmasi pemilik ([monetisasi.md](monetisasi.md))
 - [x] Mode alternatif persentase donasi (2026-09-22): sakelar "Persentase donasi biasa" di S14, memakai `PercentageGivingStrategy` yang sudah ada sejak Tahap 2; ruang Memberi bawaan pola Tiga hak mulai di mode ini, bisa dipindah ke zakat mal kapan saja tanpa kehilangan data harta
 - [x] Tes kasus tepi haul dan nisab (2026-09-22): `HaulTrackerTest` dan `ZakatCalculatorTest` (Tahap 2) plus `ZakatServiceTest` baru (mulai haul, genap, reset di bawah nisab, tunaikan sebelum dan sesudah genap) dan `ZakatTest` di lapisan data
 - [x] Disclaimer dan tampilan sumber fikih (S23) (2026-09-22): versi ringkas di footer S14 dan layar Tentang lengkap (versi aplikasi, privasi, asumsi fikih dengan penanda belum diverifikasi, disclaimer, Kebijakan privasi dan Lisensi pihak ketiga sebagai sheet dalam aplikasi, Kirim masukan lewat email); jalan masuk baris Tentang di menu Lainnya, teruji di emulator
 
 **Selesai bila:** flow F5 berjalan end-to-end termasuk reset haul; asumsi fikih dan disclaimer tampil; modul bisa dimatikan tanpa merusak aplikasi.
 
-**Status 2026-09-22:** semua kriteria terpenuhi (flow F5 teruji lewat ZakatTest dan emulator, disclaimer ringkas dan layar Tentang lengkap tampil, modul bisa dimatikan lewat sakelar persentase donasi tanpa kehilangan data). Satu butir eksplisit tersisa di daftar tugas: pengingat haul (notifikasi), digeser ke Tahap 6 karena butuh infrastruktur notifikasi yang sama dengan S26.
+**Status 2026-09-22:** semua kriteria terpenuhi (flow F5 teruji lewat ZakatTest dan emulator, disclaimer ringkas dan layar Tentang lengkap tampil, modul bisa dimatikan lewat sakelar persentase donasi tanpa kehilangan data). Pengingat haul (notifikasi) semula tersisa, lalu dikerjakan di Tahap 6 karena butuh infrastruktur notifikasi yang sama dengan S26 (selesai 2026-09-22). Yang tersisa hanya keputusan pemilik: pengingat haul satu profil gratis atau Pro; tahap ditutup setelah itu diputuskan.
 
 ## Tahap 6 — Keamanan, data, dan polish (In Progress)
 
