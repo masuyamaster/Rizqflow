@@ -10,7 +10,7 @@ Pemilik meminta alur: **splash, lalu halaman masuk dengan Google connect dan Gma
 
 | Bagian | Isi |
 |---|---|
-| Splash | Splash sistem Android berlatar token tanpa ikon (topeng lingkaran Android 12+ memotong wordmark selebar layar); wordmark penuh tampil di layar loading sampai riwayat masuk terbaca, jadi tidak ada kedipan halaman masuk |
+| Splash | Android 12+: splash sistem dimatikan (topeng lingkaran memotong wordmark selebar layar), jendela aplikasi langsung menampilkan wordmark penuh di layar loading sampai riwayat masuk terbaca, jadi tidak ada kedipan halaman masuk |
 | S30 Masuk | Logo tiga ruang, tagline, tiga jaminan, tombol Google **berupa simbol G saja** (nama "Lanjutkan dengan Google" untuk pembaca layar), tombol **Hubungkan Gmail** (opsional), pesan lembut bila gagal |
 | Alur | Tanpa riwayat: halaman masuk. Ada riwayat: langsung menu utama. **Keluar** di tab Lainnya menghapus riwayat |
 | Akun lokal (S30, S31) | Kolom nama pengguna dan sandi di S30, halaman Daftar S31. Daftar membuat akun di ponsel ini lalu langsung masuk. Lihat bagian "Akun lokal" di bawah |

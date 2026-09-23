@@ -39,14 +39,11 @@ import com.roziqrizal.rizqflow.ui.login.LoginScreen
 import com.roziqrizal.rizqflow.ui.login.RegisterScreen
 import com.roziqrizal.rizqflow.ui.security.AppLockScreen
 import com.roziqrizal.rizqflow.ui.theme.ThemePreference
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-
-private const val SPLASH_MIN_MILLIS = 1000L
 
 /**
  * Akar tampilan: splash (sistem) lalu halaman masuk, atau langsung menu utama bila sudah punya
- * riwayat masuk. Selama [AuthUiState.Loading] tampil wordmark penuh (splash sistem hanya latar).
+ * riwayat masuk. Selama [AuthUiState.Loading] tampil wordmark penuh; di Android 12+ splash sistem dimatikan (values-v31) supaya wordmark ini yang pertama terlihat.
  */
 @Composable
 fun AppRoot(
@@ -59,13 +56,6 @@ fun AppRoot(
     val state by controller.state.collectAsState()
     var registering by rememberSaveable { mutableStateOf(false) }
     var demo by rememberSaveable { mutableStateOf(false) }
-    // Splash sistem hanya latar polos (ikonnya tak bisa selebar layar), jadi wordmark penuh ditahan
-    // minimal sebentar di sini; kalau tidak, riwayat masuk yang terbaca cepat langsung menimpanya.
-    var splashDone by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(Unit) {
-        delay(SPLASH_MIN_MILLIS)
-        splashDone = true
-    }
     fun openRegister(open: Boolean) {
         controller.clearMessage()
         registering = open
@@ -81,9 +71,9 @@ fun AppRoot(
         color = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground,
     ) {
-        when (val s = if (splashDone) state else AuthUiState.Loading) {
+        when (val s = state) {
             // Warna latar disamakan dengan ic_launcher_background (bukan token tema) supaya
-            // menyatu tanpa kedipan dengan splash sistem (latar kosong), yang memakai warna itu juga.
+            // menyatu dengan splash sistem di Android 11 ke bawah, yang memakai warna itu juga.
             AuthUiState.Loading -> Box(
                 modifier = Modifier.fillMaxSize().background(colorResource(R.color.ic_launcher_background)),
                 contentAlignment = Alignment.Center,
