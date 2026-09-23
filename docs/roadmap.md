@@ -29,6 +29,7 @@ T8 -.-> T9["9 Sync (fase 2)"]
 - Detail stack **disetujui 2026-09-20**: tiga modul Gradle (`:domain`, `:data`, `:app`), min SDK 26, DI manual, backup AES-GCM, tanpa SQLCipher untuk v1 (lihat [konsep.md](konsep.md)).
 - Tahap 1 (desain) dan Tahap 2 (inti domain) bisa berjalan paralel setelah Tahap 0 selesai.
 - Tahap 9 sengaja opsional: mulai hanya bila ada sinyal kebutuhan dari pengguna nyata.
+- Tahap 10 (fitur wajib dari riset pasar) dan Tahap 11 (input cerdas on-device) ditambahkan 2026-09-23. Keduanya tidak bergantung pada Tahap 8; urutan terhadap rilis ditentukan pemilik (usulan: butir High Tahap 10 sebelum rilis, sisanya sesudah).
 
 ## Tahap 0 — Fondasi dan keputusan (In Progress)
 
@@ -169,8 +170,40 @@ Pembeda utama produk.
 - [ ] Riset arsitektur sync terenkripsi end-to-end dan biaya
 - [ ] Ruang keluarga bersama
 - [ ] Langganan Sync dan backend minimal
+- [ ] Peran anggota keluarga (pengelola, pemberi jatah, anggota pencatat, anak) dan amplop uang bulanan
+- [ ] Notifikasi saat anggota keluarga mencatat (push dari backend sync)
+- [ ] Bot WhatsApp resmi tersinkron ke aplikasi (WhatsApp Business API; riset biaya dan verifikasi bisnis dulu)
+- [ ] Input AI berbasis LLM dengan kuota per paket, hanya bila parser on-device Tahap 11 belum cukup
 
 Jangan dimulai sebelum Pro terbit dan ada sinyal bahwa pengguna memang butuh berbagi data antar-perangkat atau antar-anggota keluarga.
+
+## Tahap 10 — Celah riset: fitur wajib (Backlog)
+
+Menutup kesenjangan fitur wajib dari [riset pasar](research-market/research.md) (kecocokan sekitar 47% sebelum tahap ini, target sekitar 65–70%). Semua tanpa server. Ditambahkan 2026-09-23; disarankan selesai sebelum Tahap 8, atau minimal butir prioritas High.
+
+- [ ] Sisa aman hari ini di Denah dan Catat (High)
+- [ ] Transaksi berulang: harian, mingguan, bulanan (High)
+- [ ] Pengingat tagihan dan cicilan (High)
+- [ ] Utang-piutang, terhubung ke profil harta zakat (High)
+- [ ] Laporan dasar gratis dan perbandingan bulan lalu (Medium; laporan PDF dan tahunan tetap Pro di Tahap 7)
+- [ ] Template pos lokal: arisan, THR dan Lebaran, kiriman orang tua, paylater (Medium)
+- [ ] Putuskan batas gratis akun (3) dan ruang (5): riset menyebut multi-dompet terkunci premium adalah keluhan pengguna (Medium, keputusan pemilik)
+- [ ] Pintasan simpan cadangan ke Google Drive lewat Storage Access Framework (Low)
+- [ ] Multi-mata uang (Pro, Low): menyentuh model inti `Money`; dipindah dari butir Pro Tahap 7
+
+**Selesai bila:** transaksi berulang tidak menggandakan transaksi saat aplikasi lama tidak dibuka; utang-piutang bisa dicatat, dilunasi, dan piutang lancar mengalir ke harta zakat; sisa aman hari ini benar untuk bulan kosong dan jatah terlampaui; penguncian tetap lewat lapisan entitlement.
+
+## Tahap 11 — Input cerdas on-device (Backlog)
+
+Mengurangi friksi input tanpa server, sesuai temuan riset bahwa input manual adalah penyebab utama berhenti. Ditambahkan 2026-09-23. Tangkap otomatis dari notifikasi tetap di v1.1 di bawah.
+
+- [ ] Parser bahasa natural Indonesia ("gojek 23rb dari gopay") di `:domain` dengan golden test (High; tier Gratis adalah usulan)
+- [ ] Layar konfirmasi hasil input cerdas, memakai ulang pola Draf S27 (High)
+- [ ] Input suara lewat `SpeechRecognizer` (Pro, Medium)
+- [ ] OCR struk on-device dengan ML Kit (Pro, Medium)
+- [ ] OCR screenshot mutasi e-wallet dan bank serta e-statement PDF (Pro, Medium)
+
+**Selesai bila:** hasil parse, suara, dan OCR selalu lewat layar konfirmasi sebelum tersimpan; tidak ada data keuangan keluar dari perangkat; akurasi OCR diukur pada sekitar 30 contoh nyata dan dicatat.
 
 ## Versi 1.1 setelah rilis: tangkap otomatis (Pro)
 
