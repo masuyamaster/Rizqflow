@@ -91,6 +91,9 @@ fun RizqflowApp(
     onOpenCsv: (() -> Unit)? = null,
     onOpenBackup: (() -> Unit)? = null,
     onOpenTampilan: (() -> Unit)? = null,
+    onOpenPaywall: (() -> Unit)? = null,
+    /** Paket Pro sudah dimiliki perangkat ini (lihat `PurchaseStore`); menentukan subjudul baris Rizqflow Pro. */
+    proOwned: Boolean = false,
 ) {
     val nav = rememberNavController()
     val backStack by nav.currentBackStackEntryAsState()
@@ -146,7 +149,7 @@ fun RizqflowApp(
             TopTab.entries.forEach { tab ->
                 composable(tab.route) {
                     if (tab == TopTab.Lainnya && account != null) {
-                        LainnyaScreen(account, onConnectGmail, onSignOut, onDismissNotice, onOpenRules, onOpenManage, demo, onToggleDemo, onOpenAbout, onOpenReconciliation, onOpenReminder, onOpenSecurity, onOpenCsv, onOpenBackup, onOpenTampilan)
+                        LainnyaScreen(account, onConnectGmail, onSignOut, onDismissNotice, onOpenRules, onOpenManage, demo, onToggleDemo, onOpenAbout, onOpenReconciliation, onOpenReminder, onOpenSecurity, onOpenCsv, onOpenBackup, onOpenTampilan, onOpenPaywall, proOwned)
                     } else if (tab == TopTab.Transaksi && transaksiContent != null) {
                         transaksiContent()
                     } else if (tab == TopTab.Ruang && ruangContent != null) {
@@ -228,6 +231,8 @@ private fun LainnyaScreen(
     onOpenCsv: (() -> Unit)? = null,
     onOpenBackup: (() -> Unit)? = null,
     onOpenTampilan: (() -> Unit)? = null,
+    onOpenPaywall: (() -> Unit)? = null,
+    proOwned: Boolean = false,
 ) {
     val spacing = MaterialTheme.spacing
     Column(
@@ -259,6 +264,13 @@ private fun LainnyaScreen(
         if (onOpenCsv != null) MenuRow(stringResource(R.string.menu_csv), stringResource(R.string.menu_csv_sub), onOpenCsv)
         if (onOpenBackup != null) MenuRow(stringResource(R.string.menu_backup), stringResource(R.string.menu_backup_sub), onOpenBackup)
         if (onOpenTampilan != null) MenuRow(stringResource(R.string.menu_tampilan), stringResource(R.string.menu_tampilan_sub), onOpenTampilan)
+        if (onOpenPaywall != null) {
+            MenuRow(
+                stringResource(R.string.menu_pro),
+                stringResource(if (proOwned) R.string.menu_pro_sub_owned else R.string.menu_pro_sub_free),
+                onOpenPaywall,
+            )
+        }
         Text(
             stringResource(R.string.account_title),
             style = MaterialTheme.typography.titleLarge,

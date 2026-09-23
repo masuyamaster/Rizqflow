@@ -41,6 +41,8 @@ Yang **sengaja tidak** dipaywall:
 
 Rancang **lapisan entitlement** dari awal: satu tempat yang menjawab "fitur ini boleh dipakai user ini?". Batas ruang, aturan lanjutan, dan multi-profil haul semuanya bertanya ke sana, sehingga model harga bisa berubah tanpa membongkar kode. Ini juga selaras dengan arsitektur modul yang bisa ditukar, dan menjadi bukti desain di portofolio.
 
+**Status implementasi (2026-09-23):** lapisan ini sudah berjalan. `Entitlements`/`PlanEntitlements`/`Feature`/`Plan` (`:domain`, sejak Tahap 2) menjawab "boleh atau tidak"; `PurchaseStore` (`:app`, SharedPreferences app-wide, sejak paket Google Play terikat ke akun Play Store perangkat, bukan ke satu akun ledger lokal) menyimpan paket yang dimiliki; `LivePlanEntitlements` membacanya ulang tiap dipanggil supaya perubahan langsung berlaku. Paywall S21 dan titik penguncian ruang/akun sudah membuka bottom sheet ini. Yang **belum**: `PurchaseStore.grant()` belum dipanggil dari mana pun — tombol Beli dan Pulihkan pembelian di S21 sengaja hanya menampilkan pesan "belum tersedia" sampai Google Play Billing sungguhan terpasang (perlu listing Play Console, Tahap 8, lebih dulu).
+
 Konsekuensi yang diterima: karena aplikasi offline, penguncian di sisi klien bisa dilewati oleh pengguna yang mahir. Untuk harga sekali bayar dengan taruhan kecil, ini bisa diterima; verifikasi cukup lewat status pembelian dari toko.
 
 ## Catatan realistis

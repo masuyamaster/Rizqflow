@@ -1,8 +1,10 @@
 package com.roziqrizal.rizqflow.workspace
 
 import android.content.Context
+import com.roziqrizal.rizqflow.billing.PurchaseStore
 import com.roziqrizal.rizqflow.data.LocalLedger
-import com.roziqrizal.rizqflow.domain.entitlement.PlanEntitlements
+import com.roziqrizal.rizqflow.domain.entitlement.Entitlements
+import com.roziqrizal.rizqflow.domain.entitlement.LivePlanEntitlements
 import com.roziqrizal.rizqflow.domain.ledger.DemoData
 import com.roziqrizal.rizqflow.domain.ledger.FavoriteService
 import com.roziqrizal.rizqflow.domain.ledger.LedgerService
@@ -20,15 +22,17 @@ import java.util.UUID
  * masuk dan ditutup saat keluar; akun lain membuka berkas lain (satu database per akun).
  * Pengenal dibuat sebagai UUID dan waktu diambil dari jam sistem.
  */
-class AccountWorkspace private constructor(private val local: LocalLedger) : AutoCloseable {
+class AccountWorkspace private constructor(private val local: LocalLedger, val purchases: PurchaseStore) : AutoCloseable {
     private val newId: () -> String = { UUID.randomUUID().toString() }
 
     val repositories: LocalLedger get() = local
     val setup = WorkspaceSetup(local.workspace, newId)
     val ledger = LedgerService(local.accounts, local.rooms, local.transactions, newId, System::currentTimeMillis)
 
-    // Paket gratis sampai Tahap 7 menghubungkannya dengan status pembelian.
-    private val entitlements = PlanEntitlements()
+    // Status pembelian sungguhan lewat Google Play Billing menyusul (Tahap 7 lanjutan, perlu listing
+    // Play Console dulu); [purchases] sudah jadi satu-satunya sumber, dibaca ulang tiap dipanggil
+    // supaya perubahan paket langsung berlaku tanpa membuka ulang ruang kerja ini.
+    private val entitlements: Entitlements = LivePlanEntitlements { purchases.plans.value }
     val rules = RuleService(local.rooms, entitlements, newId)
     val management = ManagementService(local.accounts, local.rooms, entitlements, newId)
     val favorites = FavoriteService(local.favorites, local.accounts, local.rooms, ledger, newId, System::currentTimeMillis)
@@ -41,6 +45,7 @@ class AccountWorkspace private constructor(private val local: LocalLedger) : Aut
     override fun close() = local.close()
 
     companion object {
-        fun open(context: Context, accountId: String): AccountWorkspace = AccountWorkspace(LocalLedger.open(context, accountId))
+        fun open(context: Context, accountId: String): AccountWorkspace =
+            AccountWorkspace(LocalLedger.open(context, accountId), PurchaseStore(context))
     }
 }

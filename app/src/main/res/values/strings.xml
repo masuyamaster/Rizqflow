@@ -400,6 +400,30 @@
     <string name="tampilan_light">Terang</string>
     <string name="tampilan_dark">Gelap</string>
 
+    <!-- Rizqflow Pro: paywall S21 (Tahap 7). Beli dan Pulihkan pembelian belum terhubung ke Google
+         Play Billing sungguhan; lihat PaywallSheet.kt dan MainHost.kt. -->
+    <string name="menu_pro">Rizqflow Pro</string>
+    <string name="menu_pro_sub_owned">Aktif</string>
+    <string name="menu_pro_sub_free">Buka ruang, aturan, dan fitur lain</string>
+    <string name="pro_title">Rizqflow Pro</string>
+    <string name="pro_price">%1$s sekali bayar</string>
+    <string name="pro_no_subscription">Tanpa langganan</string>
+    <string name="pro_buy">Beli</string>
+    <string name="pro_restore">Pulihkan pembelian</string>
+    <string name="pro_later">Nanti saja</string>
+    <string name="pro_footer">Fitur dasar dan zakat tetap gratis.</string>
+    <string name="pro_purchase_unavailable">Pembelian Rizqflow Pro belum tersedia. Menyusul setelah aplikasi dirilis di Play Store.</string>
+    <string name="pro_benefit_unlimited_rooms">Ruang peran tak terbatas dengan sistem per peran</string>
+    <string name="pro_benefit_unlimited_accounts">Akun tak terbatas</string>
+    <string name="pro_benefit_advanced_rules">Aturan alokasi lanjutan: prioritas, batas atas, sisa mengalir ke ruang lain</string>
+    <string name="pro_benefit_multi_zakat">Multi-profil zakat dengan pengingat</string>
+    <string name="pro_benefit_gold_price">Harga emas otomatis</string>
+    <string name="pro_benefit_reports">Laporan dan insight bulanan/tahunan (PDF)</string>
+    <string name="pro_benefit_multi_currency">Multi-mata uang</string>
+    <string name="pro_benefit_widget">Widget catat kilat</string>
+    <string name="pro_benefit_themes">Tema tambahan</string>
+    <string name="pro_benefit_notification_capture">Tangkap otomatis dari notifikasi</string>
+
     <!-- Kunci aplikasi S19 (Tahap 6) -->
     <string name="lock_title">Terkunci</string>
     <string name="lock_wrong_pin">PIN salah, %1$d percobaan tersisa</string>

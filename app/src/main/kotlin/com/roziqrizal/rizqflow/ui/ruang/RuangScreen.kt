@@ -93,6 +93,8 @@ fun RuangScreen(
     onChanged: () -> Unit,
     /** Mengetuk baris ruang membuka Detail ruang (S11). */
     onOpenRoom: (RoomId) -> Unit = {},
+    /** Batas ruang gratis tercapai: membuka paywall Pro (S21) alih-alih pesan saja. */
+    onOpenPaywall: () -> Unit = {},
 ) {
     var overview by remember { mutableStateOf<RoomOverview?>(null) }
     var localVersion by remember { mutableIntStateOf(0) }
@@ -215,11 +217,7 @@ fun RuangScreen(
 
         Button(
             onClick = {
-                if (current.canAdd) {
-                    adding = true
-                } else {
-                    scope.launch { notifier.show(roomErrorText(context, LedgerError.ROOM_LIMIT_REACHED)) }
-                }
+                if (current.canAdd) adding = true else onOpenPaywall()
             },
             modifier = Modifier.padding(top = spacing.s4).fillMaxWidth().height(52.dp),
         ) {

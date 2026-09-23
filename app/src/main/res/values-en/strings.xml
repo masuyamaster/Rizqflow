@@ -398,6 +398,30 @@
     <string name="tampilan_light">Light</string>
     <string name="tampilan_dark">Dark</string>
 
+    <!-- Rizqflow Pro: paywall S21 (Stage 7). Buy and Restore purchase are not yet wired to real
+         Google Play Billing; see PaywallSheet.kt and MainHost.kt. -->
+    <string name="menu_pro">Rizqflow Pro</string>
+    <string name="menu_pro_sub_owned">Active</string>
+    <string name="menu_pro_sub_free">Unlock more rooms, rules, and features</string>
+    <string name="pro_title">Rizqflow Pro</string>
+    <string name="pro_price">%1$s one-time</string>
+    <string name="pro_no_subscription">No subscription</string>
+    <string name="pro_buy">Buy</string>
+    <string name="pro_restore">Restore purchase</string>
+    <string name="pro_later">Not now</string>
+    <string name="pro_footer">Core features and zakat stay free.</string>
+    <string name="pro_purchase_unavailable">Rizqflow Pro isn\'t available for purchase yet. Coming after the app launches on Play Store.</string>
+    <string name="pro_benefit_unlimited_rooms">Unlimited role rooms with per-role systems</string>
+    <string name="pro_benefit_unlimited_accounts">Unlimited accounts</string>
+    <string name="pro_benefit_advanced_rules">Advanced allocation rules: priority, caps, overflow to other rooms</string>
+    <string name="pro_benefit_multi_zakat">Multiple zakat profiles with reminders</string>
+    <string name="pro_benefit_gold_price">Automatic gold price</string>
+    <string name="pro_benefit_reports">Monthly/yearly reports and insights (PDF)</string>
+    <string name="pro_benefit_multi_currency">Multiple currencies</string>
+    <string name="pro_benefit_widget">Quick-log widget</string>
+    <string name="pro_benefit_themes">Extra themes</string>
+    <string name="pro_benefit_notification_capture">Auto-capture from notifications</string>
+
     <!-- App lock S19 (Stage 6) -->
     <string name="lock_title">Locked</string>
     <string name="lock_wrong_pin">Wrong PIN, %1$d attempts left</string>

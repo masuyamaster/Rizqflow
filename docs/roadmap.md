@@ -142,17 +142,19 @@ Pembeda utama produk.
 
 **Status 2026-09-23:** seluruh tugas terdaftar di atas sudah selesai (termasuk butir Denah terakhir). Dua kriteria masih menunggu verifikasi manual yang belum tercatat dilakukan (lihat checklist "Kriteria selesai" di halaman Tahap 6 Notion): **restore di perangkat fisik lain** (baru diuji bolak-balik di emulator/`BackupCryptoTest`, belum lintas perangkat) dan **berkas ekspor CSV dibuka di aplikasi spreadsheet sungguhan** (baru diperiksa isinya di emulator, belum di Sheets/Excel). PIN/biometrik dan koreksi saldo sudah terverifikasi sesuai kriteria.
 
-## Tahap 7 — Monetisasi dan Pro (Backlog)
+## Tahap 7 — Monetisasi dan Pro (In Progress)
 
-- [ ] Integrasi pembelian (Google Play Billing) dan pulihkan pembelian
-- [ ] Paywall bottom sheet dan titik penguncian (S21)
-- [ ] Pro: ruang peran tak terbatas dan sistem per peran
+- [x] Paywall bottom sheet dan titik penguncian (S21) (2026-09-23): `PaywallSheet` (`ui/paywall/`), tiga manfaat dari `Feature` yang memicu (butir yang memicu didahulukan, lalu diisi dari tiga manfaat mockup ui-flow.md), harga placeholder Rp 129.000 (belum final, lihat monetisasi.md). Titik penguncian ruang (S10, ruang ke-6) dan akun (S13) membuka S21 langsung, bukan sekadar pesan seperti sebelumnya. Baris "Rizqflow Pro" baru di menu Lainnya (S18), subjudul mengikuti status pembelian. `PurchaseStore` (`:app`, SharedPreferences app-wide seperti `ThemePreference`) dan `LivePlanEntitlements` (`:domain`, membaca ulang paket tiap dipanggil) menggantikan `PlanEntitlements()` yang dulu selalu kosong (`AccountWorkspace`) — tetapi **belum terhubung ke Google Play Billing sungguhan**: tombol Beli dan Pulihkan pembelian sengaja hanya menampilkan pesan "belum tersedia" (`pro_purchase_unavailable`), tidak membuka Pro, supaya tidak ada jalan buka-Pro-gratis yang tidak sengaja. `PurchaseStore.grant()` sudah ada sebagai seponsel Billing Client menyusul, tapi belum dipanggil dari mana pun. Diuji: 1 tes baru `EntitlementsTest` (LivePlanEntitlements membaca ulang, bukan potret sekali dibuat); `:domain:test`, `:app:assembleDebug`, dan unit test `:app`/`:data` lulus
+- [ ] Integrasi pembelian (Google Play Billing) dan pulihkan pembelian — butuh produk in-app terdaftar di Play Console (Tahap 8) dulu; `PurchaseStore.grant()` adalah seponsel yang akan dipanggil dari sini
+- [ ] Pro: ruang peran tak terbatas dan sistem per peran — batas jumlah ruang sudah dibuka otomatis begitu `Plan.PRO` dimiliki (`Entitlements.roomLimit`, sejak Tahap 2); "sistem khusus per peran" (Trader: batas risiko per trade, Investor: jadwal DCA, monetisasi.md) belum ada
 - [ ] Pro: aturan alokasi lanjutan
 - [ ] Pro: multi-profil haul dan harga emas otomatis
 - [ ] Pro: laporan dan insight, multi-mata uang, widget, tema
 - [ ] Uji alur pembelian dengan penguji lisensi
 
 **Selesai bila:** semua penguncian lewat satu lapisan entitlement; akses tidak hilang setelah pasang ulang atau ganti perangkat.
+
+**Status 2026-09-23:** paywall dan titik penguncian selesai; sisanya (billing sungguhan, fitur-fitur Pro sendiri, uji penguji lisensi) menunggu, sebagian bergantung pada akun developer Play Console (Tahap 8).
 
 ## Tahap 8 — Rilis dan portofolio (Backlog)
 

@@ -63,3 +63,18 @@ class PlanEntitlements(
         const val FREE_ACCOUNT_LIMIT = 3
     }
 }
+
+/**
+ * [Entitlements] yang membaca ulang [plans] setiap dipanggil, bukan potret sekali saat dibuat.
+ * Dipakai di :app supaya status paket yang berubah selagi aplikasi berjalan (mis. setelah membeli
+ * atau memulihkan pembelian) langsung berlaku tanpa membuka ulang ruang kerja akun.
+ */
+class LivePlanEntitlements(private val plans: () -> Set<Plan>) : Entitlements {
+    private fun snapshot() = PlanEntitlements(plans())
+
+    override fun isEnabled(feature: Feature): Boolean = snapshot().isEnabled(feature)
+
+    override val roomLimit: Int? get() = snapshot().roomLimit
+
+    override val accountLimit: Int? get() = snapshot().accountLimit
+}

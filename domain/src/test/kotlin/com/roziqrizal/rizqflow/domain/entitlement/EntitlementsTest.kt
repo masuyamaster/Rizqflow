@@ -73,4 +73,18 @@ class EntitlementsTest {
         assertEquals(1, PlanEntitlements(freeAccountLimit = 1).accountLimit)
         assertEquals(3, PlanEntitlements(setOf(Plan.SYNC)).accountLimit)
     }
+
+    @Test
+    fun `LivePlanEntitlements membaca ulang paket tiap dipanggil, bukan potret sekali dibuat`() {
+        var owned = emptySet<Plan>()
+        val live = LivePlanEntitlements { owned }
+
+        assertEquals(5, live.roomLimit)
+        assertFalse(live.isEnabled(Feature.UNLIMITED_ROOMS))
+
+        owned = setOf(Plan.PRO)
+
+        assertNull(live.roomLimit)
+        assertTrue(live.isEnabled(Feature.UNLIMITED_ROOMS))
+    }
 }

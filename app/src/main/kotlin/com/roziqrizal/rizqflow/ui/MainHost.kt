@@ -25,6 +25,9 @@ import com.roziqrizal.rizqflow.domain.auth.AppLockService
 import com.roziqrizal.rizqflow.ui.zakat.ZakatFlow
 import com.roziqrizal.rizqflow.domain.model.RoomId
 import java.time.YearMonth
+import com.roziqrizal.rizqflow.domain.entitlement.Feature
+import com.roziqrizal.rizqflow.domain.entitlement.Plan
+import com.roziqrizal.rizqflow.ui.paywall.PaywallSheet
 import com.roziqrizal.rizqflow.ui.ruang.RuangScreen
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
@@ -32,6 +35,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -113,6 +117,14 @@ fun MainHost(
     var csvOpen by rememberSaveable { mutableStateOf(false) }
     var backupOpen by rememberSaveable { mutableStateOf(false) }
     var tampilanOpen by rememberSaveable { mutableStateOf(false) }
+    var paywallOpen by rememberSaveable { mutableStateOf(false) }
+    // Nama Feature yang memicu (S21 mendahulukan manfaatnya); null = manfaat umum dari menu Lainnya.
+    var paywallTrigger by rememberSaveable { mutableStateOf<String?>(null) }
+    fun openPaywall(trigger: Feature? = null) {
+        paywallTrigger = trigger?.name
+        paywallOpen = true
+    }
+    val ownedPlans by workspace.purchases.plans.collectAsState()
     var handledQuick by rememberSaveable { mutableIntStateOf(0) }
     LaunchedEffect(quickCatatRequest) {
         if (quickCatatRequest > handledQuick) {
@@ -283,6 +295,7 @@ fun MainHost(
             RuangScreen(
                 workspace, refreshKey = version, notifier = notifier, onOpenRules = { aturan = true }, onChanged = { version++ },
                 onOpenRoom = { id -> roomMonth = YearMonth.now().toString(); roomDetail = id.value },
+                onOpenPaywall = { openPaywall(Feature.UNLIMITED_ROOMS) },
             )
         },
         onOpenRules = { aturan = true },
@@ -299,6 +312,8 @@ fun MainHost(
         onOpenCsv = { csvOpen = true },
         onOpenBackup = { backupOpen = true },
         onOpenTampilan = { tampilanOpen = true },
+        onOpenPaywall = { openPaywall() },
+        proOwned = Plan.PRO in ownedPlans,
     )
     if (tampilanOpen) {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
@@ -333,6 +348,22 @@ fun MainHost(
                 )
                 SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp))
             }
+        }
+    }
+    if (paywallOpen) {
+        ModalBottomSheet(onDismissRequest = { paywallOpen = false }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+            PaywallSheet(
+                trigger = paywallTrigger?.let { Feature.valueOf(it) },
+                onBuy = {
+                    paywallOpen = false
+                    scope.launch { notifier.show(context.getString(R.string.pro_purchase_unavailable)) }
+                },
+                onRestore = {
+                    paywallOpen = false
+                    scope.launch { notifier.show(context.getString(R.string.pro_purchase_unavailable)) }
+                },
+                onDismiss = { paywallOpen = false },
+            )
         }
     }
     if (aboutOpen) {
@@ -404,7 +435,10 @@ fun MainHost(
     } else if (kelola) {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             Box {
-                KelolaScreen(workspace = workspace, notifier = notifier, onClose = { kelola = false }, onChanged = { version++ })
+                KelolaScreen(
+                    workspace = workspace, notifier = notifier, onClose = { kelola = false }, onChanged = { version++ },
+                    onOpenPaywall = { openPaywall(Feature.UNLIMITED_ACCOUNTS) },
+                )
                 SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp))
             }
         }

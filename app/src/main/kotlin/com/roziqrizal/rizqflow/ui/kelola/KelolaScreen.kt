@@ -76,11 +76,11 @@ import kotlinx.coroutines.launch
 /**
  * S13 Kelola akun, kategori, dan favorit. Tiga tab; akun dan kategori hanya diarsipkan, tidak dihapus,
  * karena riwayat transaksi tetap memakai namanya. Perubahan diteruskan lewat [onChanged] supaya layar
- * lain (Denah, Transaksi, Catat) memuat ulang. Batas gratis 3 akun; paywall S21 belum ada, jadi batas
- * ditampilkan sebagai pesan.
+ * lain (Denah, Transaksi, Catat) memuat ulang. Batas gratis 3 akun: tercapai membuka paywall Pro (S21)
+ * lewat [onOpenPaywall].
  */
 @Composable
-fun KelolaScreen(workspace: AccountWorkspace, notifier: Notifier, onClose: () -> Unit, onChanged: () -> Unit) {
+fun KelolaScreen(workspace: AccountWorkspace, notifier: Notifier, onClose: () -> Unit, onChanged: () -> Unit, onOpenPaywall: () -> Unit = {}) {
     var tab by rememberSaveable { mutableIntStateOf(0) }
     var version by remember { mutableIntStateOf(0) }
     val spacing = MaterialTheme.spacing
@@ -103,7 +103,7 @@ fun KelolaScreen(workspace: AccountWorkspace, notifier: Notifier, onClose: () ->
             }
         }
         when (tab) {
-            0 -> AccountsTab(workspace, notifier, version, ::changed)
+            0 -> AccountsTab(workspace, notifier, version, ::changed, onOpenPaywall)
             1 -> CategoriesTab(workspace, notifier, version, ::changed)
             else -> FavoritesTab(workspace, notifier, version, ::changed)
         }
@@ -176,7 +176,7 @@ private sealed interface AccountSheet {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AccountsTab(workspace: AccountWorkspace, notifier: Notifier, version: Int, changed: () -> Unit) {
+private fun AccountsTab(workspace: AccountWorkspace, notifier: Notifier, version: Int, changed: () -> Unit, onOpenPaywall: () -> Unit) {
     var overview by remember { mutableStateOf<AccountOverview?>(null) }
     var sheet by remember { mutableStateOf<AccountSheet?>(null) }
     var showArchived by rememberSaveable { mutableStateOf(false) }
@@ -194,7 +194,7 @@ private fun AccountsTab(workspace: AccountWorkspace, notifier: Notifier, version
         }
         Button(
             onClick = {
-                if (data.canAdd) sheet = AccountSheet.New else scope.launch { notifier.show(manageErrorText(context, LedgerError.ACCOUNT_LIMIT_REACHED)) }
+                if (data.canAdd) sheet = AccountSheet.New else onOpenPaywall()
             },
             modifier = Modifier.padding(top = spacing.s4).fillMaxWidth().height(52.dp),
         ) {
