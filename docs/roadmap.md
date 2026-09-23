@@ -182,7 +182,7 @@ Jangan dimulai sebelum Pro terbit dan ada sinyal bahwa pengguna memang butuh ber
 
 Menutup kesenjangan fitur wajib dari [riset pasar](research-market/research.md) (kecocokan sekitar 47% sebelum tahap ini, target sekitar 65–70%). Semua tanpa server. Ditambahkan 2026-09-23; disarankan selesai sebelum Tahap 8, atau minimal butir prioritas High.
 
-- [ ] Sisa aman hari ini di Denah dan Catat (High)
+- [ ] Sisa aman hari ini di Denah dan Catat (High). Denah selesai 2026-09-24: kartu di bawah Rezeki bulan ini, memakai `SafeToSpend` (`:domain`), 12 tes baru. Sisa: tampil di layar Catat
 - [ ] Transaksi berulang: harian, mingguan, bulanan (High)
 - [ ] Pengingat tagihan dan cicilan (High)
 - [ ] Utang-piutang, terhubung ke profil harta zakat (High)
