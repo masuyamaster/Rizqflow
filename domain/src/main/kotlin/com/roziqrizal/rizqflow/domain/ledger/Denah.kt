@@ -1,5 +1,6 @@
 package com.roziqrizal.rizqflow.domain.ledger
 
+import com.roziqrizal.rizqflow.domain.model.RoomId
 import com.roziqrizal.rizqflow.domain.model.RoomKind
 import com.roziqrizal.rizqflow.domain.model.TransactionKind
 import com.roziqrizal.rizqflow.domain.money.Money
@@ -75,6 +76,47 @@ data class RoomCard(
     val isOver: Boolean get() = allocated.isPositive && spent > allocated
 }
 
+/**
+ * "Sisa aman hari ini" (Tahap 10): berapa yang masih aman dibelanjakan hari ini dari ruang bertipe Mencukupi.
+ * Rumus disetujui 2026-09-24: jatah tersisa (per ruang, sebelum pengeluaran hari ini) dibagi sisa hari bulan
+ * itu termasuk hari ini, dikurangi pengeluaran hari ini. Ruang Menunaikan dan Menumbuhkan tidak ikut karena
+ * itu tabungan atau zakat, bukan jatah belanja.
+ *
+ * Tenang, bukan panik: tidak pernah negatif. Ruang yang sudah melewati jatah dihitung 0 (tidak memakan jatah
+ * ruang lain), dan bila jatah hari ini terlampaui [remaining] menjadi 0 dan [isOver] bernilai true.
+ */
+data class SafeToSpend(
+    /** Jatah harian: jatah tersisa sebelum hari ini dibagi [daysLeft], dibulatkan ke bawah. */
+    val dailyBudget: Money,
+    /** Pengeluaran hari ini di ruang Mencukupi. */
+    val spentToday: Money,
+    /** Sisa hari bulan ini termasuk hari ini (minimal 1). */
+    val daysLeft: Int,
+) {
+    val remaining: Money get() = if (spentToday >= dailyBudget) Money.zero() else dailyBudget - spentToday
+    val isOver: Boolean get() = spentToday > dailyBudget
+
+    companion object {
+        /**
+         * Null bila tidak ada ruang Mencukupi yang punya jatah bulan ini (tidak ada yang bisa dihitung).
+         * [spentTodayByRoom] adalah pengeluaran hari [today] per ruang; [cards] berisi terpakai sebulan penuh
+         * sampai hari ini.
+         */
+        fun compute(cards: List<RoomCard>, spentTodayByRoom: Map<RoomId, Money>, today: LocalDate): SafeToSpend? {
+            val everyday = cards.filter { it.room.kind == RoomKind.MENCUKUPI && it.allocated.isPositive }
+            if (everyday.isEmpty()) return null
+            val spentToday = everyday.map { spentTodayByRoom[it.room.id] ?: Money.zero() }.sum()
+            val pool = everyday.map { card ->
+                val today0 = spentTodayByRoom[card.room.id] ?: Money.zero()
+                val left = card.allocated - (card.spent - today0)
+                if (left.isPositive) left else Money.zero()
+            }.sum()
+            val daysLeft = YearMonth.from(today).lengthOfMonth() - today.dayOfMonth + 1
+            return SafeToSpend(Money(pool.minor / daysLeft), spentToday, daysLeft)
+        }
+    }
+}
+
 /** Butir di bagian "Perlu perhatian" S05. */
 sealed interface AttentionItem {
     /** Terpakai sudah melewati jatah. */
@@ -100,6 +142,8 @@ data class DenahOverview(
     val unallocated: Money,
     val cards: List<RoomCard>,
     val attention: List<AttentionItem>,
+    /** Hanya untuk bulan berjalan; null di bulan lain atau bila tidak ada jatah ruang Mencukupi. */
+    val safeToSpend: SafeToSpend? = null,
 ) {
     val hasRooms: Boolean get() = cards.isNotEmpty()
     val hasIncome: Boolean get() = income.isPositive
@@ -134,7 +178,9 @@ class DenahLoader(
             val spent = totals.spent[room.id] ?: Money.zero()
             RoomCard(room, allocated, spent, RoomStatusRules.progressBp(allocated, spent), RoomStatusRules.statusOf(room.kind, allocated, spent, monthOver))
         }
-        return DenahOverview(month, income, unallocated, cards, if (month == current) attentionFor(cards, unallocated, today) else emptyList())
+        if (month != current) return DenahOverview(month, income, unallocated, cards, emptyList())
+        val safe = SafeToSpend.compute(cards, transactions.roomTotals(today, today).spent, today)
+        return DenahOverview(month, income, unallocated, cards, attentionFor(cards, unallocated, today), safe)
     }
 
     /** Urutan: ruang yang sudah lewat jatah, lalu yang mendekati, rezeki belum dialirkan, lalu saldo akun lama tidak dicocokkan. */
