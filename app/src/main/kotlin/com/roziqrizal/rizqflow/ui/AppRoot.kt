@@ -3,6 +3,7 @@ package com.roziqrizal.rizqflow.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -80,7 +81,8 @@ fun AppRoot(
                 Image(
                     painter = painterResource(R.drawable.ic_rizqflow_wordmark),
                     contentDescription = null,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp),
+                    // Rasio dikunci (viewport wordmark 5440x1110) supaya gambar mengisi lebar penuh, bukan ukuran bawaan drawable.
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 15.dp).aspectRatio(5440f / 1110f),
                     contentScale = ContentScale.FillWidth,
                 )
             }
