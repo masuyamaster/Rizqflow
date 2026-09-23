@@ -54,6 +54,7 @@ import com.roziqrizal.rizqflow.domain.ledger.LedgerResult
 import com.roziqrizal.rizqflow.domain.ledger.RoomCard
 import com.roziqrizal.rizqflow.domain.ledger.RoomStatus
 import com.roziqrizal.rizqflow.domain.ledger.RoomTemplate
+import com.roziqrizal.rizqflow.domain.ledger.SafeToSpend
 import com.roziqrizal.rizqflow.domain.model.AccountId
 import com.roziqrizal.rizqflow.domain.model.RoomId
 import com.roziqrizal.rizqflow.ui.RizqflowIcons
@@ -139,6 +140,8 @@ fun DenahScreen(
 
         IncomeCard(data, isCurrent = month == currentMonth, onCatat = onCatat, onTryDemo = if (demo) null else onTryDemo)
 
+        data.safeToSpend?.let { SafeToSpendCard(it) }
+
         Text(stringResource(R.string.denah_rooms), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = spacing.s5, bottom = spacing.s2))
         if (!data.hasRooms) {
             NoRoomsCard(onApply = {
@@ -203,6 +206,34 @@ private fun IncomeCard(data: DenahOverview, isCurrent: Boolean, onCatat: () -> U
                 if (onTryDemo != null) TextButton(onClick = onTryDemo, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.demo_try)) }
             }
         }
+    }
+}
+
+/** Sisa aman hari ini dari ruang Mencukupi. Nadanya lembut: terlampaui tampil 0 dengan teks penjelas, bukan angka merah. */
+@Composable
+private fun SafeToSpendCard(safe: SafeToSpend) {
+    val spacing = MaterialTheme.spacing
+    Column(
+        modifier = Modifier
+            .padding(top = spacing.s3)
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surfaceContainerLow, RoundedCornerShape(16.dp))
+            .padding(spacing.s4),
+    ) {
+        Text(stringResource(R.string.denah_safe_title), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        CappedFontScale(HERO_MAX_FONT_SCALE) {
+            Text(formatRupiah(safe.remaining), style = MaterialTheme.typography.headlineMedium)
+        }
+        Text(
+            stringResource(
+                if (safe.isOver) R.string.denah_safe_over else R.string.denah_safe_hint,
+                formatRupiah(safe.dailyBudget),
+                safe.daysLeft,
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(top = spacing.s1),
+        )
     }
 }
 
