@@ -175,13 +175,13 @@ Kesimpulan awal: **Rizqflow masih layak dipakai**. **Rizqly bukan cadangan yang 
   - **UI dan domain:** Material 3 sebagai basis dengan tema dari design tokens (peta di `docs/design/README.md`), navigation-compose, `StateFlow` dan coroutine. `Money` berupa value class berisi bilangan bulat satuan terkecil (rupiah tanpa desimal) dengan penanda mata uang untuk multi-mata uang di Pro. Kalender Hijriyah diakses lewat antarmuka `HijriCalendar` di `:domain` supaya implementasinya (hisab Al-Kaukaba atau Umm al-Qura) bisa ditukar.
 - **Prototipe klik disetujui** pemilik (2026-09-20) sebagai acuan layar kunci dan kemudahan mencatat. Prototipe F1 (onboarding) dan F4 (ubah aturan) belum ada.
 - **Application ID** `com.roziqrizal.rizqflow` (2026-09-20). Tetap setelah terbit di Play Store.
+- **Pengingat haul (2026-09-24):** tetap gratis untuk satu profil; pengingat untuk profil tambahan masuk Pro bersama multi-profil haul ([monetisasi.md](monetisasi.md)).
 - **compileSdk dan targetSdk 37** (2026-09-20): Compose terbaru (BOM 2026.09) menuntut compileSdk 37, dan target mengikuti keputusan "target SDK terbaru yang stabil". Emulator yang ada baru API 36, jadi perlu image API 37 sebelum rilis. Tes `:domain` memakai JUnit Jupiter (alkaukabaandroid memakai JUnit 4) supaya golden test bertabel bisa memakai tes berparameter.
 
 ## Keputusan yang masih terbuka
 
 - **Domain sendiri:** rizqflow.com dipegang pihak lain; .app dan .id bebas. Landing page bisa berada di roziqrizal.com, jadi domain sendiri belum tentu perlu.
 - **Haul saat harta turun di bawah nisab di tengah tahun:** terputus lalu mulai dari nol (bawaan sementara), atau hanya diperiksa di awal dan akhir haul (pendapat lain). Keduanya sudah ada sebagai `HaulBreakPolicy`; menunggu verifikasi kitab oleh pemilik.
-- **Pengingat haul:** tetap gratis untuk satu profil atau masuk Pro.
 - **Harga final** Pro dan Sync, berdasarkan uji minat.
 - **Pengingat malam:** jam bawaan dan kapan izin notifikasi Android 13+ diminta. Usulan: pukul 21.00, dan izin diminta setelah transaksi pertama disimpan, bukan di awal onboarding.
 - **Aplikasi bank dan e-wallet yang didukung lebih dulu** untuk tangkap otomatis. Usulan: yang paling sering dipakai, dilihat dari Transaksi Harian di Ruang Finansial.
