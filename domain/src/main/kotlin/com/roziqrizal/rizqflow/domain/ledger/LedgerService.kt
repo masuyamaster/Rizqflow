@@ -70,6 +70,12 @@ enum class LedgerError {
 
     /** Ruang belum punya peran yang dibutuhkan aksi ini (mis. mencatat DCA tanpa jadwal). */
     ROLE_NOT_SET,
+
+    /** Profil harta zakat yang dimaksud tidak (lagi) ada. */
+    PROFILE_NOT_FOUND,
+
+    /** Profil harta terakhir yang aktif tidak boleh diarsipkan. */
+    LAST_PROFILE,
 }
 
 sealed interface LedgerResult<out T> {

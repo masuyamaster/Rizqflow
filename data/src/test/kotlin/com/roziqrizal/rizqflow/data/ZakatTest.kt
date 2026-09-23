@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Room as AndroidRoom
 import androidx.test.core.app.ApplicationProvider
 import com.roziqrizal.rizqflow.data.db.RizqflowDatabase
+import com.roziqrizal.rizqflow.domain.entitlement.Plan
+import com.roziqrizal.rizqflow.domain.entitlement.PlanEntitlements
 import com.roziqrizal.rizqflow.domain.ledger.FirstAccount
 import com.roziqrizal.rizqflow.domain.ledger.LedgerResult
 import com.roziqrizal.rizqflow.domain.ledger.LedgerService
@@ -97,7 +99,7 @@ class ZakatTest {
 
         runBlocking { service.saveWealth(listOf(NewWealthItem(kind = WealthKind.CASH_SAVINGS, label = "Baru", value = rupiah(2_000_000))), rupiah(1_100_000), awal.plusDays(1)) }
 
-        val items = runBlocking { local.zakat.items(local.zakat.activeProfile()!!.id) }
+        val items = runBlocking { local.zakat.items(local.zakat.profiles().first().id) }
         assertEquals(listOf("Baru"), items.map { it.label })
     }
 
@@ -108,7 +110,7 @@ class ZakatTest {
 
         runBlocking { service.saveWealth(listOf(NewWealthItem(kind = WealthKind.CASH_SAVINGS, label = "A", value = rupiah(200_000_000))), rupiah(1_660_000), awal) }
 
-        val checks = runBlocking { local.zakat.checks(local.zakat.activeProfile()!!.id) }
+        val checks = runBlocking { local.zakat.checks(local.zakat.profiles().first().id) }
         assertEquals(1, checks.size, "hanya satu pemeriksaan untuk hari yang sama")
         assertEquals(rupiah(200_000_000), checks.single().netWealth)
     }
@@ -134,6 +136,27 @@ class ZakatTest {
         assertEquals(1, sesudah.payments.size)
         assertIs<HaulStatus.Running>((sesudah.status as GivingStatus.Zakat).haul)
         assertTrue(runBlocking { local.balance(account()) } < rupiah(200_000_000))
+    }
+
+    @Test
+    fun `beberapa profil tersimpan berurutan menurut pembuatan dan tiap profil punya hartanya sendiri`() {
+        val ledger = LedgerService(local.accounts, local.rooms, local.transactions, newId) { 1_000L }
+        val pro = ZakatService(local.rooms, local.transactions, local.zakat, ledger, newId, entitlements = PlanEntitlements(setOf(Plan.PRO)))
+        runBlocking { pro.setGivingMode(room(), ZakatHaulHijriStrategy.ID) }
+        val tabungan = listOf(NewWealthItem(kind = WealthKind.CASH_SAVINGS, label = "Tabungan", value = rupiah(200_000_000)))
+        runBlocking { pro.saveWealth(tabungan, rupiah(1_660_000), awal) }
+
+        val istri = (runBlocking { pro.addProfile("Istri") } as LedgerResult.Success).value
+        runBlocking { pro.addProfile("Usaha") }
+        runBlocking { pro.saveWealth(tabungan.map { it.copy(value = rupiah(5_000_000)) }, rupiah(1_660_000), awal, istri.id) }
+
+        assertEquals(listOf("Utama", "Istri", "Usaha"), runBlocking { local.zakat.profiles() }.map { it.name })
+        assertEquals(rupiah(5_000_000), (runBlocking { pro.overview(room(), awal, istri.id) }!!.status as GivingStatus.Zakat).netWealth)
+        assertEquals(rupiah(200_000_000), (runBlocking { pro.overview(room(), awal) }!!.status as GivingStatus.Zakat).netWealth)
+
+        runBlocking { pro.archiveProfile(istri.id) }
+        assertEquals(listOf("Utama", "Usaha"), runBlocking { local.zakat.profiles() }.map { it.name })
+        assertEquals("Istri", runBlocking { local.zakat.findProfile(istri.id) }!!.name)
     }
 
     private suspend fun LocalLedger.balance(id: com.roziqrizal.rizqflow.domain.model.AccountId) = accounts.balance(id)

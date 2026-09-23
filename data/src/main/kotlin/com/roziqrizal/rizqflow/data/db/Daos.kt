@@ -182,8 +182,12 @@ interface FavoriteDao {
 
 @Dao
 interface ZakatDao {
-    @Query("SELECT * FROM zakat_profile WHERE archived = 0 LIMIT 1")
-    suspend fun activeProfile(): ZakatProfileEntity?
+    /** Berurutan menurut pembuatan (rowid naik): profil pertama adalah "Utama". */
+    @Query("SELECT * FROM zakat_profile WHERE archived = 0 ORDER BY rowid")
+    suspend fun activeProfiles(): List<ZakatProfileEntity>
+
+    @Query("SELECT * FROM zakat_profile WHERE id = :id")
+    suspend fun profile(id: String): ZakatProfileEntity?
 
     @Upsert
     suspend fun upsertProfile(profile: ZakatProfileEntity)

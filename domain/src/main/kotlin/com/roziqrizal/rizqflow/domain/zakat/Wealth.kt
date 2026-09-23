@@ -8,7 +8,7 @@ import java.time.LocalDate
 
 /**
  * Model modul zakat (S14 sampai S17, docs/model-data.md "Modul zakat"). Satu profil gratis;
- * multi-profil menyusul di Pro. Status haul **tidak disimpan**: [HaulTracker] menghitungnya ulang
+ * profil tambahan (mis. istri, usaha) adalah Pro. Tiap profil punya harta, haul, dan riwayat zakatnya sendiri. Status haul **tidak disimpan**: [HaulTracker] menghitungnya ulang
  * dari [WealthCheck] dan [ZakatPayment], persis seperti riwayat transaksi menentukan saldo akun.
  */
 data class ZakatProfile(
@@ -61,8 +61,11 @@ data class WealthCheck(val id: String, val profileId: String, val day: LocalDate
 data class ZakatPayment(val id: String, val profileId: String, val day: LocalDate, val transactionId: TransactionId)
 
 interface ZakatRepository {
-    /** Satu-satunya profil aktif (Gratis); null bila modul belum pernah diaktifkan. */
-    suspend fun activeProfile(): ZakatProfile?
+    /** Profil yang belum diarsipkan, berurutan menurut pembuatannya; kosong bila modul belum pernah diisi. */
+    suspend fun profiles(): List<ZakatProfile>
+
+    /** Profil menurut pengenal, termasuk yang terarsip; null bila tidak ada. */
+    suspend fun findProfile(id: String): ZakatProfile?
 
     suspend fun saveProfile(profile: ZakatProfile)
 

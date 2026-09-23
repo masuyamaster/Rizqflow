@@ -2,16 +2,18 @@ package com.roziqrizal.rizqflow.domain.zakat
 
 /** Penyimpanan tiruan di memori untuk menguji [ZakatService] tanpa database; lihat InMemoryLedger di :domain ledger. */
 class InMemoryZakat : ZakatRepository {
-    var profile: ZakatProfile? = null
+    val profileRows = linkedMapOf<String, ZakatProfile>()
     val itemRows = linkedMapOf<String, WealthItem>()
     val goldPrices = mutableListOf<GoldPrice>()
     val checkRows = mutableListOf<WealthCheck>()
     val paymentRows = mutableListOf<ZakatPayment>()
 
-    override suspend fun activeProfile(): ZakatProfile? = profile
+    override suspend fun profiles(): List<ZakatProfile> = profileRows.values.filter { !it.archived }
+
+    override suspend fun findProfile(id: String): ZakatProfile? = profileRows[id]
 
     override suspend fun saveProfile(profile: ZakatProfile) {
-        this.profile = profile
+        profileRows[profile.id] = profile
     }
 
     override suspend fun items(profileId: String): List<WealthItem> = itemRows.values.filter { it.profileId == profileId }

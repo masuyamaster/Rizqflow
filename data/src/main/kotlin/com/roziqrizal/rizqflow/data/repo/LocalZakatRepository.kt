@@ -10,7 +10,9 @@ import com.roziqrizal.rizqflow.domain.zakat.ZakatProfile
 import com.roziqrizal.rizqflow.domain.zakat.ZakatRepository
 
 class LocalZakatRepository(private val db: RizqflowDatabase) : ZakatRepository {
-    override suspend fun activeProfile(): ZakatProfile? = db.zakat().activeProfile()?.toDomain()
+    override suspend fun profiles(): List<ZakatProfile> = db.zakat().activeProfiles().map { it.toDomain() }
+
+    override suspend fun findProfile(id: String): ZakatProfile? = db.zakat().profile(id)?.toDomain()
 
     override suspend fun saveProfile(profile: ZakatProfile) = db.zakat().upsertProfile(profile.toEntity())
 
