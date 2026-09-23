@@ -91,7 +91,7 @@ Entitas Transaction. Nama tabel `money_transaction` karena `TRANSACTION` kata ku
 | income_source | teks, boleh kosong | Hanya pemasukan: Gaji, Usaha, Freelance, Lainnya |
 | occurred_on | epochDay | Bulan transaksi menentukan jatah ruang bulan itu |
 | note | teks, boleh kosong | |
-| origin | teks | `MANUAL`, `QUICK`, `REPLY`, `CORRECTION`, `DRAFT`, `IMPORT` |
+| origin | teks | `MANUAL`, `QUICK`, `REPLY`, `CORRECTION`, `DRAFT`, `IMPORT`, `RECURRING` (transaksi berulang) |
 | created_at, updated_at | epochMillis | |
 
 Batasan: `TRANSFER` tidak punya ruang dan tidak dihitung sebagai pemasukan atau pengeluaran; `account_id` dan `to_account_id` harus berbeda. Koreksi saldo (S25) hanyalah `EXPENSE` kategori sistem `Tak terlacak` atau `INCOME` dengan `origin = CORRECTION`.
@@ -206,6 +206,15 @@ Enam butir ini sudah tertanam di skema versi 1 dan di lapisan data. Pemilik belu
 - Manajemen akun, kategori, favorit, dan arsip ruang (S10, S13); layanan untuk Koreksi saldo (S25) dan tunaikan zakat (S17).
 - Tabel `capture_draft` (v1.1), lewat migrasi.
 
+### Transaksi berulang (Gratis, versi 4, 2026-09-24)
+- **recurring_rule**: `id`, `kind` (`INCOME`, `EXPENSE`, `TRANSFER`), `amount` (Long), `currency`, `account_id`, `to_account_id` (hanya transfer), `room_id` dan `category_id` (hanya pengeluaran), `income_source` (hanya pemasukan), `note`, `frequency` (`DAILY`, `WEEKLY`, `MONTHLY`), `start_date` (jangkar jadwal), `next_due` (kemunculan berikutnya yang belum dicatat), `end_date` (boleh kosong), `active` (false = dijeda). Keempat kunci asing `ON DELETE RESTRICT`, seperti `money_transaction`.
+- **Jadwal dihitung dari `start_date`, bukan dari kemunculan sebelumnya**, jadi aturan bulanan yang mulai tanggal 31 jatuh di 28 (29) Februari lalu kembali ke 31 Maret, tidak tertinggal di 28 (`RecurrenceSchedule`).
+- **Tanpa penjadwal latar belakang.** `RecurringService.runDue` dipanggil saat ruang kerja dibuka dan tiap aplikasi kembali ke depan; ia mencatat semua kemunculan dari `next_due` sampai hari ini, termasuk yang terlewat selama aplikasi tidak dibuka (paling banyak 400 per aturan per panggilan; sisanya menyusul).
+- **Tidak menggandakan.** Tiap kemunculan punya pengenal transaksi tetap `rec-<id aturan>-<tanggal>`. Bila aplikasi mati setelah transaksi tersimpan tetapi sebelum `next_due` maju, panggilan berikutnya menemukan transaksinya dan hanya memajukan aturan. Transaksi yang dihapus pengguna tidak dicatat ulang karena `next_due` sudah lewat.
+- Transaksi hasilnya bertanda `origin = RECURRING` dan lewat `LedgerService` yang sama dengan Catat: pemasukan dialirkan menurut aturan alokasi saat itu, dan jatah ruang serta saldo akun ikut berubah.
+- Kemunculan yang gagal (akun, ruang, atau kategori sudah diarsipkan) menahan aturan itu di tempatnya dan dilaporkan; aturan lain jalan terus. Setelah diperbaiki atau dipulihkan, yang tertahan disusul. Menjeda lalu melanjutkan **tidak** mengejar yang terlewat selama dijeda.
+- Aturan baru tidak boleh mulai sebelum hari ini (yang sudah lewat dicatat sendiri oleh pengguna). Menghapus aturan tidak menghapus transaksi yang sudah dicatat.
+
 ## Status implementasi
 
 Skema versi 1 sudah ditulis di `data/src/main/kotlin/.../data/db/` (14 entity, 4 DAO, `RizqflowDatabase`). Kueri SQL diperiksa saat kompilasi oleh Room, dan berkas skema JSON tersimpan di `data/schemas/`. Room 2.8.5 dengan KSP 2.3.12 berjalan di Gradle 9.7 dan AGP 9.4 (built-in Kotlin).
@@ -213,3 +222,5 @@ Skema versi 1 sudah ditulis di `data/src/main/kotlin/.../data/db/` (14 entity, 4
 Skema naik ke **versi 2** (2026-09-23, `MIGRATION_1_2`: `allocation_rule.cap_amount` untuk aturan alokasi lanjutan). Migrasi pertama ini TIDAK diuji lewat `androidx.room:room-testing`'s `MigrationTestHelper`: pada kombinasi Room 2.8.5 + Robolectric di proyek ini, helper itu selalu melempar `IllegalArgumentException` ("driver dikonfigurasi membuka X tapi Y diminta") sebelum migrasi sempat berjalan, walau `openFactory` diberikan eksplisit — kemungkinan bug spesifik kombinasi versi ini. `MigrationTest.kt` (`:data`) sebagai gantinya membangun berkas skema versi 1 apa adanya dari `createSql`/`indices` di `1.json` (bukan menyalin tangan), lalu membukanya lewat jalur produksi sungguhan (`Room.databaseBuilder(...).addMigrations(...)`, sama seperti `LocalLedger.open`) — pola ini dipakai lagi untuk migrasi berikutnya kecuali bug Room-nya sudah diperbaiki.
 
 Skema naik ke **versi 3** (2026-09-23, `MIGRATION_2_3`: tabel baru `trader_profile` dan `dca_plan` untuk sistem per peran). Aditif saja. `MigrationTest.kt` kini menjalankan 1 sampai 3 sekaligus, memeriksa tabel baru kosong dan bisa dipakai lewat DAO; pernyataan SQL migrasi sama dengan `createSql` di `3.json`.
+
+Skema naik ke **versi 4** (2026-09-24, `MIGRATION_3_4`: tabel baru `recurring_rule` untuk transaksi berulang). Aditif saja. `MigrationTest.kt` kini menjalankan 1 sampai 4 sekaligus; Room sendiri memeriksa skema hasil migrasi terhadap `4.json` saat database dibuka, dan tes memastikan tabel barunya kosong dan bisa dipakai lewat DAO. Migrasi 3 ke 4 juga teruji pada database sungguhan di emulator (pasang ulang di atas data lama, tanpa crash).
