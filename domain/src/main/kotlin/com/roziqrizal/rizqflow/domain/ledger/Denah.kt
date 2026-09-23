@@ -96,6 +96,9 @@ data class SafeToSpend(
     val remaining: Money get() = if (spentToday >= dailyBudget) Money.zero() else dailyBudget - spentToday
     val isOver: Boolean get() = spentToday > dailyBudget
 
+    /** Sisa setelah pengeluaran [amount] lagi hari ini; tidak pernah negatif. */
+    fun remainingAfter(amount: Money): Money = if (remaining > amount) remaining - amount else Money.zero()
+
     companion object {
         /**
          * Null bila tidak ada ruang Mencukupi yang punya jatah bulan ini (tidak ada yang bisa dihitung).

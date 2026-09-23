@@ -26,19 +26,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.roziqrizal.rizqflow.R
 import com.roziqrizal.rizqflow.domain.ledger.CatatContext
 import com.roziqrizal.rizqflow.domain.ledger.CatatContextLoader
 import com.roziqrizal.rizqflow.domain.ledger.CatatDraft
 import com.roziqrizal.rizqflow.domain.ledger.CatatMode
+import com.roziqrizal.rizqflow.domain.ledger.DenahLoader
 import com.roziqrizal.rizqflow.domain.ledger.FavoriteRow
 import com.roziqrizal.rizqflow.domain.ledger.FavoriteUse
 import com.roziqrizal.rizqflow.domain.ledger.LedgerError
 import com.roziqrizal.rizqflow.domain.ledger.LedgerResult
 import com.roziqrizal.rizqflow.domain.ledger.QuickFavorite
 import com.roziqrizal.rizqflow.domain.ledger.AmountPad
+import com.roziqrizal.rizqflow.domain.ledger.SafeToSpend
 import com.roziqrizal.rizqflow.domain.model.AccountId
+import com.roziqrizal.rizqflow.domain.model.RoomKind
 import com.roziqrizal.rizqflow.domain.model.TransactionKind
 import com.roziqrizal.rizqflow.ui.formatRupiah
 import com.roziqrizal.rizqflow.ui.kelola.manageErrorText
@@ -66,6 +72,7 @@ fun QuickCatatSheet(
     val today = remember { LocalDate.now() }
     var context by remember { mutableStateOf<CatatContext?>(null) }
     var favorites by remember { mutableStateOf<List<FavoriteRow>>(emptyList()) }
+    var safe by remember { mutableStateOf<SafeToSpend?>(null) }
     var digits by rememberSaveable { mutableStateOf("") }
     var accountId by rememberSaveable { mutableStateOf<String?>(null) }
     var error by remember { mutableStateOf<LedgerError?>(null) }
@@ -78,6 +85,7 @@ fun QuickCatatSheet(
         val repos = workspace.repositories
         context = CatatContextLoader(repos.accounts, repos.rooms, repos.transactions).load()
         favorites = workspace.favorites.list().filter { it.usable }.take(QuickFavorite.MAX_COUNT)
+        safe = DenahLoader(repos.rooms, repos.transactions, repos.accounts).safeToSpend(today)
     }
     val ctx = context ?: return
 
@@ -104,6 +112,17 @@ fun QuickCatatSheet(
                 stringResource(R.string.quick_destination, room.name, category.name),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+
+        safe?.let { s ->
+            // Seperti di layar Catat: setelah nominal diisi di ruang Mencukupi, tampil sisa setelah pengeluaran ini.
+            val after = if (draft.amount.isPositive && room?.kind == RoomKind.MENCUKUPI) s.remainingAfter(draft.amount) else null
+            Text(
+                stringResource(if (after != null) R.string.catat_safe_after else R.string.catat_safe_now, formatRupiah(after ?: s.remaining)),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
             )
         }
 

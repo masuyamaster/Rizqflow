@@ -375,11 +375,7 @@ fun CatatFlow(
             // Sisa aman: setelah nominal diisi di ruang Mencukupi, tampil sisa setelah pengeluaran ini.
             safe?.let { s ->
                 val everyday = context.rooms.firstOrNull { it.id == draft.roomId }?.kind == RoomKind.MENCUKUPI
-                val after = if (draft.amount.isPositive && everyday) {
-                    if (s.remaining > draft.amount) s.remaining - draft.amount else Money.zero()
-                } else {
-                    null
-                }
+                val after = if (draft.amount.isPositive && everyday) s.remainingAfter(draft.amount) else null
                 Text(
                     stringResource(if (after != null) R.string.catat_safe_after else R.string.catat_safe_now, formatRupiah(after ?: s.remaining)),
                     style = MaterialTheme.typography.bodyMedium,

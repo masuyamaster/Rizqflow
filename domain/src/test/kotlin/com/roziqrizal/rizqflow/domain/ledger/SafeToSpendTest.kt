@@ -52,6 +52,15 @@ class SafeToSpendTest {
     }
 
     @Test
+    fun `sisa setelah pengeluaran baru tidak pernah negatif`() {
+        val safe = assertNotNull(compute(listOf(card("Kebutuhan", RoomKind.MENCUKUPI, 3_000_000, 1_600_000))))
+
+        assertEquals(rupiah(150_000), safe.remainingAfter(rupiah(50_000)))
+        assertEquals(Money.zero(), safe.remainingAfter(rupiah(200_000)))
+        assertEquals(Money.zero(), safe.remainingAfter(rupiah(500_000)))
+    }
+
+    @Test
     fun `hari terakhir bulan memberi seluruh sisa jatah`() {
         val safe = assertNotNull(compute(listOf(card("Kebutuhan", RoomKind.MENCUKUPI, 1_000_000, 400_000)), on = LocalDate.of(2026, 9, 30)))
 
