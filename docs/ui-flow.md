@@ -298,6 +298,7 @@ Hanya sebagian layar ada di sini; wireframe semua layar S01–S28 (termasuk kead
 - **Ketuk favorit langsung menyimpan** dengan nominal, kategori, ruang, dan akun favorit itu, lalu snackbar Urungkan. Satu ketukan.
 - Nominal diketik manual: kategori dan ruang mengikuti yang terakhir dipakai, akun mengikuti akun terakhir.
 - Hanya pengeluaran. Pemasukan tetap lewat S06 karena harus melewati S07.
+- Baris **Sisa aman hari ini** di bawah nominal, berubah menjadi **Sisa aman setelah ini** saat nominal diketik dan ruang yang dipakai bertipe Mencukupi; sama dengan S06.
 - Paling banyak 6 favorit tampil, urut dari yang paling sering dipakai. Favorit dibuat dari S06 dan dikelola di S13.
 
 ### S25 Koreksi saldo
