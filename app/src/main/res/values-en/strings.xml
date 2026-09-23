@@ -709,4 +709,44 @@
     <string name="zakat_profile_err_name">Profile name must be 1 to 30 characters.</string>
     <string name="zakat_profile_err_last">The last profile cannot be archived.</string>
     <string name="reminder_haul_profile_body">%1$s (%2$s)</string>
+
+    <!-- Recurring transactions (Stage 10) -->
+    <string name="menu_recurring">Recurring transactions</string>
+    <string name="menu_recurring_sub">Salary, rent, or installments recorded automatically</string>
+    <string name="recurring_title">Recurring transactions</string>
+    <string name="recurring_add">Add recurring transaction</string>
+    <string name="recurring_empty">No recurring transactions yet.</string>
+    <string name="recurring_empty_hint">Good for monthly salary, rent, or installments. The app records them when the date arrives, including any missed while the app was closed.</string>
+    <string name="recurring_new">New recurring transaction</string>
+    <string name="recurring_edit">Edit recurring transaction</string>
+    <string name="recurring_frequency">Repeat</string>
+    <string name="recurring_freq_daily">Daily</string>
+    <string name="recurring_freq_weekly">Weekly</string>
+    <string name="recurring_freq_monthly">Monthly</string>
+    <string name="recurring_start">Starts</string>
+    <string name="recurring_start_hint">The first one is recorded on this date. Monthly rules starting on the 31st fall on the last day of shorter months.</string>
+    <string name="recurring_end">Ends (optional)</string>
+    <string name="recurring_end_none">No end date</string>
+    <string name="recurring_end_clear">Clear</string>
+    <string name="recurring_into">Into %1$s</string>
+    <string name="recurring_row_next">Next %1$s</string>
+    <string name="recurring_row_meta">%1$s · %2$s</string>
+    <string name="recurring_status_paused">Paused</string>
+    <string name="recurring_status_finished">Finished</string>
+    <string name="recurring_status_unusable">Blocked: its account, room, or category is archived. Edit or pause this rule.</string>
+    <string name="recurring_pause">Pause</string>
+    <string name="recurring_resume">Resume</string>
+    <string name="recurring_delete">Delete rule</string>
+    <string name="recurring_delete_title">Delete recurring transaction?</string>
+    <string name="recurring_delete_body">Transactions already recorded from it stay.</string>
+    <string name="recurring_delete_confirm">Delete</string>
+    <string name="recurring_err_schedule">The start date cannot be before today, and the end date cannot be before the start date.</string>
+    <plurals name="recurring_ran">
+        <item quantity="one">%d recurring transaction recorded</item>
+        <item quantity="other">%d recurring transactions recorded</item>
+    </plurals>
+    <plurals name="recurring_blocked_notice">
+        <item quantity="one">%d recurring transaction is blocked. Check its account, room, or category.</item>
+        <item quantity="other">%d recurring transactions are blocked. Check their account, room, or category.</item>
+    </plurals>
 </resources>

@@ -18,6 +18,7 @@ import com.roziqrizal.rizqflow.ui.about.AboutScreen
 import com.roziqrizal.rizqflow.ui.reconciliation.ReconciliationScreen
 import com.roziqrizal.rizqflow.ui.backup.BackupScreen
 import com.roziqrizal.rizqflow.ui.csv.CsvScreen
+import com.roziqrizal.rizqflow.ui.recurring.RecurringScreen
 import com.roziqrizal.rizqflow.ui.reminder.ReminderSettingsScreen
 import com.roziqrizal.rizqflow.ui.security.SecuritySettingsScreen
 import com.roziqrizal.rizqflow.ui.theme.ThemePreference
@@ -75,6 +76,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import com.roziqrizal.rizqflow.notifications.ReminderScheduler
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
+import java.time.LocalDate
 
 /**
  * Menu utama beserta layar Catat di atasnya. Catat menutupi menu utama (bukan menggantinya)
@@ -117,6 +122,7 @@ fun MainHost(
     var reminderOpen by rememberSaveable { mutableStateOf(false) }
     var securityOpen by rememberSaveable { mutableStateOf(false) }
     var csvOpen by rememberSaveable { mutableStateOf(false) }
+    var recurringOpen by rememberSaveable { mutableStateOf(false) }
     var backupOpen by rememberSaveable { mutableStateOf(false) }
     var tampilanOpen by rememberSaveable { mutableStateOf(false) }
     var paywallOpen by rememberSaveable { mutableStateOf(false) }
@@ -171,6 +177,26 @@ fun MainHost(
                 snackbar.currentSnackbarData?.dismiss()
                 return snackbar.showSnackbar(message, actionLabel = actionLabel, duration = SnackbarDuration.Long) == SnackbarResult.ActionPerformed
             }
+        }
+    }
+
+    // Transaksi berulang (Tahap 10): catat semua kemunculan yang sudah tiba, termasuk yang terlewat selama
+    // aplikasi tidak dibuka. Berjalan saat ruang kerja dibuka dan tiap aplikasi kembali ke depan (harinya
+    // bisa sudah berganti), tidak di mode demo. Aman diulang: tiap kemunculan punya pengenal tetap.
+    // Yang tertahan (akun, ruang, atau kategorinya diarsipkan) diberitahukan sekali per pembukaan.
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    LaunchedEffect(workspace, demo) {
+        if (demo) return@LaunchedEffect
+        var blockedNoticed = false
+        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            val run = workspace.recurring.runDue(LocalDate.now())
+            if (run.recorded > 0) {
+                version++
+                scope.launch { notifier.show(context.resources.getQuantityString(R.plurals.recurring_ran, run.recorded, run.recorded)) }
+            } else if (run.blocked.isNotEmpty() && !blockedNoticed) {
+                scope.launch { notifier.show(context.resources.getQuantityString(R.plurals.recurring_blocked_notice, run.blocked.size, run.blocked.size)) }
+            }
+            if (run.blocked.isNotEmpty()) blockedNoticed = true
         }
     }
 
@@ -314,6 +340,7 @@ fun MainHost(
         onOpenCsv = { csvOpen = true },
         onOpenBackup = { backupOpen = true },
         onOpenTampilan = { tampilanOpen = true },
+        onOpenRecurring = { recurringOpen = true },
         onOpenPaywall = { openPaywall() },
         proOwned = Plan.PRO in ownedPlans,
     )
@@ -325,6 +352,11 @@ fun MainHost(
     if (securityOpen) {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             SecuritySettingsScreen(service = appLock, onClose = { securityOpen = false })
+        }
+    }
+    if (recurringOpen) {
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            RecurringScreen(workspace = workspace, onClose = { recurringOpen = false }, onChanged = { version++ })
         }
     }
     if (csvOpen) {

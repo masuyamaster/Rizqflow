@@ -712,4 +712,42 @@
     <string name="zakat_profile_err_name">Nama profil 1 sampai 30 karakter.</string>
     <string name="zakat_profile_err_last">Profil terakhir tidak bisa diarsipkan.</string>
     <string name="reminder_haul_profile_body">%1$s (%2$s)</string>
+
+    <!-- Transaksi berulang (Tahap 10) -->
+    <string name="menu_recurring">Transaksi berulang</string>
+    <string name="menu_recurring_sub">Gaji, sewa, atau cicilan yang dicatat otomatis</string>
+    <string name="recurring_title">Transaksi berulang</string>
+    <string name="recurring_add">Tambah transaksi berulang</string>
+    <string name="recurring_empty">Belum ada transaksi berulang.</string>
+    <string name="recurring_empty_hint">Cocok untuk gaji bulanan, sewa, atau cicilan. Aplikasi mencatatnya sendiri saat tanggalnya tiba, termasuk yang terlewat selama aplikasi tidak dibuka.</string>
+    <string name="recurring_new">Transaksi berulang baru</string>
+    <string name="recurring_edit">Ubah transaksi berulang</string>
+    <string name="recurring_frequency">Ulangi</string>
+    <string name="recurring_freq_daily">Harian</string>
+    <string name="recurring_freq_weekly">Mingguan</string>
+    <string name="recurring_freq_monthly">Bulanan</string>
+    <string name="recurring_start">Mulai</string>
+    <string name="recurring_start_hint">Kemunculan pertama dicatat pada tanggal ini. Aturan bulanan yang mulai tanggal 31 jatuh di hari terakhir bulan yang lebih pendek.</string>
+    <string name="recurring_end">Berakhir (opsional)</string>
+    <string name="recurring_end_none">Tanpa akhir</string>
+    <string name="recurring_end_clear">Hapus</string>
+    <string name="recurring_into">Masuk ke %1$s</string>
+    <string name="recurring_row_next">Berikutnya %1$s</string>
+    <string name="recurring_row_meta">%1$s · %2$s</string>
+    <string name="recurring_status_paused">Dijeda</string>
+    <string name="recurring_status_finished">Selesai</string>
+    <string name="recurring_status_unusable">Tertahan: akun, ruang, atau kategorinya diarsipkan. Ubah atau jeda aturan ini.</string>
+    <string name="recurring_pause">Jeda</string>
+    <string name="recurring_resume">Lanjutkan</string>
+    <string name="recurring_delete">Hapus aturan</string>
+    <string name="recurring_delete_title">Hapus transaksi berulang?</string>
+    <string name="recurring_delete_body">Transaksi yang sudah tercatat darinya tetap ada.</string>
+    <string name="recurring_delete_confirm">Hapus</string>
+    <string name="recurring_err_schedule">Tanggal mulai tidak boleh sebelum hari ini, dan tanggal akhir tidak boleh sebelum tanggal mulai.</string>
+    <plurals name="recurring_ran">
+        <item quantity="other">%d transaksi berulang dicatat</item>
+    </plurals>
+    <plurals name="recurring_blocked_notice">
+        <item quantity="other">%d transaksi berulang tertahan. Periksa akun, ruang, atau kategorinya.</item>
+    </plurals>
 </resources>
