@@ -24,6 +24,13 @@ android {
     testOptions {
         unitTests.isIncludeAndroidResources = true
     }
+
+    // Berkas skema JSON dibaca langsung (context.assets) oleh tes migrasi untuk membangun versi lama.
+    sourceSets {
+        getByName("test") {
+            assets.srcDir("$projectDir/schemas")
+        }
+    }
 }
 
 // Berkas skema JSON masuk git supaya setiap versi skema bisa diuji migrasinya.

@@ -1,8 +1,11 @@
 package com.roziqrizal.rizqflow.domain.ledger
 
+import com.roziqrizal.rizqflow.domain.allocation.AllocationCap
+import com.roziqrizal.rizqflow.domain.allocation.AllocationMode
 import com.roziqrizal.rizqflow.domain.allocation.AllocationRule
 import com.roziqrizal.rizqflow.domain.allocation.BasisPoints
 import com.roziqrizal.rizqflow.domain.entitlement.Entitlements
+import com.roziqrizal.rizqflow.domain.entitlement.Feature
 import com.roziqrizal.rizqflow.domain.model.CategoryId
 import com.roziqrizal.rizqflow.domain.model.RoomId
 import com.roziqrizal.rizqflow.domain.model.RoomKind
@@ -32,6 +35,9 @@ data class RoomOverview(val active: List<RoomEntry>, val archived: List<Room>, v
  * Aturan yang disimpan harus **tepat 100%** (prototipe F4: total lain tidak bisa disimpan).
  * Menambah ruang dibatasi [Entitlements]: ruang ke-6 ditolak untuk paket gratis, dan layar
  * mengubahnya menjadi paywall S21.
+ *
+ * Aturan lanjutan (Pro, docs/monetisasi.md): mode terpisah ([AllocationMode.WATERFALL]) yang
+ * mengabaikan syarat 100% karena bukan persentase, lihat [saveAdvancedRules].
  */
 class RuleService(
     private val rooms: RoomRepository,
@@ -140,6 +146,34 @@ class RuleService(
     /** Mengembalikan aturan ke keadaan sebelumnya tanpa memeriksa total (dasar Urungkan setelah menyimpan aturan). */
     suspend fun restoreRules(rules: List<AllocationRule>) {
         rooms.replaceRules(rules)
+    }
+
+    /** Paket sekarang membuka aturan alokasi lanjutan (S12). */
+    suspend fun advancedRulesEntitled(): Boolean = entitlements.isEnabled(Feature.ADVANCED_ALLOCATION_RULES)
+
+    /**
+     * Menyalakan mode lanjutan (Pro) dan menyimpan batas atasnya sekaligus (S12). [caps] harus
+     * mencakup persis ruang aktif, tanpa ganda; batas atas tidak boleh negatif. Aturan persentase
+     * ([rules]) tidak ikut berubah, jadi mematikan mode lanjutan nanti kembali memakainya apa adanya.
+     */
+    suspend fun saveAdvancedRules(caps: List<AllocationCap>): LedgerResult<Unit> {
+        if (!entitlements.isEnabled(Feature.ADVANCED_ALLOCATION_RULES)) return failure(LedgerError.FEATURE_LOCKED)
+        val activeRooms = rooms.activeRooms()
+        val active = activeRooms.map { it.id }.toSet()
+        if (caps.map { it.roomId }.toSet().size != caps.size || caps.any { it.roomId !in active } || caps.size != active.size) {
+            return failure(LedgerError.RULES_INVALID)
+        }
+        if (caps.any { it.capAmount?.isNegative == true }) return failure(LedgerError.AMOUNT_NOT_POSITIVE)
+
+        val priority = activeRooms.withIndex().associate { (index, room) -> room.id to index }
+        rooms.setAllocationMode(AllocationMode.WATERFALL)
+        rooms.replaceCaps(caps.sortedBy { priority.getValue(it.roomId) })
+        return LedgerResult.Success(Unit)
+    }
+
+    /** Kembali ke mode persentase dasar. Selalu diizinkan: turun paket tidak boleh mengunci pengguna keluar dari datanya. */
+    suspend fun disableAdvancedRules() {
+        rooms.setAllocationMode(AllocationMode.PERCENTAGE)
     }
 
     /** Menambah ruang peran baru dengan persentase 0% dan kategori awal `Lain-lain` serta kategori sistem `Tak terlacak`. */

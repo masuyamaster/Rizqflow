@@ -6,6 +6,9 @@ import androidx.room.RoomDatabase
 /**
  * Database lokal. Setiap perubahan skema wajib menaikkan [version], menambah migrasi, dan
  * punya tes migrasi; `fallbackToDestructiveMigration` dilarang (docs/model-data.md).
+ *
+ * Versi 2 (2026-09-23): menambah `allocation_rule.cap_amount` untuk aturan alokasi lanjutan
+ * (Pro); lihat [MIGRATION_1_2] di Migrations.kt.
  */
 @Database(
     entities = [
@@ -24,7 +27,7 @@ import androidx.room.RoomDatabase
         WealthCheckEntity::class,
         ZakatPaymentEntity::class,
     ],
-    version = 1,
+    version = 2,
     exportSchema = true,
 )
 abstract class RizqflowDatabase : RoomDatabase() {

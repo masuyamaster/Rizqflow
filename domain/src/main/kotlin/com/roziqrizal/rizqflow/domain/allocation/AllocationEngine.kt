@@ -55,4 +55,45 @@ object AllocationEngine {
             unallocated = Money(amount.minor - target, amount.currency),
         )
     }
+
+    /**
+     * Rule engine alokasi lanjutan (Pro, docs/monetisasi.md): ruang diisi berurutan menurut
+     * prioritas ([caps]), masing-masing sampai batas atasnya (atau seluruh sisa bila tak
+     * terbatas), dan kelebihannya mengalir ke ruang berikutnya. Aritmetika bulat eksak, tidak ada
+     * pembulatan sama sekali karena setiap ruang hanya mengambil `min(sisa, batas)`.
+     */
+    fun allocateWaterfall(amount: Money, caps: List<AllocationCap>): AllocationResult {
+        require(!amount.isNegative) { "Nominal yang dialirkan tidak boleh negatif: ${amount.minor}" }
+        require(caps.map { it.roomId }.toSet().size == caps.size) { "Satu ruang muncul lebih dari sekali di batas atas" }
+        require(caps.all { it.capAmount == null || !it.capAmount.isNegative }) { "Batas atas tidak boleh negatif" }
+
+        var remaining = amount
+        val shares = caps.map { cap ->
+            val take = when (val limit = cap.capAmount) {
+                null -> remaining
+                else -> if (remaining < limit) remaining else limit
+            }
+            remaining -= take
+            AllocationShare(cap.roomId, take)
+        }
+        return AllocationResult(shares, unallocated = remaining)
+    }
+
+    /**
+     * Persentase yang, dipakai lagi lewat [allocate] pada nominal [amount] yang sama, menghasilkan
+     * kembali [shares]. Dipakai untuk menyimpan potret aturan lanjutan sebagai persentase biasa
+     * (`AllocationEntry.share`), supaya perubahan nominal nanti (S09) tetap bisa dihitung ulang
+     * lewat mekanisme potret yang sudah ada, tanpa kolom snapshot baru. Hasilnya sedikit membulat
+     * ke bawah (floor); ini disengaja karena hanya dipakai sebagai dasar perkiraan bila nominal
+     * transaksi diubah nanti, bukan untuk menghitung ulang alokasi transaksi yang sedang dicatat.
+     */
+    fun impliedShares(amount: Money, shares: List<AllocationShare>): List<AllocationRule> {
+        if (amount.minor <= 0L) return shares.map { AllocationRule(it.roomId, BasisPoints(0)) }
+        val full = BigInteger.valueOf(BasisPoints.FULL.toLong())
+        val total = BigInteger.valueOf(amount.minor)
+        return shares.map { share ->
+            val bp = (BigInteger.valueOf(share.amount.minor) * full / total).toInt().coerceIn(0, BasisPoints.FULL)
+            AllocationRule(share.roomId, BasisPoints(bp))
+        }
+    }
 }

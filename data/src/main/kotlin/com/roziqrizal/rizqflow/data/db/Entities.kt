@@ -53,6 +53,12 @@ data class AllocationRuleEntity(
     @PrimaryKey @ColumnInfo(name = "room_id") val roomId: String,
     /** Basis point, 0 sampai 10.000. */
     @ColumnInfo(name = "share_bp") val shareBp: Int,
+    /**
+     * Batas atas rupiah untuk mode lanjutan (Pro, versi 2); null = tak terbatas. Independen dari
+     * [shareBp] — keduanya bisa terisi sekaligus, tapi hanya salah satu yang dipakai menurut mode
+     * aktif (`app_setting`, kunci `allocation_mode`).
+     */
+    @ColumnInfo(name = "cap_amount", defaultValue = "NULL") val capAmount: Long? = null,
 )
 
 @Entity(

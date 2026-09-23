@@ -1,5 +1,7 @@
 package com.roziqrizal.rizqflow.domain.ledger
 
+import com.roziqrizal.rizqflow.domain.allocation.AllocationCap
+import com.roziqrizal.rizqflow.domain.allocation.AllocationMode
 import com.roziqrizal.rizqflow.domain.allocation.AllocationRule
 import com.roziqrizal.rizqflow.domain.model.AccountId
 import com.roziqrizal.rizqflow.domain.model.CategoryId
@@ -82,6 +84,18 @@ interface RoomRepository {
 
     /** Mengganti seluruh aturan alokasi (atomik). */
     suspend fun replaceRules(rules: List<AllocationRule>)
+
+    /** Mode aturan alokasi sekarang: PERCENTAGE (dasar, gratis) atau WATERFALL (lanjutan, Pro). */
+    suspend fun allocationMode(): AllocationMode
+
+    /** Mengganti mode. Tidak memeriksa entitlement; pemanggil ([RuleService]) yang menjaganya. */
+    suspend fun setAllocationMode(mode: AllocationMode)
+
+    /** Batas atas per ruang aktif untuk mode WATERFALL, berurutan menurut prioritas ruang. */
+    suspend fun caps(): List<AllocationCap>
+
+    /** Mengganti seluruh batas atas (atomik). Persentase ([rules]) tidak ikut berubah. */
+    suspend fun replaceCaps(caps: List<AllocationCap>)
 }
 
 /** Jatah dan terpakai per ruang untuk satu rentang hari. Ruang tanpa baris dianggap nol. */

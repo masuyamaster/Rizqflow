@@ -54,7 +54,7 @@ Saldo menurut catatan = `opening_balance` + pemasukan ke akun − pengeluaran da
 | name | teks | |
 | kind | teks | `MENUNAIKAN`, `MENUMBUHKAN`, `MENCUKUPI` (menentukan arti "terpenuhi") |
 | icon_key, color_slot | teks, Int | Slot 1 sampai 3 tervalidasi; ruang ke-4 dan seterusnya belum |
-| sort_order | Int | **Juga prioritas**: pemutus seri pembulatan alokasi |
+| sort_order | Int | **Juga prioritas**: pemutus seri pembulatan alokasi (mode persentase) dan urutan pengisian (mode lanjutan/waterfall, Pro) |
 | archived | boolean | Tidak tampil di Denah dan tidak menerima alokasi baru; riwayat tetap |
 | giving_mode | teks, boleh kosong | Hanya ruang Memberi: `zakat-haul-hijri` atau `percentage` |
 
@@ -62,9 +62,10 @@ Saldo menurut catatan = `opening_balance` + pemasukan ke akun − pengeluaran da
 | Kolom | Tipe | Catatan |
 |---|---|---|
 | room_id | FK, kunci utama | Satu aturan aktif per ruang |
-| share_bp | Int | Basis point, 0 sampai 10.000; total semua ruang aktif tepat 10.000 (dijaga UI, S12) |
+| share_bp | Int | Basis point, 0 sampai 10.000; total semua ruang aktif tepat 10.000 (dijaga UI, S12). Dipakai bila mode PERCENTAGE |
+| cap_amount | Long, boleh kosong (versi 2, migrasi `MIGRATION_1_2`) | Batas atas rupiah ruang untuk mode WATERFALL (Pro); kosong = tak terbatas. Independen dari `share_bp` — keduanya bisa terisi sekaligus, hanya salah satu dipakai menurut mode aktif |
 
-Aturan lanjutan Pro (prioritas, batas atas, sisa mengalir) nanti menambah kolom atau tabel lewat migrasi; jangan dirancang sekarang.
+**Mode aturan alokasi** (2026-09-23, docs/monetisasi.md "Aturan alokasi lanjutan"): disimpan sebagai `app_setting` kunci `allocation_mode` (`PERCENTAGE` default, atau `WATERFALL`), bukan kolom baru — cukup pakai tabel kunci/nilai generik yang sudah ada. Mode WATERFALL: ruang diisi berurutan menurut `sort_order` sampai `cap_amount`-nya, kelebihan mengalir ke ruang berikutnya (`AllocationEngine.allocateWaterfall`, murni aritmetika bulat, tanpa pembulatan). Potretnya (`allocation_entry`) tetap disimpan sebagai persentase seperti biasa lewat `AllocationEngine.impliedShares` — tidak ada kolom snapshot baru, dan perubahan nominal transaksi (S09) tetap dihitung ulang lewat mekanisme persentase yang sudah ada, bukan menjalankan ulang waterfall-nya.
 
 ### category (pos)
 | Kolom | Tipe | Catatan |
@@ -196,9 +197,10 @@ Enam butir ini sudah tertanam di skema versi 1 dan di lapisan data. Pemilik belu
 ## Yang belum ditulis
 
 - Manajemen akun, kategori, favorit, dan arsip ruang (S10, S13); layanan untuk Koreksi saldo (S25) dan tunaikan zakat (S17).
-- Tes migrasi (`MigrationTestHelper`); migrasi pertama baru ada saat skema naik ke versi 2.
-- Tabel `capture_draft` (v1.1) dan aturan alokasi lanjutan (Pro), lewat migrasi.
+- Tabel `capture_draft` (v1.1), lewat migrasi.
 
 ## Status implementasi
 
 Skema versi 1 sudah ditulis di `data/src/main/kotlin/.../data/db/` (14 entity, 4 DAO, `RizqflowDatabase`). Kueri SQL diperiksa saat kompilasi oleh Room, dan berkas skema JSON tersimpan di `data/schemas/`. Room 2.8.5 dengan KSP 2.3.12 berjalan di Gradle 9.7 dan AGP 9.4 (built-in Kotlin).
+
+Skema naik ke **versi 2** (2026-09-23, `MIGRATION_1_2`: `allocation_rule.cap_amount` untuk aturan alokasi lanjutan). Migrasi pertama ini TIDAK diuji lewat `androidx.room:room-testing`'s `MigrationTestHelper`: pada kombinasi Room 2.8.5 + Robolectric di proyek ini, helper itu selalu melempar `IllegalArgumentException` ("driver dikonfigurasi membuka X tapi Y diminta") sebelum migrasi sempat berjalan, walau `openFactory` diberikan eksplisit — kemungkinan bug spesifik kombinasi versi ini. `MigrationTest.kt` (`:data`) sebagai gantinya membangun berkas skema versi 1 apa adanya dari `createSql`/`indices` di `1.json` (bukan menyalin tangan), lalu membukanya lewat jalur produksi sungguhan (`Room.databaseBuilder(...).addMigrations(...)`, sama seperti `LocalLedger.open`) — pola ini dipakai lagi untuk migrasi berikutnya kecuali bug Room-nya sudah diperbaiki.

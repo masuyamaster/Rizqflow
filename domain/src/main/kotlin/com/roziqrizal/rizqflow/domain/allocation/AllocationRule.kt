@@ -30,3 +30,18 @@ data class AllocationRule(val roomId: RoomId, val share: BasisPoints)
 
 /** Bagian rezeki yang jatuh ke satu ruang. */
 data class AllocationShare(val roomId: RoomId, val amount: Money)
+
+/**
+ * Mode aturan alokasi, berlaku untuk seluruh ruleset sekaligus (docs/monetisasi.md, "Aturan alokasi
+ * lanjutan"). [PERCENTAGE] adalah dasar (gratis); [WATERFALL] adalah lanjutan (Pro).
+ */
+enum class AllocationMode { PERCENTAGE, WATERFALL }
+
+/**
+ * Satu baris aturan lanjutan (Pro): ruang [roomId] diisi berurutan menurut prioritas sampai
+ * [capAmount], lalu sisanya mengalir ke ruang berikutnya di urutan itu. [capAmount] null berarti
+ * tak terbatas: ruang ini menampung seluruh sisa yang tersisa (cocok untuk ruang prioritas
+ * terakhir, supaya sisa tidak selalu jatuh ke "belum dialirkan"). Urutan daftar adalah urutan
+ * prioritas ruang, sama seperti [AllocationRule] (lihat [AllocationEngine.allocateWaterfall]).
+ */
+data class AllocationCap(val roomId: RoomId, val capAmount: Money?)

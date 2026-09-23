@@ -615,6 +615,11 @@
     <string name="rules_advanced">Advanced rules</string>
     <string name="rules_advanced_sub">Priority, upper limit, remainder flow · Pro</string>
     <string name="rules_pro_note">Advanced rules are in Rizqflow Pro.</string>
+    <string name="rules_mode_percentage">Basic percentage</string>
+    <string name="rules_mode_waterfall">Advanced (Pro)</string>
+    <string name="rules_cap_hint">Rooms fill in priority order (same order as the Rooms tab) up to their cap; the leftover flows to the next room. Leave blank for unlimited.</string>
+    <string name="rules_cap_unlimited">Unlimited</string>
+    <string name="rules_cap_sample">Example %1$s</string>
     <string name="rules_save">Save rules</string>
     <string name="rules_saved">Rules saved. Applies to the next income.</string>
     <string name="rules_empty">No rooms to set yet. Use the Three rights pattern first, or add a room in the Rooms tab.</string>

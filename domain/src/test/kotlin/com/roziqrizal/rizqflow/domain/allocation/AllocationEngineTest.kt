@@ -215,4 +215,81 @@ class AllocationEngineTest {
             assertTrue(!hasil.unallocated.isNegative)
         }
     }
+
+    // ------------------------------------------------------------------ aturan lanjutan (waterfall)
+
+    private fun cap(room: String, amount: Long?) = AllocationCap(RoomId(room), amount?.let(Money::rupiah))
+
+    @Test
+    fun `waterfall mengisi berurutan sampai batas atas, lalu ruang berikutnya`() {
+        val hasil = AllocationEngine.allocateWaterfall(
+            Money.rupiah(1_000_000),
+            listOf(cap("a", 300_000), cap("b", 500_000), cap("c", null)),
+        )
+
+        assertEquals(listOf(300_000L, 500_000L, 200_000L), hasil.amounts())
+        assertEquals(Money.zero(), hasil.unallocated)
+    }
+
+    @Test
+    fun `waterfall berhenti saat nominal habis, ruang berikutnya dapat nol`() {
+        val hasil = AllocationEngine.allocateWaterfall(
+            Money.rupiah(300_000),
+            listOf(cap("a", 300_000), cap("b", 500_000), cap("c", null)),
+        )
+
+        assertEquals(listOf(300_000L, 0L, 0L), hasil.amounts())
+        assertEquals(Money.zero(), hasil.unallocated)
+    }
+
+    @Test
+    fun `waterfall tanpa ruang tak terbatas menyisakan belum dialirkan`() {
+        val hasil = AllocationEngine.allocateWaterfall(
+            Money.rupiah(1_000_000),
+            listOf(cap("a", 300_000), cap("b", 500_000)),
+        )
+
+        assertEquals(listOf(300_000L, 500_000L), hasil.amounts())
+        assertEquals(Money.rupiah(200_000), hasil.unallocated)
+    }
+
+    @Test
+    fun `waterfall tanpa batas sama sekali ruang pertama menampung semua`() {
+        val hasil = AllocationEngine.allocateWaterfall(Money.rupiah(750_000), listOf(cap("a", null), cap("b", null)))
+
+        assertEquals(listOf(750_000L, 0L), hasil.amounts())
+        assertEquals(Money.zero(), hasil.unallocated)
+    }
+
+    @Test
+    fun `waterfall ruang ganda ditolak`() {
+        assertFailsWith<IllegalArgumentException> {
+            AllocationEngine.allocateWaterfall(Money.rupiah(100), listOf(cap("a", 50), cap("a", 50)))
+        }
+    }
+
+    @Test
+    fun `waterfall batas atas negatif ditolak`() {
+        assertFailsWith<IllegalArgumentException> {
+            AllocationEngine.allocateWaterfall(Money.rupiah(100), listOf(cap("a", -1)))
+        }
+    }
+
+    @Test
+    fun `impliedShares menghasilkan kembali bagian yang sama lewat allocate`() {
+        val amount = Money.rupiah(1_000_000)
+        val waterfall = AllocationEngine.allocateWaterfall(amount, listOf(cap("a", 300_000), cap("b", 500_000), cap("c", null)))
+
+        val implied = AllocationEngine.impliedShares(amount, waterfall.shares)
+        val reapplied = AllocationEngine.allocate(amount, implied)
+
+        assertEquals(waterfall.amounts(), reapplied.amounts())
+    }
+
+    @Test
+    fun `impliedShares pada nominal nol tidak meledak`() {
+        val implied = AllocationEngine.impliedShares(Money.zero(), listOf(AllocationShare(RoomId("a"), Money.zero())))
+
+        assertEquals(listOf(BasisPoints(0)), implied.map { it.share })
+    }
 }

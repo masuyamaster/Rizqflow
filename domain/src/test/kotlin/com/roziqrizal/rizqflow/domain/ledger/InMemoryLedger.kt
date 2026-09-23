@@ -1,5 +1,7 @@
 package com.roziqrizal.rizqflow.domain.ledger
 
+import com.roziqrizal.rizqflow.domain.allocation.AllocationCap
+import com.roziqrizal.rizqflow.domain.allocation.AllocationMode
 import com.roziqrizal.rizqflow.domain.allocation.AllocationRule
 import com.roziqrizal.rizqflow.domain.model.AccountId
 import com.roziqrizal.rizqflow.domain.model.CategoryId
@@ -20,6 +22,8 @@ class InMemoryLedger : WorkspaceRepository, AccountRepository, RoomRepository, T
     val roomRows = linkedMapOf<RoomId, Room>()
     val categoryRows = linkedMapOf<CategoryId, Category>()
     var ruleRows: List<AllocationRule> = emptyList()
+    var modeRow: AllocationMode = AllocationMode.PERCENTAGE
+    var capRows: List<AllocationCap> = emptyList()
     val transactionRows = linkedMapOf<TransactionId, MoneyTransaction>()
     val entryRows = linkedMapOf<String, AllocationEntry>()
     val favoriteRows = linkedMapOf<String, QuickFavorite>()
@@ -135,6 +139,24 @@ class InMemoryLedger : WorkspaceRepository, AccountRepository, RoomRepository, T
         maybeFail()
         rooms.forEach { roomRows[it.id] = it }
         if (rules != null) replaceRules(rules)
+    }
+
+    override suspend fun allocationMode(): AllocationMode = modeRow
+
+    override suspend fun setAllocationMode(mode: AllocationMode) {
+        modeRow = mode
+    }
+
+    override suspend fun caps(): List<AllocationCap> {
+        val order = activeRooms().map { it.id }
+        val byRoom = capRows.associate { it.roomId to it.capAmount }
+        return order.map { AllocationCap(it, byRoom[it]) }
+    }
+
+    override suspend fun replaceCaps(caps: List<AllocationCap>) {
+        maybeFail()
+        val activeIds = roomRows.values.filter { !it.archived }.map { it.id }.toSet()
+        capRows = capRows.filter { it.roomId !in activeIds } + caps
     }
 
     // ---- TransactionRepository

@@ -1,5 +1,7 @@
 package com.roziqrizal.rizqflow.domain.ledger
 
+import com.roziqrizal.rizqflow.domain.allocation.AllocationCap
+import com.roziqrizal.rizqflow.domain.allocation.AllocationMode
 import com.roziqrizal.rizqflow.domain.allocation.AllocationRule
 import com.roziqrizal.rizqflow.domain.allocation.BasisPoints
 import com.roziqrizal.rizqflow.domain.auth.runSuspend
@@ -440,5 +442,62 @@ class LedgerServiceTest {
         assertFailsWith<IllegalArgumentException> { Room(RoomId("r"), "ok", com.roziqrizal.rizqflow.domain.model.RoomKind.MENCUKUPI, "home", 0, 0) }
         assertFailsWith<IllegalArgumentException> { Category(CategoryId("c"), RoomId("r"), "") }
         assertFailsWith<IllegalArgumentException> { Category(CategoryId("c"), RoomId("r"), "ok", weight = 0) }
+    }
+
+    // ------------------------------------------------------------------ aturan lanjutan (waterfall, Pro)
+
+    private fun cap(f: LedgerFixture, room: String, amount: Long?) = AllocationCap(f.room(room).id, amount?.let(Money::rupiah))
+
+    private fun waterfall(f: LedgerFixture, vararg caps: Pair<String, Long?>) {
+        f.store.modeRow = AllocationMode.WATERFALL
+        f.store.capRows = caps.map { (room, amount) -> cap(f, room, amount) }
+    }
+
+    @Test
+    fun `pratinjau memakai waterfall saat mode lanjutan aktif`() {
+        val f = LedgerFixture().standard()
+        waterfall(f, "Memberi" to 100_000L, "Diri" to 500_000L, "Keluarga" to null)
+
+        val preview = runSuspend { f.ledger.previewIncome(rupiah(1_000_000)) }
+
+        assertEquals(listOf(100_000L, 500_000L, 400_000L), preview.shares.map { it.amount.minor })
+        assertEquals(rupiah(0), preview.unallocated)
+    }
+
+    @Test
+    fun `pemasukan mode lanjutan tersimpan sesuai batas atas berurutan prioritas`() {
+        val f = LedgerFixture().standard()
+        waterfall(f, "Memberi" to 200_000L, "Diri" to 300_000L, "Keluarga" to null)
+
+        val receipt = f.income(1_000_000).value()
+
+        val entries = entriesOf(f, receipt.transaction.id)
+        assertEquals(listOf("Memberi", "Diri", "Keluarga"), entries.map { f.store.roomRows.getValue(it.roomId).name })
+        assertEquals(listOf(200_000L, 300_000L, 500_000L), entries.map { it.amount.minor })
+    }
+
+    @Test
+    fun `mengubah nominal pemasukan mode lanjutan menghitung ulang lewat persentase potret, bukan waterfall ulang`() {
+        val f = LedgerFixture().standard()
+        waterfall(f, "Memberi" to 200_000L, "Diri" to 300_000L, "Keluarga" to null)
+        val receipt = f.income(1_000_000).value()
+
+        // Andai waterfall dijalankan ulang pada Rp 100.000, Memberi akan tetap dapat Rp 100.000 (masih di bawah
+        // batasnya). Potret persentase (20%/30%/50%) membuktikan yang sebenarnya terjadi: skala proporsional.
+        val updated = runSuspend { f.ledger.editIncomeAmount(receipt.transaction.id, rupiah(100_000)) }.value()
+
+        assertEquals(listOf(20_000L, 30_000L, 50_000L), updated.allocation.shares.map { it.amount.minor })
+    }
+
+    @Test
+    fun `pemasukan tanpa Ubah sekali ini mengikuti mode persentase walau ada batas atas tersimpan`() {
+        val f = LedgerFixture().standard()
+        waterfall(f, "Memberi" to 200_000L, "Diri" to 300_000L, "Keluarga" to null)
+        f.store.modeRow = AllocationMode.PERCENTAGE
+
+        val receipt = f.income(1_000_000).value()
+
+        // Aturan Tiga hak standar: 10/30/60.
+        assertEquals(listOf(100_000L, 300_000L, 600_000L), entriesOf(f, receipt.transaction.id).map { it.amount.minor })
     }
 }

@@ -451,6 +451,7 @@ fun MainHost(
                     onClose = { aturan = false },
                     onSaved = ::announceRules,
                     onTemplateApplied = { version++ },
+                    onOpenPaywall = { openPaywall(Feature.ADVANCED_ALLOCATION_RULES) },
                 )
                 // Layar ini menutupi Scaffold beserta snackbar-nya, jadi ia membawa SnackbarHost sendiri.
                 SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 80.dp))

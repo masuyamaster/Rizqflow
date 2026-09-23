@@ -618,6 +618,11 @@
     <string name="rules_advanced">Aturan lanjutan</string>
     <string name="rules_advanced_sub">Prioritas, batas atas, sisa mengalir · Pro</string>
     <string name="rules_pro_note">Aturan lanjutan ada di Rizqflow Pro.</string>
+    <string name="rules_mode_percentage">Persentase dasar</string>
+    <string name="rules_mode_waterfall">Lanjutan (Pro)</string>
+    <string name="rules_cap_hint">Ruang diisi berurutan sesuai prioritas (urutan di tab Ruang) sampai batas atasnya; kelebihannya mengalir ke ruang berikutnya. Kosongkan untuk tak terbatas.</string>
+    <string name="rules_cap_unlimited">Tak terbatas</string>
+    <string name="rules_cap_sample">Contoh %1$s</string>
     <string name="rules_save">Simpan aturan</string>
     <string name="rules_saved">Aturan disimpan. Berlaku untuk pemasukan berikutnya.</string>
     <string name="rules_empty">Belum ada ruang yang bisa diatur. Pakai pola Tiga hak dulu, atau tambah ruang di tab Ruang.</string>

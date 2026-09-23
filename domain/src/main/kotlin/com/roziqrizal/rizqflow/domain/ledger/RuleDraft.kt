@@ -1,5 +1,6 @@
 package com.roziqrizal.rizqflow.domain.ledger
 
+import com.roziqrizal.rizqflow.domain.allocation.AllocationCap
 import com.roziqrizal.rizqflow.domain.allocation.AllocationEngine
 import com.roziqrizal.rizqflow.domain.allocation.AllocationResult
 import com.roziqrizal.rizqflow.domain.allocation.AllocationRule
@@ -46,6 +47,37 @@ data class RuleDraft(val roomIds: List<RoomId>, val shares: List<Int>) {
         fun from(rooms: List<Room>, rules: List<AllocationRule>): RuleDraft {
             val byRoom = rules.associate { it.roomId to it.share.value }
             return RuleDraft(rooms.map { it.id }, rooms.map { byRoom[it.id] ?: 0 })
+        }
+    }
+}
+
+/**
+ * Isian layar Aturan lanjutan (S12, Pro) yang belum disimpan: batas atas rupiah tiap ruang aktif,
+ * berurutan menurut prioritas. Null berarti tak terbatas (ruang itu menampung seluruh sisa).
+ * Berbeda dengan [RuleDraft], tidak ada syarat total 100% karena ini bukan persentase.
+ */
+data class CapDraft(val roomIds: List<RoomId>, val caps: List<Money?>) {
+    init {
+        require(roomIds.size == caps.size) { "Jumlah ruang dan batas atas harus sama" }
+    }
+
+    fun set(index: Int, capAmount: Money?): CapDraft {
+        require(index in caps.indices) { "Ruang $index tidak ada" }
+        return copy(caps = caps.toMutableList().also { it[index] = capAmount })
+    }
+
+    fun hasChanges(original: CapDraft): Boolean = roomIds != original.roomIds || caps != original.caps
+
+    fun toCaps(): List<AllocationCap> = roomIds.zip(caps) { room, cap -> AllocationCap(room, cap) }
+
+    /** Ringkasan contoh (S12), sama seperti [RuleDraft.sample]. */
+    fun sample(amount: Money): AllocationResult? = if (roomIds.isEmpty()) null else AllocationEngine.allocateWaterfall(amount, toCaps())
+
+    companion object {
+        /** [rooms]: ruang aktif berurutan; ruang tanpa batas dianggap tak terbatas. */
+        fun from(rooms: List<Room>, caps: List<AllocationCap>): CapDraft {
+            val byRoom = caps.associate { it.roomId to it.capAmount }
+            return CapDraft(rooms.map { it.id }, rooms.map { byRoom[it.id] })
         }
     }
 }

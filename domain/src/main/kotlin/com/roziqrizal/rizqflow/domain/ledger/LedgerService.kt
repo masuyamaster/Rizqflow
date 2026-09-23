@@ -1,6 +1,7 @@
 package com.roziqrizal.rizqflow.domain.ledger
 
 import com.roziqrizal.rizqflow.domain.allocation.AllocationEngine
+import com.roziqrizal.rizqflow.domain.allocation.AllocationMode
 import com.roziqrizal.rizqflow.domain.allocation.AllocationResult
 import com.roziqrizal.rizqflow.domain.allocation.AllocationRule
 import com.roziqrizal.rizqflow.domain.model.AccountId
@@ -43,6 +44,9 @@ enum class LedgerError {
     RULES_NOT_100_PERCENT,
     RULES_INVALID,
     WORKSPACE_NOT_EMPTY,
+
+    /** Aksi butuh paket Pro (mis. menyalakan aturan alokasi lanjutan) tapi paket sekarang tidak membukanya. */
+    FEATURE_LOCKED,
 
     /** Ruang Menunaikan tidak (lagi) punya kategori sistem Zakat mal; seharusnya tidak pernah terjadi. */
     ZAKAT_CATEGORY_MISSING,
@@ -123,7 +127,7 @@ class LedgerService(
 
     /** Pratinjau S07: bagaimana [amount] akan dialirkan dengan aturan sekarang (atau [rules] bila diberikan). Tidak menyimpan apa pun. */
     suspend fun previewIncome(amount: Money, rules: List<AllocationRule>? = null): AllocationResult =
-        AllocationEngine.allocate(amount, rules ?: rooms.rules())
+        if (rules != null) AllocationEngine.allocate(amount, rules) else currentAllocation(amount).second
 
     suspend fun recordIncome(command: NewIncome): LedgerResult<IncomeReceipt> {
         if (!command.amount.isPositive) return failure(LedgerError.AMOUNT_NOT_POSITIVE)
@@ -131,9 +135,12 @@ class LedgerService(
         val source = cleanSource(command.source) ?: return failure(LedgerError.SOURCE_TOO_LONG)
         checkAccount(command.accountId, command.amount)?.let { return failure(it) }
 
-        val rules = command.overrideRules ?: rooms.rules()
-        if (command.overrideRules != null && !overrideIsValid(rules)) return failure(LedgerError.RULES_INVALID)
-        val allocation = AllocationEngine.allocate(command.amount, rules)
+        val (rules, allocation) = if (command.overrideRules != null) {
+            if (!overrideIsValid(command.overrideRules)) return failure(LedgerError.RULES_INVALID)
+            command.overrideRules to AllocationEngine.allocate(command.amount, command.overrideRules)
+        } else {
+            currentAllocation(command.amount)
+        }
         val now = nowMillis()
         val transaction = MoneyTransaction(
             id = TransactionId(newId()),
@@ -348,6 +355,26 @@ class LedgerService(
         if (account.currency != amount.currency) return LedgerError.CURRENCY_MISMATCH
         return null
     }
+
+    /**
+     * Aturan dan hasil alokasi sekarang, mengikuti mode yang aktif ([AllocationMode]). Mode WATERFALL
+     * dihitung dulu dengan [AllocationEngine.allocateWaterfall], lalu diterjemahkan menjadi persentase
+     * ([AllocationEngine.impliedShares]) supaya potretnya ([AllocationEntry]) tetap berbentuk
+     * persentase seperti biasa dan bisa dihitung ulang lewat mekanisme yang sudah ada saat nominal
+     * diubah (S09) — tidak perlu kolom snapshot baru untuk mode lanjutan.
+     */
+    private suspend fun currentAllocation(amount: Money): Pair<List<AllocationRule>, AllocationResult> =
+        when (rooms.allocationMode()) {
+            AllocationMode.WATERFALL -> {
+                val allocation = AllocationEngine.allocateWaterfall(amount, rooms.caps())
+                AllocationEngine.impliedShares(amount, allocation.shares) to allocation
+            }
+
+            AllocationMode.PERCENTAGE -> {
+                val rules = rooms.rules()
+                rules to AllocationEngine.allocate(amount, rules)
+            }
+        }
 
     /**
      * Satu baris potret per ruang yang punya bagian (persentase lebih dari nol), termasuk yang

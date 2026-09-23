@@ -2,7 +2,6 @@ package com.roziqrizal.rizqflow.ui.ruang
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,16 +12,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
@@ -42,14 +45,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.roziqrizal.rizqflow.R
+import com.roziqrizal.rizqflow.domain.allocation.AllocationMode
+import com.roziqrizal.rizqflow.domain.allocation.AllocationResult
 import com.roziqrizal.rizqflow.domain.allocation.AllocationRule
+import com.roziqrizal.rizqflow.domain.ledger.CapDraft
 import com.roziqrizal.rizqflow.domain.ledger.LedgerResult
 import com.roziqrizal.rizqflow.domain.ledger.Room
 import com.roziqrizal.rizqflow.domain.ledger.RoomTemplate
@@ -70,13 +76,21 @@ import kotlin.math.roundToInt
 private val SAMPLE = Money.rupiah(1_000_000)
 
 /** Ruang aktif berurutan beserta aturannya saat layar dibuka; dimuat sekaligus supaya ukurannya selalu sama. */
-private class LoadedRules(val rooms: List<Room>, val original: RuleDraft)
+private class LoadedRules(
+    val rooms: List<Room>,
+    val original: RuleDraft,
+    val originalCaps: CapDraft,
+    val persistedMode: AllocationMode,
+    val advancedEntitled: Boolean,
+)
 
 /**
  * S12 Aturan alokasi. Berlaku untuk pemasukan berikutnya; riwayat tidak berubah (potretnya sudah
  * tersimpan). Semua ruang bebas diubah dan total boleh sementara bukan 100%; **Simpan aturan** baru
  * aktif bila total tepat 100% dan ada perubahan. Keluar dengan perubahan menanyakan "Buang perubahan?".
- * [onSaved] menerima aturan sebelumnya supaya pemanggil bisa menawarkan Urungkan.
+ * [onSaved] menerima aturan sebelumnya supaya pemanggil bisa menawarkan Urungkan (hanya mode
+ * persentase; menyimpan aturan lanjutan belum menawarkan Urungkan). [onOpenPaywall] membuka S21
+ * saat memilih mode lanjutan tanpa Pro.
  */
 @Composable
 fun AturanScreen(
@@ -85,6 +99,7 @@ fun AturanScreen(
     onClose: () -> Unit,
     onSaved: (previous: List<AllocationRule>) -> Unit,
     onTemplateApplied: () -> Unit,
+    onOpenPaywall: () -> Unit = {},
 ) {
     var loaded by remember { mutableStateOf<LoadedRules?>(null) }
     var reload by remember { mutableStateOf(0) }
@@ -93,7 +108,13 @@ fun AturanScreen(
     LaunchedEffect(reload) {
         val rooms = workspace.repositories.rooms
         val active = rooms.activeRooms()
-        loaded = LoadedRules(active, RuleDraft.from(active, rooms.rules()))
+        loaded = LoadedRules(
+            rooms = active,
+            original = RuleDraft.from(active, rooms.rules()),
+            originalCaps = CapDraft.from(active, rooms.caps()),
+            persistedMode = rooms.allocationMode(),
+            advancedEntitled = workspace.rules.advancedRulesEntitled(),
+        )
     }
 
     val data = loaded
@@ -112,7 +133,7 @@ fun AturanScreen(
             },
         )
 
-        else -> RulesEditor(workspace, notifier, data.rooms, data.original, onClose, onSaved)
+        else -> RulesEditor(workspace, notifier, data, onClose, onSaved, onOpenPaywall)
     }
 }
 
@@ -120,17 +141,23 @@ fun AturanScreen(
 private fun RulesEditor(
     workspace: AccountWorkspace,
     notifier: Notifier,
-    roomList: List<Room>,
-    base: RuleDraft,
+    data: LoadedRules,
     onClose: () -> Unit,
     onSaved: (previous: List<AllocationRule>) -> Unit,
+    onOpenPaywall: () -> Unit,
 ) {
+    val roomList = data.rooms
+    val base = data.original
     // Isian bertahan saat layar diputar.
     var draft by rememberSaveable(stateSaver = DraftSaver) { mutableStateOf(base) }
+    var capDraft by rememberSaveable(stateSaver = CapDraftSaver) { mutableStateOf(data.originalCaps) }
+    var uiMode by rememberSaveable(stateSaver = ModeSaver) { mutableStateOf(data.persistedMode) }
     var confirmingDiscard by remember { mutableStateOf(false) }
     var busy by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
-    val changed = draft.hasChanges(base)
+    val modeChanged = uiMode != data.persistedMode
+    val changed = modeChanged || if (uiMode == AllocationMode.PERCENTAGE) draft.hasChanges(base) else capDraft.hasChanges(data.originalCaps)
+    val canSave = changed && (uiMode == AllocationMode.WATERFALL || draft.isBalanced)
     val spacing = MaterialTheme.spacing
     val context = LocalContext.current
 
@@ -140,24 +167,33 @@ private fun RulesEditor(
     BackHandler(enabled = !busy) { leave() }
 
     fun save() {
-        if (busy || !draft.isBalanced || !changed) return
+        if (busy || !canSave) return
         busy = true
         scope.launch {
-            val before = workspace.repositories.rooms.rules()
-            val result = workspace.rules.changeRules(draft.toRules())
+            val result: LedgerResult<Unit> = if (uiMode == AllocationMode.PERCENTAGE) {
+                val before = workspace.repositories.rooms.rules()
+                when (val r = workspace.rules.changeRules(draft.toRules())) {
+                    is LedgerResult.Success -> {
+                        if (data.persistedMode == AllocationMode.WATERFALL) workspace.rules.disableAdvancedRules()
+                        onSaved(before)
+                        r
+                    }
+
+                    is LedgerResult.Failure -> r
+                }
+            } else {
+                workspace.rules.saveAdvancedRules(capDraft.toCaps())
+            }
             busy = false
             when (result) {
-                is LedgerResult.Success -> {
-                    onSaved(before)
-                    onClose()
-                }
-
+                is LedgerResult.Success -> onClose()
                 is LedgerResult.Failure -> notifier.show(roomErrorText(context, result.error))
             }
         }
     }
 
     val sample = draft.sample(SAMPLE)
+    val capSample = capDraft.sample(SAMPLE)
     val lessLabel = stringResource(R.string.onb_persen_less)
     val moreLabel = stringResource(R.string.onb_persen_more)
 
@@ -183,6 +219,38 @@ private fun RulesEditor(
                 modifier = Modifier.padding(top = spacing.s2, bottom = spacing.s3),
             )
 
+            // Mode: persentase dasar (gratis) atau lanjutan (Pro, prioritas + batas atas + sisa mengalir).
+            Text(stringResource(R.string.rules_advanced), style = MaterialTheme.typography.titleSmall)
+            Text(
+                stringResource(R.string.rules_advanced_sub),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(bottom = spacing.s2),
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(spacing.s2), modifier = Modifier.padding(bottom = spacing.s3)) {
+                FilterChip(
+                    selected = uiMode == AllocationMode.PERCENTAGE,
+                    onClick = { uiMode = AllocationMode.PERCENTAGE },
+                    enabled = !busy,
+                    label = { Text(stringResource(R.string.rules_mode_percentage)) },
+                )
+                FilterChip(
+                    selected = uiMode == AllocationMode.WATERFALL,
+                    onClick = { if (data.advancedEntitled) uiMode = AllocationMode.WATERFALL else onOpenPaywall() },
+                    enabled = !busy,
+                    label = { Text(stringResource(R.string.rules_mode_waterfall)) },
+                )
+            }
+
+            if (uiMode == AllocationMode.WATERFALL) {
+                CapsEditor(
+                    rooms = roomList,
+                    draft = capDraft,
+                    onChange = { capDraft = it },
+                    enabled = !busy && data.advancedEntitled,
+                    sample = capSample,
+                )
+            } else {
             // Ringkasan contoh: hanya bila total tidak melebihi 100%, karena pembagian seperti itu tidak sah.
             Text(stringResource(R.string.onb_persen_sample, formatRupiah(SAMPLE)), style = MaterialTheme.typography.titleSmall)
             Row(
@@ -297,28 +365,12 @@ private fun RulesEditor(
                     )
                 }
             }
-
-            // Aturan lanjutan (prioritas, batas atas, sisa mengalir): terkunci Pro; paywall S21 belum dibuat.
-            Row(
-                modifier = Modifier
-                    .padding(top = spacing.s4)
-                    .fillMaxWidth()
-                    .clickable(role = Role.Button) { scope.launch { notifier.show(context.getString(R.string.rules_pro_note)) } }
-                    .padding(vertical = spacing.s2),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(spacing.s3),
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(stringResource(R.string.rules_advanced), style = MaterialTheme.typography.titleSmall)
-                    Text(stringResource(R.string.rules_advanced_sub), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-                Icon(RizqflowIcons.PanahKanan, contentDescription = null)
             }
         }
 
         Button(
             onClick = ::save,
-            enabled = draft.isBalanced && changed && !busy,
+            enabled = canSave && !busy,
             modifier = Modifier.padding(horizontal = spacing.s5).padding(bottom = spacing.s3).fillMaxWidth().height(52.dp),
         ) { Text(stringResource(if (busy) R.string.onb_saving else R.string.rules_save)) }
     }
@@ -363,6 +415,47 @@ private fun EmptyRules(onClose: () -> Unit, onApply: () -> Unit) {
     }
 }
 
+// ---------------------------------------------------------------------------------- aturan lanjutan (Pro)
+
+/** Batas atas rupiah tiap ruang aktif, berurutan menurut prioritas. Kosong = tak terbatas. */
+@Composable
+private fun CapsEditor(rooms: List<Room>, draft: CapDraft, onChange: (CapDraft) -> Unit, enabled: Boolean, sample: AllocationResult?) {
+    val spacing = MaterialTheme.spacing
+    Text(
+        stringResource(R.string.rules_cap_hint),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(bottom = spacing.s3),
+    )
+    if (sample != null) {
+        Text(stringResource(R.string.rules_cap_sample, formatRupiah(SAMPLE)), style = MaterialTheme.typography.titleSmall)
+        Text(
+            rooms.indices.joinToString("   ") { i -> "${rooms[i].name} ${sample.shares.getOrNull(i)?.let { formatRupiah(it.amount) } ?: "—"}" },
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(bottom = spacing.s4),
+        )
+    }
+    Column(verticalArrangement = Arrangement.spacedBy(spacing.s3)) {
+        rooms.forEachIndexed { index, room ->
+            val value = draft.caps.getOrNull(index)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(spacing.s3)) {
+                RoomTile(room.iconKey, room.colorSlot, size = 36)
+                Text(room.name, style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
+                OutlinedTextField(
+                    value = value?.minor?.toString() ?: "",
+                    onValueChange = { raw -> onChange(draft.set(index, raw.filter(Char::isDigit).take(12).toLongOrNull()?.let(Money::rupiah))) },
+                    placeholder = { Text(stringResource(R.string.rules_cap_unlimited)) },
+                    singleLine = true,
+                    enabled = enabled,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.width(160.dp),
+                )
+            }
+        }
+    }
+}
+
 /** Menyimpan [RuleDraft] agar selamat dari layar diputar. */
 private val DraftSaver = Saver<RuleDraft, List<String>>(
     save = { listOf(it.roomIds.joinToString(",") { r -> r.value }, it.shares.joinToString(",")) },
@@ -373,3 +466,17 @@ private val DraftSaver = Saver<RuleDraft, List<String>>(
         )
     },
 )
+
+/** Menyimpan [CapDraft] agar selamat dari layar diputar. Kosong ("") berarti tak terbatas (null). */
+private val CapDraftSaver = Saver<CapDraft, List<String>>(
+    save = { listOf(it.roomIds.joinToString(",") { r -> r.value }, it.caps.joinToString(",") { c -> c?.minor?.toString() ?: "" }) },
+    restore = {
+        CapDraft(
+            roomIds = it[0].split(",").filter(String::isNotEmpty).map(::RoomId),
+            caps = it[1].split(",").map { raw -> raw.toLongOrNull()?.let(Money::rupiah) },
+        )
+    },
+)
+
+/** Menyimpan [AllocationMode] agar selamat dari layar diputar. */
+private val ModeSaver = Saver<AllocationMode, String>(save = { it.name }, restore = AllocationMode::valueOf)

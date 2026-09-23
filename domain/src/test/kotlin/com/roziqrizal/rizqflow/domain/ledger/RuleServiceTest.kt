@@ -1,11 +1,14 @@
 package com.roziqrizal.rizqflow.domain.ledger
 
+import com.roziqrizal.rizqflow.domain.allocation.AllocationCap
+import com.roziqrizal.rizqflow.domain.allocation.AllocationMode
 import com.roziqrizal.rizqflow.domain.allocation.AllocationRule
 import com.roziqrizal.rizqflow.domain.allocation.BasisPoints
 import com.roziqrizal.rizqflow.domain.auth.runSuspend
 import com.roziqrizal.rizqflow.domain.entitlement.Plan
 import com.roziqrizal.rizqflow.domain.model.RoomId
 import com.roziqrizal.rizqflow.domain.model.RoomKind
+import com.roziqrizal.rizqflow.domain.money.Money
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -174,5 +177,78 @@ class RuleServiceTest {
 
         assertEquals(3, f.store.roomRows.size)
         assertEquals(f.store.roomRows.keys, f.store.categoryRows.values.map { it.roomId }.toSet())
+    }
+
+    // ------------------------------------------------------------------ aturan lanjutan (Pro)
+
+    private fun cap(f: LedgerFixture, room: String, amount: Long?) = AllocationCap(f.room(room).id, amount?.let(Money::rupiah))
+
+    private fun capsOf(f: LedgerFixture) = runSuspend { f.store.caps() }.map { f.store.roomRows.getValue(it.roomId).name to it.capAmount?.minor }
+
+    @Test
+    fun `paket gratis tidak boleh menyalakan aturan lanjutan`() {
+        val f = LedgerFixture().standard()
+
+        val result = runSuspend { f.rules.saveAdvancedRules(listOf(cap(f, "Memberi", 100_000), cap(f, "Diri", 200_000), cap(f, "Keluarga", null))) }
+
+        assertEquals(LedgerResult.Failure(LedgerError.FEATURE_LOCKED), result)
+        assertEquals(AllocationMode.PERCENTAGE, runSuspend { f.store.allocationMode() })
+    }
+
+    @Test
+    fun `paket Pro menyalakan aturan lanjutan dan menyimpan batas atas berurutan prioritas`() {
+        val f = LedgerFixture(plans = setOf(Plan.PRO)).standard()
+
+        val result = runSuspend { f.rules.saveAdvancedRules(listOf(cap(f, "Keluarga", 500_000), cap(f, "Memberi", 100_000), cap(f, "Diri", null))) }
+
+        assertIs<LedgerResult.Success<Unit>>(result)
+        assertEquals(AllocationMode.WATERFALL, runSuspend { f.store.allocationMode() })
+        assertEquals(listOf("Memberi" to 100_000L, "Diri" to null, "Keluarga" to 500_000L), capsOf(f))
+    }
+
+    @Test
+    fun `menyimpan batas atas yang tidak mencakup persis ruang aktif ditolak`() {
+        val f = LedgerFixture(plans = setOf(Plan.PRO)).standard()
+
+        assertEquals(
+            LedgerResult.Failure(LedgerError.RULES_INVALID),
+            runSuspend { f.rules.saveAdvancedRules(listOf(cap(f, "Memberi", 100_000), cap(f, "Diri", 200_000))) },
+        )
+    }
+
+    @Test
+    fun `batas atas negatif ditolak`() {
+        val f = LedgerFixture(plans = setOf(Plan.PRO)).standard()
+
+        assertEquals(
+            LedgerResult.Failure(LedgerError.AMOUNT_NOT_POSITIVE),
+            runSuspend { f.rules.saveAdvancedRules(listOf(cap(f, "Memberi", -1), cap(f, "Diri", 0), cap(f, "Keluarga", null))) },
+        )
+    }
+
+    @Test
+    fun `mematikan aturan lanjutan selalu diizinkan walau paket gratis`() {
+        val f = LedgerFixture(plans = setOf(Plan.PRO)).standard()
+        runSuspend { f.rules.saveAdvancedRules(listOf(cap(f, "Memberi", 100_000), cap(f, "Diri", 200_000), cap(f, "Keluarga", null))) }
+
+        runSuspend { f.rules.disableAdvancedRules() }
+
+        assertEquals(AllocationMode.PERCENTAGE, runSuspend { f.store.allocationMode() })
+    }
+
+    @Test
+    fun `mengubah persentase tidak menghapus batas atas yang sudah tersimpan`() {
+        val f = LedgerFixture(plans = setOf(Plan.PRO)).standard()
+        runSuspend { f.rules.saveAdvancedRules(listOf(cap(f, "Memberi", 100_000), cap(f, "Diri", 200_000), cap(f, "Keluarga", null))) }
+
+        change(f, rule(f, "Memberi", 50), rule(f, "Diri", 25), rule(f, "Keluarga", 25))
+
+        assertEquals(listOf("Memberi" to 100_000L, "Diri" to 200_000L, "Keluarga" to null), capsOf(f))
+    }
+
+    @Test
+    fun `advancedRulesEntitled mengikuti paket`() {
+        assertTrue(!runSuspend { LedgerFixture().standard().rules.advancedRulesEntitled() })
+        assertTrue(runSuspend { LedgerFixture(plans = setOf(Plan.PRO)).standard().rules.advancedRulesEntitled() })
     }
 }

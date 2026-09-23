@@ -1,7 +1,11 @@
 package com.roziqrizal.rizqflow.data.repo
 
 import androidx.room.withTransaction
+import com.roziqrizal.rizqflow.data.db.AppSettingEntity
+import com.roziqrizal.rizqflow.data.db.AllocationRuleEntity
 import com.roziqrizal.rizqflow.data.db.RizqflowDatabase
+import com.roziqrizal.rizqflow.domain.allocation.AllocationCap
+import com.roziqrizal.rizqflow.domain.allocation.AllocationMode
 import com.roziqrizal.rizqflow.domain.allocation.AllocationRule
 import com.roziqrizal.rizqflow.domain.ledger.Account
 import com.roziqrizal.rizqflow.domain.ledger.AccountRepository
@@ -94,8 +98,35 @@ class LocalRoomRepository(private val db: RizqflowDatabase) : RoomRepository {
 
     override suspend fun replaceRules(rules: List<AllocationRule>) {
         db.withTransaction {
+            // Cap_amount ruang lanjutan (Pro) dibawa serta supaya mengubah persentase tidak menghapusnya.
+            val capsByRoom = db.rooms().rules().associate { it.roomId to it.capAmount }
             db.rooms().clearActiveRules()
-            db.rooms().upsertRules(rules.map(AllocationRule::toEntity))
+            db.rooms().upsertRules(rules.map { AllocationRuleEntity(roomId = it.roomId.value, shareBp = it.share.value, capAmount = capsByRoom[it.roomId.value]) })
+        }
+    }
+
+    override suspend fun allocationMode(): AllocationMode {
+        val raw = db.settings().get(KEY_ALLOCATION_MODE)
+        return AllocationMode.entries.firstOrNull { it.name == raw } ?: AllocationMode.PERCENTAGE
+    }
+
+    override suspend fun setAllocationMode(mode: AllocationMode) {
+        db.settings().put(AppSettingEntity(KEY_ALLOCATION_MODE, mode.name))
+    }
+
+    override suspend fun caps(): List<AllocationCap> {
+        val capsByRoom = db.rooms().rules().associate { it.roomId to it.capAmount }
+        return db.rooms().active().map { AllocationCap(RoomId(it.id), capsByRoom[it.id]?.let(Money::rupiah)) }
+    }
+
+    override suspend fun replaceCaps(caps: List<AllocationCap>) {
+        db.withTransaction {
+            // Share_bp ruang mode persentase dibawa serta supaya mengubah batas atas tidak menghapusnya.
+            val sharesByRoom = db.rooms().rules().associate { it.roomId to it.shareBp }
+            db.rooms().clearActiveRules()
+            db.rooms().upsertRules(
+                caps.map { AllocationRuleEntity(roomId = it.roomId.value, shareBp = sharesByRoom[it.roomId.value] ?: 0, capAmount = it.capAmount?.minor) },
+            )
         }
     }
 
@@ -112,10 +143,16 @@ class LocalRoomRepository(private val db: RizqflowDatabase) : RoomRepository {
             db.rooms().upsertAll(rooms.map { it.toEntity() })
             if (rules != null) {
                 // Ruang yang baru dipulihkan sudah aktif di sini, jadi aturan lamanya ikut terhapus dan diganti.
+                // Cap_amount ruang lain dibawa serta supaya tidak ikut terhapus (lihat replaceRules).
+                val capsByRoom = db.rooms().rules().associate { it.roomId to it.capAmount }
                 db.rooms().clearActiveRules()
-                db.rooms().upsertRules(rules.map(AllocationRule::toEntity))
+                db.rooms().upsertRules(rules.map { AllocationRuleEntity(roomId = it.roomId.value, shareBp = it.share.value, capAmount = capsByRoom[it.roomId.value]) })
             }
         }
+    }
+
+    private companion object {
+        const val KEY_ALLOCATION_MODE = "allocation_mode"
     }
 }
 

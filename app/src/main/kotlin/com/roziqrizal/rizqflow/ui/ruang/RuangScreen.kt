@@ -356,6 +356,7 @@ internal fun roomErrorText(context: Context, error: LedgerError): String = conte
         LedgerError.ROOM_LIMIT_REACHED -> R.string.room_err_limit
         LedgerError.NAME_TAKEN -> R.string.room_err_taken
         LedgerError.INVALID_NAME -> R.string.room_err_name
+        LedgerError.FEATURE_LOCKED -> R.string.rules_pro_note
         else -> R.string.catat_error_generic
     },
 )

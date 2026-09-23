@@ -2,6 +2,7 @@ package com.roziqrizal.rizqflow.data
 
 import android.content.Context
 import androidx.room.Room
+import com.roziqrizal.rizqflow.data.db.MIGRATION_1_2
 import com.roziqrizal.rizqflow.data.db.RizqflowDatabase
 import com.roziqrizal.rizqflow.data.repo.LocalAccountRepository
 import com.roziqrizal.rizqflow.data.repo.LocalFavoriteRepository
@@ -50,7 +51,7 @@ class LocalLedger(val db: RizqflowDatabase) : AutoCloseable {
                 context.applicationContext,
                 RizqflowDatabase::class.java,
                 AccountStorage.databaseName(accountId),
-            ).build()
+            ).addMigrations(MIGRATION_1_2).build()
             return LocalLedger(db)
         }
     }
