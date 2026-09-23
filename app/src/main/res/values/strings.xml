@@ -535,6 +535,8 @@
     <!-- Denah S05 -->
     <string name="denah_income">Rezeki bulan ini</string>
     <string name="denah_unallocated">Belum dialirkan: %1$s</string>
+    <string name="catat_safe_now">Sisa aman hari ini: %1$s</string>
+    <string name="catat_safe_after">Sisa aman setelah ini: %1$s</string>
     <string name="denah_safe_title">Sisa aman hari ini</string>
     <string name="denah_safe_hint">Jatah harian %1$s, sisa %2$d hari bulan ini</string>
     <string name="denah_safe_over">Jatah hari ini sudah terpakai. Jatah harian %1$s, dihitung ulang besok</string>

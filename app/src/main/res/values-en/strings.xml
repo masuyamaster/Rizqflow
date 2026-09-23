@@ -532,6 +532,8 @@
     <!-- Plan S05 -->
     <string name="denah_income">This month\'s rezeki</string>
     <string name="denah_unallocated">Not yet allocated: %1$s</string>
+    <string name="catat_safe_now">Safe to spend today: %1$s</string>
+    <string name="catat_safe_after">Safe to spend after this: %1$s</string>
     <string name="denah_safe_title">Safe to spend today</string>
     <string name="denah_safe_hint">Daily allowance %1$s, %2$d days left this month</string>
     <string name="denah_safe_over">Today\'s allowance is used up. Daily allowance %1$s, recalculated tomorrow</string>

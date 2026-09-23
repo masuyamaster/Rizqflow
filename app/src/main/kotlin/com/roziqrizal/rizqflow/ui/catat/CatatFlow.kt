@@ -41,6 +41,7 @@ import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -56,6 +57,7 @@ import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.roziqrizal.rizqflow.R
 import com.roziqrizal.rizqflow.domain.allocation.AllocationEngine
@@ -68,6 +70,9 @@ import com.roziqrizal.rizqflow.domain.ledger.CatatContextLoader
 import com.roziqrizal.rizqflow.domain.ledger.CatatDraft
 import com.roziqrizal.rizqflow.domain.ledger.CatatIssue
 import com.roziqrizal.rizqflow.domain.ledger.CatatMode
+import com.roziqrizal.rizqflow.domain.ledger.DenahLoader
+import com.roziqrizal.rizqflow.domain.ledger.SafeToSpend
+import com.roziqrizal.rizqflow.domain.model.RoomKind
 import com.roziqrizal.rizqflow.domain.ledger.INCOME_SOURCES
 import com.roziqrizal.rizqflow.domain.ledger.LedgerError
 import com.roziqrizal.rizqflow.domain.ledger.LedgerResult
@@ -180,6 +185,19 @@ fun CatatFlow(
         }
     }
 
+    // Sisa aman hari ini: hanya untuk pengeluaran baru bertanggal hari ini; dimuat ulang setelah simpan beruntun.
+    var safe by remember { mutableStateOf<SafeToSpend?>(null) }
+    var safeVersion by remember { mutableIntStateOf(0) }
+    val showSafe = editing == null && draft.mode == CatatMode.EXPENSE && draft.date == today
+    LaunchedEffect(showSafe, safeVersion) {
+        safe = if (showSafe) {
+            val repos = workspace.repositories
+            DenahLoader(repos.rooms, repos.transactions, repos.accounts).safeToSpend(today)
+        } else {
+            null
+        }
+    }
+
     BackHandler(enabled = !busy) { if (review != null) review = null else onClose() }
 
     fun change(next: CatatDraft) {
@@ -210,6 +228,7 @@ fun CatatFlow(
                     }
                     onSaved(SavedInfo(tx.id, tx.kind, tx.amount, 0, favoriteSaved = wantsFavorite && favoriteError == null, favoriteError = favoriteError))
                     asFavorite = false
+                    safeVersion++
                     if (keepOpen) change(draft.copy(digits = "", note = "")) else onClose()
                 }
 
@@ -350,6 +369,23 @@ fun CatatFlow(
                     style = MaterialTheme.typography.displaySmall.copy(fontFamily = CaslonFamily),
                     color = if (draft.amount.isPositive) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.outline,
                     modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite },
+                )
+            }
+
+            // Sisa aman: setelah nominal diisi di ruang Mencukupi, tampil sisa setelah pengeluaran ini.
+            safe?.let { s ->
+                val everyday = context.rooms.firstOrNull { it.id == draft.roomId }?.kind == RoomKind.MENCUKUPI
+                val after = if (draft.amount.isPositive && everyday) {
+                    if (s.remaining > draft.amount) s.remaining - draft.amount else Money.zero()
+                } else {
+                    null
+                }
+                Text(
+                    stringResource(if (after != null) R.string.catat_safe_after else R.string.catat_safe_now, formatRupiah(after ?: s.remaining)),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth().semantics { liveRegion = LiveRegionMode.Polite },
                 )
             }
 
