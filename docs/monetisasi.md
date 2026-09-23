@@ -77,4 +77,10 @@ Aplikasi niche seperti ini kemungkinan menghasilkan uang kecil. Anggap monetisas
 - **Sisa (overflow)** mengalir **otomatis berantai** ke ruang berikutnya sesuai urutan prioritas; ruang tanpa batas atas (kosong) berarti tak terbatas dan menampung seluruh sisa — cocok sebagai ruang penutup di prioritas terakhir.
 - **Cakupan: satu toggle untuk seluruh ruleset**, bukan campur persentase dan lanjutan dalam satu ruleset yang sama (lebih sederhana dipahami dan diimplementasikan).
 
+**Sistem per peran, rancangan (disetujui pemilik 2026-09-23, sudah diimplementasikan; layar S32):**
+- **Modul opsional per ruang** (seperti modul Memberi), bukan tipe ruang baru; satu ruang satu peran. Memasang dan mengubah butuh Pro; melepas selalu boleh, dan turun paket hanya membuat peringatan dan pengingat diam.
+- **Trader:** batas risiko per trade = modal (diisi pengguna) x persen risiko. Pengeluaran di ruang itu yang melewatinya memunculkan peringatan lembut saat mencatat; tidak pernah memblokir.
+- **Investor:** jadwal DCA bulanan (nominal, tanggal 1 sampai 28, akun, kategori). Dicatat sebagai pengeluaran di ruang itu (sesuai keputusan investasi = pengeluaran, [konsep.md](konsep.md)), bukan transfer; pengingat sekali per bulan.
+- Sengaja tanpa harga aset, portofolio, atau jurnal trade lengkap ("Sengaja tidak masuk" di konsep.md).
+
 Alur saat pengguna menyentuh fitur terkunci ada di [ui-flow.md](ui-flow.md) (flow F6 dan layar S21).

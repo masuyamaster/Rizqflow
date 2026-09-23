@@ -125,6 +125,13 @@ Potret alokasi satu pemasukan.
 - **wealth_check**: `profile_id`, `day`, `net_wealth`, `nisab`. Ini persis `HaulEvent.WealthChecked` di domain; **status haul tidak disimpan**, dihitung ulang oleh `HaulTracker`.
 - **zakat_payment**: `profile_id`, `day`, `transaction_id` (pengeluaran kategori `Zakat mal` di ruang Memberi). Ini `HaulEvent.ZakatPaid`.
 
+### Sistem per peran (Pro, versi 3, 2026-09-23)
+Modul opsional per ruang; ada barisnya berarti modul terpasang, dan satu ruang paling banyak punya satu peran (dijaga `RoleService`, bukan skema). Keduanya `ON DELETE CASCADE` dari `room`.
+- **trader_profile**: `room_id` (kunci utama), `capital` (Long; modal trading yang diisi pengguna, bukan dihitung dari saldo), `risk_bp` (basis point modal yang boleh hilang per trade). Batas rupiahnya, `capital * risk_bp / 10.000` dibulatkan ke bawah, dihitung saat dibutuhkan (`TraderProfile.maxRiskPerTrade`), tidak disimpan.
+- **dca_plan**: `room_id` (kunci utama), `amount` (Long), `day_of_month` (1 sampai 28 supaya ada di setiap bulan), `account_id`, `category_id` (kategori biasa milik ruang itu). Status bulan ini (Selesai, Jatuh tempo, Akan datang) **tidak disimpan**: dihitung dari pengeluaran di ruang dan kategori itu bulan ini (`DcaStatus`), jadi menghapus transaksinya membuat DCA jatuh tempo lagi.
+- Kerugian trade dan investasi DCA tetap **pengeluaran biasa** di ruang itu (keputusan di [konsep.md](konsep.md): investasi = pengeluaran). Modul tidak menambah jenis transaksi.
+- Turun paket tidak menghapus apa pun: peringatan dan pengingat berhenti, pengaturan tetap terlihat dan bisa dilepas.
+
 ### Draf tangkap otomatis (v1.1)
 Tabel `capture_draft` ditambah lewat migrasi saat fitur dibuat; tidak dirancang sekarang.
 
@@ -204,3 +211,5 @@ Enam butir ini sudah tertanam di skema versi 1 dan di lapisan data. Pemilik belu
 Skema versi 1 sudah ditulis di `data/src/main/kotlin/.../data/db/` (14 entity, 4 DAO, `RizqflowDatabase`). Kueri SQL diperiksa saat kompilasi oleh Room, dan berkas skema JSON tersimpan di `data/schemas/`. Room 2.8.5 dengan KSP 2.3.12 berjalan di Gradle 9.7 dan AGP 9.4 (built-in Kotlin).
 
 Skema naik ke **versi 2** (2026-09-23, `MIGRATION_1_2`: `allocation_rule.cap_amount` untuk aturan alokasi lanjutan). Migrasi pertama ini TIDAK diuji lewat `androidx.room:room-testing`'s `MigrationTestHelper`: pada kombinasi Room 2.8.5 + Robolectric di proyek ini, helper itu selalu melempar `IllegalArgumentException` ("driver dikonfigurasi membuka X tapi Y diminta") sebelum migrasi sempat berjalan, walau `openFactory` diberikan eksplisit — kemungkinan bug spesifik kombinasi versi ini. `MigrationTest.kt` (`:data`) sebagai gantinya membangun berkas skema versi 1 apa adanya dari `createSql`/`indices` di `1.json` (bukan menyalin tangan), lalu membukanya lewat jalur produksi sungguhan (`Room.databaseBuilder(...).addMigrations(...)`, sama seperti `LocalLedger.open`) — pola ini dipakai lagi untuk migrasi berikutnya kecuali bug Room-nya sudah diperbaiki.
+
+Skema naik ke **versi 3** (2026-09-23, `MIGRATION_2_3`: tabel baru `trader_profile` dan `dca_plan` untuk sistem per peran). Aditif saja. `MigrationTest.kt` kini menjalankan 1 sampai 3 sekaligus, memeriksa tabel baru kosong dan bisa dipakai lewat DAO; pernyataan SQL migrasi sama dengan `createSql` di `3.json`.

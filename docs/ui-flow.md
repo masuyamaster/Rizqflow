@@ -80,6 +80,7 @@ T -.-> F
 | S29 | Splash | Layar pembuka; menahan sampai riwayat masuk terbaca | 3 |
 | S30 | Masuk | Nama pengguna dan sandi, Google connect, Gmail (opsional); menggantikan S01 Sambutan | 3 |
 | S31 | Daftar | Membuat akun lokal (nama pengguna dan sandi), langsung masuk | 3 |
+| S32 | Peran ruang | Trader (batas risiko per trade) atau Investor (jadwal DCA) untuk satu ruang; Pro | 7 |
 
 ## Wireframe layar kunci
 
@@ -439,6 +440,7 @@ I --> J["Transaksi pengeluaran di Ruang Memberi dan haul baru"]
 - **S08:** kolom cari (catatan dan nominal), filter cepat Semua, Masuk, Keluar, Transfer. Baris bisa diketuk menuju S09.
 - **S09:** pengeluaran, pemasukan, dan transfer bisa diubah dan dihapus (dengan konfirmasi dan Urungkan). Alokasi pemasukan dihitung ulang dengan persentase saat itu; ruang dan persentasenya tidak bisa diedit dari sini.
 - **S10 dan S11:** tambah ruang lewat sheet (nama, tipe, ikon); ruang ke-6 memicu S21 (batas 5 ruang gratis). Arsipkan ruang lewat S11 dengan konfirmasi; ruang arsip tidak tampil dan tidak menerima alokasi baru, riwayat tetap, dan bisa dipulihkan dari baris Diarsipkan di S10. Setelah mengarsipkan, aturan alokasi perlu diatur ulang supaya total kembali 100%.
+- **S32 Peran ruang (Pro):** dibuka dari kartu Peran di S11 (ruang selain Memberi). Tanpa peran: dua pilihan, Trader dan Investor; tanpa Pro, memilih membuka S21. Trader: isi modal (papan angka) dan risiko per trade (penggeser 0,25% sampai 10%, kelipatan 0,25%), layar menampilkan batas rupiahnya. Di S06, pengeluaran di ruang Trader yang melewati batas memunculkan banner lembut (bukan merah, tetap bisa disimpan). Investor: nominal, tanggal tiap bulan (1 sampai 28), akun sumber, dan kategori; kartu status menunjukkan Selesai, Jatuh tempo (tombol Catat sekarang), atau Akan datang. Catat sekarang membuat satu pengeluaran di kategori itu. Notifikasi jatuh tempo sekali per bulan menumpang pengingat malam. Lepas peran dengan konfirmasi; transaksi lama tidak berubah. Disclaimer: alat bantu disiplin, bukan saran investasi atau trading.
 - **S14 sampai S17:** status Belum diisi, Belum mencapai nisab, Haul berjalan, dan Haul genap. Menyimpan profil harta yang membuat harta mencapai nisab memulai haul hari itu; di bawah nisab, haul dipantau saja. Tunaikan zakat menjadi pengeluaran kategori Zakat mal di ruang Memberi lalu memulai haul baru. Mode Persentase donasi biasa menyembunyikan nisab dan haul tanpa menghapus data.
 - **S19:** PIN 6 angka diketik dua kali; lima kali salah menahan sementara (data tidak dihapus); sidik jari hanya bisa aktif setelah ada PIN.
 - **S20:** cadangan memakai sandi (minimal 6 karakter); pulihkan menanyakan berkas, sandi, lalu konfirmasi menimpa. Impor dari Transaksi Harian menampilkan pratinjau dulu dan menyatukan pasangan transfer.
