@@ -182,7 +182,7 @@ Jangan dimulai sebelum Pro terbit dan ada sinyal bahwa pengguna memang butuh ber
 
 Menutup kesenjangan fitur wajib dari [riset pasar](research-market/research.md) (kecocokan sekitar 47% sebelum tahap ini, target sekitar 65–70%). Semua tanpa server. Ditambahkan 2026-09-23; disarankan selesai sebelum Tahap 8, atau minimal butir prioritas High.
 
-- [x] Sisa aman hari ini di Denah dan Catat (High) (2026-09-24): `SafeToSpend` di `:domain` dengan 15 tes (termasuk lewat `DenahLoader` dengan pemasukan dan pengeluaran nyata); kartu di Denah bulan berjalan, dan baris "Sisa aman hari ini" / "setelah ini" di Catat untuk pengeluaran baru bertanggal hari ini serta di Catat kilat (S24). Rumus di [konsep.md](konsep.md). Belum dicoba di emulator
+- [x] Sisa aman hari ini di Denah dan Catat (High) (2026-09-24): `SafeToSpend` di `:domain` dengan 15 tes (termasuk lewat `DenahLoader` dengan pemasukan dan pengeluaran nyata); kartu di Denah bulan berjalan, dan baris "Sisa aman hari ini" / "setelah ini" di Catat untuk pengeluaran baru bertanggal hari ini serta di Catat kilat (S24). Rumus di [konsep.md](konsep.md). Teruji di emulator (2026-09-24): Denah, Catat, dan Catat kilat menampilkan angka yang sama dan berubah benar setelah pengeluaran
 - [ ] Transaksi berulang: harian, mingguan, bulanan (High)
 - [ ] Pengingat tagihan dan cicilan (High)
 - [ ] Utang-piutang, terhubung ke profil harta zakat (High)
