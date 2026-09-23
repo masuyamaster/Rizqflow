@@ -36,7 +36,7 @@ class ReminderWorker(context: Context, params: WorkerParameters) : CoroutineWork
             }
             if (settings.enabled && hasPermission()) {
                 workspace.haulReminder.dueReminders(today).forEach { reminder ->
-                    ReminderNotifier.showHaul(applicationContext, reminder.roomId.value, reminder.status)
+                    ReminderNotifier.showHaul(applicationContext, reminder.roomId.value, reminder.profileId, reminder.profileName.takeIf { reminder.showProfileName }, reminder.status)
                     workspace.haulReminder.markNotified(reminder)
                 }
                 workspace.dcaReminder.dueReminders(today).forEach { reminder ->

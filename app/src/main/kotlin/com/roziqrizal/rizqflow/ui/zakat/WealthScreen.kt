@@ -59,7 +59,7 @@ private fun digitsOnly(text: String): String = text.filter(Char::isDigit).take(1
  * Menyimpan mengganti seluruh daftar sekaligus dan mencatat pemeriksaan haul hari itu.
  */
 @Composable
-fun WealthScreen(workspace: AccountWorkspace, overview: GivingOverview, onSaved: () -> Unit, onCancel: () -> Unit) {
+fun WealthScreen(workspace: AccountWorkspace, overview: GivingOverview, profileId: String?, onSaved: () -> Unit, onCancel: () -> Unit) {
     val spacing = MaterialTheme.spacing
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -152,7 +152,7 @@ fun WealthScreen(workspace: AccountWorkspace, overview: GivingOverview, onSaved:
                         add(NewWealthItem(of(WealthKind.DEDUCTION)?.id, WealthKind.DEDUCTION, context.getString(R.string.wealth_kind_deduction), Money.rupiah(debt.toLongOrNull() ?: 0)))
                         customs.filter { it.label.isNotBlank() }.forEach { add(NewWealthItem(null, WealthKind.OTHER, it.label, Money.rupiah(it.value.toLongOrNull() ?: 0))) }
                     }
-                    val result = workspace.zakat.saveWealth(items, Money.rupiah(goldPrice.toLongOrNull() ?: 0), today)
+                    val result = workspace.zakat.saveWealth(items, Money.rupiah(goldPrice.toLongOrNull() ?: 0), today, profileId)
                     busy = false
                     when (result) {
                         is LedgerResult.Success -> onSaved()

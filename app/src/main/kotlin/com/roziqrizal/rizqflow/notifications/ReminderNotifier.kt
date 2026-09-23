@@ -119,7 +119,7 @@ object ReminderNotifier {
      * konteks dari pengingat malam), tanpa mengganggu notifikasi pengingat malam yang mungkin
      * tampil hari yang sama karena channel dan id-nya terpisah.
      */
-    fun showHaul(context: Context, roomId: String, status: HaulStatus) {
+    fun showHaul(context: Context, roomId: String, profileId: String, profileName: String?, status: HaulStatus) {
         if (!canNotify(context)) return
         ensureHaulChannel(context)
 
@@ -139,16 +139,18 @@ object ReminderNotifier {
             HaulStatus.BelowNisab -> return
         }
 
+        // Dengan beberapa profil harta, nama profil disebut supaya jelas haul siapa yang dimaksud.
+        val text = if (profileName != null) context.getString(R.string.reminder_haul_profile_body, body, profileName) else body
         val notification = NotificationCompat.Builder(context, CHANNEL_ID_HAUL)
             .setSmallIcon(R.drawable.ic_quick_catat)
             .setContentTitle(title)
-            .setContentText(body)
+            .setContentText(text)
             .setContentIntent(openIntent(context))
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
 
-        NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_HAUL_BASE + (roomId.hashCode() and 0xFF), notification)
+        NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_HAUL_BASE + ((roomId + profileId).hashCode() and 0xFF), notification)
     }
 
     /**

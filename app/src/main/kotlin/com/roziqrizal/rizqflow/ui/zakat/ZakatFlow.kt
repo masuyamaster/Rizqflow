@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +16,8 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -21,6 +25,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -53,6 +58,7 @@ import com.roziqrizal.rizqflow.domain.zakat.GivingStatus
 import com.roziqrizal.rizqflow.domain.zakat.HaulStatus
 import com.roziqrizal.rizqflow.domain.zakat.PercentageGivingStrategy
 import com.roziqrizal.rizqflow.domain.zakat.ZakatHaulHijriStrategy
+import com.roziqrizal.rizqflow.domain.zakat.ZakatProfile
 import com.roziqrizal.rizqflow.ui.Notifier
 import com.roziqrizal.rizqflow.ui.RizqflowIcons
 import com.roziqrizal.rizqflow.ui.formatDate
@@ -71,17 +77,33 @@ import java.time.LocalDate
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ZakatFlow(workspace: AccountWorkspace, roomId: RoomId, notifier: Notifier, onClose: () -> Unit, onOpenTransaction: (TransactionId) -> Unit) {
+fun ZakatFlow(
+    workspace: AccountWorkspace,
+    roomId: RoomId,
+    notifier: Notifier,
+    onClose: () -> Unit,
+    onOpenTransaction: (TransactionId) -> Unit,
+    /** Profil harta tambahan butuh Pro (multi-profil). */
+    onOpenPaywall: () -> Unit = {},
+) {
     val today = remember { LocalDate.now() }
     var overview by remember { mutableStateOf<GivingOverview?>(null) }
     var version by remember { mutableIntStateOf(0) }
     var wealthOpen by rememberSaveable { mutableStateOf(false) }
     var payOpen by rememberSaveable { mutableStateOf(false) }
+    // Profil harta yang sedang dilihat; kosong berarti profil pertama.
+    var profileId by rememberSaveable { mutableStateOf<String?>(null) }
+    // "add" atau "rename" saat dialog nama profil terbuka.
+    var profileDialog by rememberSaveable { mutableStateOf<String?>(null) }
+    var profileName by rememberSaveable { mutableStateOf("") }
+    var profileError by remember { mutableStateOf<LedgerError?>(null) }
+    var archiving by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     val spacing = MaterialTheme.spacing
     val hijriMonths = stringArrayResource(R.array.hijri_months).toList()
 
-    LaunchedEffect(roomId, version) { overview = workspace.zakat.overview(roomId, today) }
+    LaunchedEffect(roomId, version, profileId) { overview = workspace.zakat.overview(roomId, today, profileId) }
     BackHandler(onBack = onClose)
 
     val data = overview
@@ -104,6 +126,28 @@ fun ZakatFlow(workspace: AccountWorkspace, roomId: RoomId, notifier: Notifier, o
                 .padding(bottom = spacing.s5),
         ) {
             Text(stringResource(R.string.zakat_title), style = MaterialTheme.typography.headlineMedium)
+
+            if (data.status !is GivingStatus.Percentage && data.profiles.isNotEmpty()) {
+                ProfileBar(
+                    overview = data,
+                    onSelect = { profileId = it },
+                    onAdd = {
+                        if (data.canAddProfile) {
+                            profileName = ""
+                            profileError = null
+                            profileDialog = "add"
+                        } else {
+                            onOpenPaywall()
+                        }
+                    },
+                    onRename = {
+                        profileName = data.profile?.name.orEmpty()
+                        profileError = null
+                        profileDialog = "rename"
+                    },
+                    onArchive = { archiving = true },
+                )
+            }
 
             when (val status = data.status) {
                 is GivingStatus.NeedsInput -> SetupCard(first = data.neverSetUp, onFill = { wealthOpen = true })
@@ -167,8 +211,86 @@ fun ZakatFlow(workspace: AccountWorkspace, roomId: RoomId, notifier: Notifier, o
 
     if (wealthOpen) {
         ModalBottomSheet(onDismissRequest = { wealthOpen = false }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
-            WealthScreen(workspace = workspace, overview = data, onSaved = { wealthOpen = false; changed() }, onCancel = { wealthOpen = false })
+            WealthScreen(workspace = workspace, overview = data, profileId = data.profile?.id, onSaved = { wealthOpen = false; changed() }, onCancel = { wealthOpen = false })
         }
+    }
+    val dialog = profileDialog
+    if (dialog != null) {
+        val adding = dialog == "add"
+        AlertDialog(
+            onDismissRequest = { profileDialog = null },
+            title = { Text(stringResource(if (adding) R.string.zakat_profile_add_title else R.string.zakat_profile_rename_title)) },
+            text = {
+                OutlinedTextField(
+                    value = profileName,
+                    onValueChange = {
+                        profileName = it.take(ZakatProfile.NAME_MAX)
+                        profileError = null
+                    },
+                    label = { Text(stringResource(R.string.zakat_profile_name)) },
+                    placeholder = { Text(stringResource(R.string.zakat_profile_name_hint)) },
+                    singleLine = true,
+                    isError = profileError != null,
+                    supportingText = profileError?.let { error -> { Text(stringResource(profileErrorText(error))) } },
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    enabled = profileName.isNotBlank(),
+                    onClick = {
+                        scope.launch {
+                            if (adding) {
+                                when (val result = workspace.zakat.addProfile(profileName)) {
+                                    is LedgerResult.Success -> {
+                                        profileId = result.value.id
+                                        profileDialog = null
+                                        changed()
+                                    }
+
+                                    is LedgerResult.Failure -> profileError = result.error
+                                }
+                            } else {
+                                val current = data.profile ?: return@launch
+                                when (val result = workspace.zakat.renameProfile(current.id, profileName)) {
+                                    is LedgerResult.Success -> {
+                                        profileDialog = null
+                                        changed()
+                                    }
+
+                                    is LedgerResult.Failure -> profileError = result.error
+                                }
+                            }
+                        }
+                    },
+                ) { Text(stringResource(R.string.zakat_profile_save)) }
+            },
+            dismissButton = { TextButton(onClick = { profileDialog = null }) { Text(stringResource(R.string.catat_date_cancel)) } },
+        )
+    }
+    if (archiving) {
+        val current = data.profile
+        AlertDialog(
+            onDismissRequest = { archiving = false },
+            title = { Text(stringResource(R.string.zakat_profile_archive_title, current?.name.orEmpty())) },
+            text = { Text(stringResource(R.string.zakat_profile_archive_body)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    archiving = false
+                    val target = current ?: return@TextButton
+                    scope.launch {
+                        when (val result = workspace.zakat.archiveProfile(target.id)) {
+                            is LedgerResult.Success -> {
+                                profileId = null
+                                changed()
+                            }
+
+                            is LedgerResult.Failure -> notifier.show(context.getString(profileErrorText(result.error)))
+                        }
+                    }
+                }) { Text(stringResource(R.string.zakat_profile_archive), color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = { TextButton(onClick = { archiving = false }) { Text(stringResource(R.string.catat_date_cancel)) } },
+        )
     }
     val zakatStatus = data.status
     if (payOpen && zakatStatus is GivingStatus.Zakat) {
@@ -177,6 +299,9 @@ fun ZakatFlow(workspace: AccountWorkspace, roomId: RoomId, notifier: Notifier, o
                 workspace = workspace,
                 roomId = roomId,
                 status = zakatStatus,
+                profileId = data.profile?.id,
+                // Dengan beberapa profil, nama profil ikut di catatan supaya transaksinya bisa dibedakan.
+                note = data.profile?.name?.takeIf { data.profiles.size > 1 },
                 onCancel = { payOpen = false },
                 onPaid = {
                     payOpen = false
@@ -186,6 +311,37 @@ fun ZakatFlow(workspace: AccountWorkspace, roomId: RoomId, notifier: Notifier, o
             )
         }
     }
+}
+
+// ---------------------------------------------------------------------------------- profil harta (Pro)
+
+/** Pemilih profil harta: satu chip per profil, tombol tambah (Pro), dan ubah nama atau arsipkan profil yang dipilih. */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun ProfileBar(overview: GivingOverview, onSelect: (String) -> Unit, onAdd: () -> Unit, onRename: () -> Unit, onArchive: () -> Unit) {
+    val spacing = MaterialTheme.spacing
+    Column(modifier = Modifier.padding(top = spacing.s3)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(spacing.s2)) {
+            overview.profiles.forEach { profile ->
+                FilterChip(selected = profile.id == overview.profile?.id, onClick = { onSelect(profile.id) }, label = { Text(profile.name) }, colors = rizqflowFilterChipColors())
+            }
+            AssistChip(onClick = onAdd, label = { Text(stringResource(R.string.zakat_profile_add)) })
+        }
+        Row {
+            TextButton(onClick = onRename) { Text(stringResource(R.string.zakat_profile_rename)) }
+            if (overview.profiles.size > 1) {
+                TextButton(onClick = onArchive) { Text(stringResource(R.string.zakat_profile_archive), color = MaterialTheme.colorScheme.error) }
+            }
+        }
+    }
+}
+
+private fun profileErrorText(error: LedgerError): Int = when (error) {
+    LedgerError.NAME_TAKEN -> R.string.zakat_profile_err_taken
+    LedgerError.INVALID_NAME -> R.string.zakat_profile_err_name
+    LedgerError.FEATURE_LOCKED -> R.string.role_locked_note
+    LedgerError.LAST_PROFILE -> R.string.zakat_profile_err_last
+    else -> R.string.catat_error_generic
 }
 
 // ---------------------------------------------------------------------------------- kartu status
@@ -299,7 +455,15 @@ private fun ZakatCard(status: GivingStatus.Zakat, goldPrice: com.roziqrizal.rizq
 // ---------------------------------------------------------------------------------- S17 Tunaikan zakat
 
 @Composable
-private fun PayZakatSheet(workspace: AccountWorkspace, roomId: RoomId, status: GivingStatus.Zakat, onCancel: () -> Unit, onPaid: (TransactionId) -> Unit) {
+private fun PayZakatSheet(
+    workspace: AccountWorkspace,
+    roomId: RoomId,
+    status: GivingStatus.Zakat,
+    profileId: String?,
+    note: String?,
+    onCancel: () -> Unit,
+    onPaid: (TransactionId) -> Unit,
+) {
     val spacing = MaterialTheme.spacing
     val today = remember { LocalDate.now() }
     var accounts by remember { mutableStateOf<List<Account>>(emptyList()) }
@@ -356,7 +520,7 @@ private fun PayZakatSheet(workspace: AccountWorkspace, roomId: RoomId, status: G
                 val account = accountId ?: return@Button
                 busy = true
                 scope.launch {
-                    val result = workspace.zakat.payZakat(roomId, AccountId(account), com.roziqrizal.rizqflow.domain.ledger.AmountPad.toRupiah(digits), today)
+                    val result = workspace.zakat.payZakat(roomId, AccountId(account), com.roziqrizal.rizqflow.domain.ledger.AmountPad.toRupiah(digits), today, note, profileId)
                     busy = false
                     when (result) {
                         is LedgerResult.Success -> onPaid(result.value)

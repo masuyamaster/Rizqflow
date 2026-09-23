@@ -691,4 +691,20 @@
     <string name="reminder_dca_channel_desc">Notifikasi saat tanggal jadwal DCA tiba dan belum dicatat</string>
     <string name="reminder_dca_title">Jadwal DCA belum dicatat</string>
     <string name="reminder_dca_body">%1$s dari %2$s, ruang %3$s.</string>
+
+    <!-- Multi-profil harta zakat (Pro) -->
+    <string name="zakat_profile_add">+ Profil</string>
+    <string name="zakat_profile_rename">Ubah nama</string>
+    <string name="zakat_profile_archive">Arsipkan</string>
+    <string name="zakat_profile_save">Simpan</string>
+    <string name="zakat_profile_add_title">Profil harta baru</string>
+    <string name="zakat_profile_rename_title">Ubah nama profil</string>
+    <string name="zakat_profile_name">Nama profil</string>
+    <string name="zakat_profile_name_hint">mis. Istri atau Usaha</string>
+    <string name="zakat_profile_archive_title">Arsipkan %1$s?</string>
+    <string name="zakat_profile_archive_body">Profil ini hilang dari daftar dan pengingat haulnya berhenti. Riwayat zakatnya tetap tersimpan.</string>
+    <string name="zakat_profile_err_taken">Nama profil itu sudah dipakai.</string>
+    <string name="zakat_profile_err_name">Nama profil 1 sampai 30 karakter.</string>
+    <string name="zakat_profile_err_last">Profil terakhir tidak bisa diarsipkan.</string>
+    <string name="reminder_haul_profile_body">%1$s (%2$s)</string>
 </resources>

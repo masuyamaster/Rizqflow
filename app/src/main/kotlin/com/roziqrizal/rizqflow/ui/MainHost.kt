@@ -485,6 +485,7 @@ fun MainHost(
                     notifier = notifier,
                     onClose = { zakatRoom = null },
                     onOpenTransaction = { editId = it.value },
+                    onOpenPaywall = { openPaywall(Feature.MULTI_ZAKAT_PROFILE) },
                 )
                 SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp))
             }
