@@ -82,7 +82,7 @@ fun AppRoot(
                     painter = painterResource(R.drawable.ic_rizqflow_wordmark),
                     contentDescription = null,
                     // Rasio dikunci (viewport wordmark 5440x1110) supaya gambar mengisi lebar penuh, bukan ukuran bawaan drawable.
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 5.dp).aspectRatio(5440f / 1110f),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 25.dp).aspectRatio(5440f / 1110f),
                     contentScale = ContentScale.FillWidth,
                 )
             }
