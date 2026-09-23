@@ -124,7 +124,7 @@ Pembeda utama produk.
 
 **Status 2026-09-22:** semua kriteria terpenuhi (flow F5 teruji lewat ZakatTest dan emulator, disclaimer ringkas dan layar Tentang lengkap tampil, modul bisa dimatikan lewat sakelar persentase donasi tanpa kehilangan data). Satu butir eksplisit tersisa di daftar tugas: pengingat haul (notifikasi), digeser ke Tahap 6 karena butuh infrastruktur notifikasi yang sama dengan S26.
 
-## Tahap 6 — Keamanan, data, dan polish (Selesai)
+## Tahap 6 — Keamanan, data, dan polish (In Progress)
 
 - [x] Kunci PIN dan biometrik (S19): PIN 6 angka diketik dua kali, lima kali salah menahan sementara 30 detik tanpa menghapus data, biometrik hanya bisa aktif setelah ada PIN dan bila tersedia di perangkat, kunci otomatis (segera/1/5/15 menit) diperiksa lewat lifecycle Activity saat kembali dari latar belakang, start dingin selalu terkunci bila ada PIN, FLAG_SECURE menyembunyikan nominal di tampilan aplikasi terakhir dan tangkapan layar; menu Lainnya > Keamanan untuk ubah PIN dan matikan kunci (keduanya minta PIN sekarang dulu); teruji ujung ke ujung di emulator termasuk lockout, kedua mode kunci otomatis, dan tampilan aplikasi terakhir (2026-09-22)
 - [x] Backup dan restore terenkripsi (S20) (2026-09-22): menu Lainnya > Backup dan data. Cadangkan menyalin berkas SQLite Room apa adanya (checkpoint WAL dulu supaya lengkap) dan mengenkripsinya AES-256-GCM dengan kunci PBKDF2-HMAC-SHA256 dari sandi pengguna (`BackupCrypto` di `:domain`, garam dan IV acak per cadangan, sandi minimal 6 karakter, dua kali ketik); berkas dibagikan lewat Storage Access Framework. Pulihkan meminta berkas lalu sandi dengan konfirmasi eksplisit menimpa data; sandi salah atau berkas rusak menampilkan pesan tanpa menyentuh data sekarang. Restore menutup ruang kerja, menimpa berkas database (menghapus sisa `-wal`/`-shm` lama), lalu membuka ulang — menu dan tab kembali ke Denah dengan data baru. Diuji: `BackupCryptoTest` (bolak-balik, sandi salah, berkas rusak, berkas terlalu pendek) di `:domain`; `:app:assembleDebug` dan unit test `:app`/`:data` lulus
@@ -140,7 +140,7 @@ Pembeda utama produk.
 
 **Selesai bila:** PIN/biometrik tidak bisa dilewati; backup lalu restore di perangkat lain menghasilkan data identik; koreksi saldo mencatat selisih dengan benar untuk akun tunai, e-wallet, dan bank.
 
-**Status 2026-09-23:** semua kriteria terpenuhi; seluruh butir Tahap 6 selesai termasuk butir Denah terakhir di atas.
+**Status 2026-09-23:** seluruh tugas terdaftar di atas sudah selesai (termasuk butir Denah terakhir). Dua kriteria masih menunggu verifikasi manual yang belum tercatat dilakukan (lihat checklist "Kriteria selesai" di halaman Tahap 6 Notion): **restore di perangkat fisik lain** (baru diuji bolak-balik di emulator/`BackupCryptoTest`, belum lintas perangkat) dan **berkas ekspor CSV dibuka di aplikasi spreadsheet sungguhan** (baru diperiksa isinya di emulator, belum di Sheets/Excel). PIN/biometrik dan koreksi saldo sudah terverifikasi sesuai kriteria.
 
 ## Tahap 7 — Monetisasi dan Pro (Backlog)
 
