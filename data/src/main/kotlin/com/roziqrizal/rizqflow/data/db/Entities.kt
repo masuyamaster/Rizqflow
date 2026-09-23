@@ -11,6 +11,7 @@ import com.roziqrizal.rizqflow.domain.model.RoomKind
 import com.roziqrizal.rizqflow.domain.model.TransactionKind
 import com.roziqrizal.rizqflow.domain.model.TransactionOrigin
 import com.roziqrizal.rizqflow.domain.model.WealthKind
+import com.roziqrizal.rizqflow.domain.recurring.Frequency
 
 /*
  * Skema Room versi 1, mengikuti docs/model-data.md. Aturan yang berlaku di semua tabel:
@@ -249,4 +250,37 @@ data class DcaPlanEntity(
     @ColumnInfo(name = "day_of_month") val dayOfMonth: Int,
     @ColumnInfo(name = "account_id") val accountId: String,
     @ColumnInfo(name = "category_id") val categoryId: String,
+)
+
+/**
+ * Aturan transaksi berulang (versi 4, Tahap 10). Uang berupa Long satuan terkecil, tanggal berupa
+ * epochDay. [nextDue] adalah kemunculan berikutnya yang belum dicatat; [startDate] adalah jangkar
+ * penghitungan jadwal.
+ */
+@Entity(
+    tableName = "recurring_rule",
+    foreignKeys = [
+        ForeignKey(AccountEntity::class, ["id"], ["account_id"], onDelete = ForeignKey.RESTRICT),
+        ForeignKey(AccountEntity::class, ["id"], ["to_account_id"], onDelete = ForeignKey.RESTRICT),
+        ForeignKey(RoomEntity::class, ["id"], ["room_id"], onDelete = ForeignKey.RESTRICT),
+        ForeignKey(CategoryEntity::class, ["id"], ["category_id"], onDelete = ForeignKey.RESTRICT),
+    ],
+    indices = [Index("account_id"), Index("to_account_id"), Index("room_id"), Index("category_id"), Index("next_due")],
+)
+data class RecurringRuleEntity(
+    @PrimaryKey val id: String,
+    val kind: TransactionKind,
+    val amount: Long,
+    val currency: String,
+    @ColumnInfo(name = "account_id") val accountId: String,
+    @ColumnInfo(name = "to_account_id") val toAccountId: String?,
+    @ColumnInfo(name = "room_id") val roomId: String?,
+    @ColumnInfo(name = "category_id") val categoryId: String?,
+    @ColumnInfo(name = "income_source") val incomeSource: String?,
+    val note: String?,
+    val frequency: Frequency,
+    @ColumnInfo(name = "start_date") val startDate: Long,
+    @ColumnInfo(name = "next_due") val nextDue: Long,
+    @ColumnInfo(name = "end_date") val endDate: Long?,
+    val active: Boolean,
 )

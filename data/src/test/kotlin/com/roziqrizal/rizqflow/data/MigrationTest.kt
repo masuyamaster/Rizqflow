@@ -5,6 +5,7 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.roziqrizal.rizqflow.data.db.MIGRATION_1_2
 import com.roziqrizal.rizqflow.data.db.MIGRATION_2_3
+import com.roziqrizal.rizqflow.data.db.MIGRATION_3_4
 import com.roziqrizal.rizqflow.data.db.RizqflowDatabase
 import org.json.JSONObject
 import org.junit.Test
@@ -31,7 +32,7 @@ import kotlin.test.assertTrue
 class MigrationTest {
 
     @Test
-    fun `versi 1 sampai 3 menambah cap_amount tanpa menghapus data yang ada`() {
+    fun `versi 1 sampai 4 menambah cap_amount tanpa menghapus data yang ada`() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val dbFile = context.getDatabasePath(TEST_DB)
         dbFile.delete()
@@ -39,7 +40,7 @@ class MigrationTest {
         buildSchemaVersion1(context, dbFile.path)
 
         val db = Room.databaseBuilder(context, RizqflowDatabase::class.java, TEST_DB)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
             .build()
         try {
             db.openHelper.writableDatabase.query("SELECT share_bp, cap_amount FROM allocation_rule WHERE room_id = 'r1'").use { cursor ->
@@ -47,14 +48,14 @@ class MigrationTest {
                 assertEquals(10_000, cursor.getInt(0))
                 assertTrue(cursor.isNull(1))
             }
-            assertEquals(3, db.openHelper.readableDatabase.version)
+            assertEquals(4, db.openHelper.readableDatabase.version)
         } finally {
             db.close()
         }
     }
 
     @Test
-    fun `versi 1 sampai 3 menambah tabel peran yang kosong dan bisa dipakai`() {
+    fun `versi 1 sampai 4 menambah tabel peran yang kosong dan bisa dipakai`() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val dbFile = context.getDatabasePath(TEST_DB)
         dbFile.delete()
@@ -62,7 +63,7 @@ class MigrationTest {
         buildSchemaVersion1(context, dbFile.path)
 
         val db = Room.databaseBuilder(context, RizqflowDatabase::class.java, TEST_DB)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
             .build()
         try {
             val sqlite = db.openHelper.writableDatabase
@@ -73,6 +74,34 @@ class MigrationTest {
             kotlinx.coroutines.runBlocking {
                 db.roles().upsertTrader(com.roziqrizal.rizqflow.data.db.TraderProfileEntity("r1", 5_000_000, 100))
                 assertEquals(5_000_000, db.roles().trader("r1")!!.capital)
+            }
+        } finally {
+            db.close()
+        }
+    }
+
+    @Test
+    fun `versi 1 sampai 4 menambah tabel transaksi berulang yang kosong dan bisa dipakai`() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val dbFile = context.getDatabasePath(TEST_DB)
+        dbFile.delete()
+
+        buildSchemaVersion1(context, dbFile.path)
+
+        val db = Room.databaseBuilder(context, RizqflowDatabase::class.java, TEST_DB)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+            .build()
+        try {
+            db.openHelper.writableDatabase.query("SELECT COUNT(*) FROM recurring_rule").use { assertTrue(it.moveToFirst()); assertEquals(0, it.getInt(0)) }
+            kotlinx.coroutines.runBlocking {
+                db.accounts().upsert(com.roziqrizal.rizqflow.data.db.AccountEntity("a1", "Dompet", com.roziqrizal.rizqflow.domain.model.AccountKind.CASH, "IDR", 0, false, 0, null))
+                db.recurring().upsert(
+                    com.roziqrizal.rizqflow.data.db.RecurringRuleEntity(
+                        "rr1", com.roziqrizal.rizqflow.domain.model.TransactionKind.INCOME, 5_000_000, "IDR", "a1", null, null, null, "Gaji", null,
+                        com.roziqrizal.rizqflow.domain.recurring.Frequency.MONTHLY, 20_000, 20_000, null, true,
+                    ),
+                )
+                assertEquals(5_000_000, db.recurring().find("rr1")!!.amount)
             }
         } finally {
             db.close()

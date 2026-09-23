@@ -32,7 +32,7 @@ import java.time.LocalDate
 private fun currencyOf(code: String): Currency =
     Currency.entries.firstOrNull { it.code == code } ?: error("Mata uang tidak dikenal di database: $code")
 
-private fun money(minor: Long, code: String) = Money(minor, currencyOf(code))
+internal fun money(minor: Long, code: String) = Money(minor, currencyOf(code))
 
 internal fun AccountEntity.toDomain() = Account(
     id = AccountId(id),

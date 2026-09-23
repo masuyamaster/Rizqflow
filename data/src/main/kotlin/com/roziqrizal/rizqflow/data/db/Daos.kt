@@ -262,3 +262,18 @@ interface SettingsDao {
     @Query("SELECT COUNT(*) FROM day_check WHERE day = :day")
     suspend fun isDayChecked(day: Long): Int
 }
+
+@Dao
+interface RecurringDao {
+    @Query("SELECT * FROM recurring_rule ORDER BY next_due, id")
+    suspend fun all(): List<RecurringRuleEntity>
+
+    @Query("SELECT * FROM recurring_rule WHERE id = :id")
+    suspend fun find(id: String): RecurringRuleEntity?
+
+    @Upsert
+    suspend fun upsert(rule: RecurringRuleEntity)
+
+    @Query("DELETE FROM recurring_rule WHERE id = :id")
+    suspend fun delete(id: String)
+}
