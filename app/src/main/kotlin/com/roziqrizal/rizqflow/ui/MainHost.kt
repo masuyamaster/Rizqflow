@@ -11,6 +11,7 @@ import com.roziqrizal.rizqflow.ui.denah.DenahScreen
 import com.roziqrizal.rizqflow.ui.kelola.KelolaScreen
 import com.roziqrizal.rizqflow.ui.kelola.manageErrorText
 import com.roziqrizal.rizqflow.domain.ledger.ArchiveUndo
+import com.roziqrizal.rizqflow.ui.role.RoleFlow
 import com.roziqrizal.rizqflow.ui.ruang.AturanScreen
 import com.roziqrizal.rizqflow.ui.ruang.RoomDetailScreen
 import com.roziqrizal.rizqflow.ui.about.AboutScreen
@@ -109,6 +110,7 @@ fun MainHost(
     var roomDetail by rememberSaveable { mutableStateOf<String?>(null) }
     var roomMonth by rememberSaveable { mutableStateOf("") }
     var zakatRoom by rememberSaveable { mutableStateOf<String?>(null) }
+    var roleRoom by rememberSaveable { mutableStateOf<String?>(null) }
     var aboutOpen by rememberSaveable { mutableStateOf(false) }
     var reconcileAccount by rememberSaveable { mutableStateOf<String?>(null) }
     var reconcileOpen by rememberSaveable { mutableStateOf(false) }
@@ -457,6 +459,21 @@ fun MainHost(
                 SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 80.dp))
             }
         }
+    } else if (roleRoom != null) {
+        // Sama seperti Zakat: dibuka dari Detail ruang tanpa menutupnya, jadi Kembali balik ke sana.
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            Box {
+                RoleFlow(
+                    workspace = workspace,
+                    roomId = RoomId(roleRoom.orEmpty()),
+                    notifier = notifier,
+                    onClose = { roleRoom = null },
+                    onOpenPaywall = { openPaywall(Feature.ROLE_SYSTEMS) },
+                    onDataChanged = { version++ },
+                )
+                SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp))
+            }
+        }
     } else if (zakatRoom != null) {
         // Diperiksa sebelum roomDetail: dibuka DARI Detail ruang tanpa menutupnya (roomDetail tetap
         // terisi), supaya Kembali dari Zakat balik ke Detail ruang, bukan langsung ke Denah atau Ruang.
@@ -486,6 +503,7 @@ fun MainHost(
                     onOpenRules = { aturan = true },
                     onArchived = ::announceRoomArchived,
                     onOpenZakat = { zakatRoom = it.value },
+                    onOpenRole = { roleRoom = it.value },
                 )
                 SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp))
             }

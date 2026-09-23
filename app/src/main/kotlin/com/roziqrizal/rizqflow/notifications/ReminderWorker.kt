@@ -20,7 +20,8 @@ import java.time.LocalDate
  * Pengingat haul (Tahap 6) menumpang di sini juga, bukan worker terpisah: setiap kali pekerjaan
  * ini berjalan, ruang Memberi bermode zakat dicek juga (lihat `HaulReminderService`). Efeknya,
  * pengingat haul hanya jalan bila pengingat malam aktif — sengaja, supaya tidak menduplikasi
- * infrastruktur penjadwalan yang sudah ada (lihat roadmap Tahap 6).
+ * infrastruktur penjadwalan yang sudah ada (lihat roadmap Tahap 6). Jadwal DCA (sistem per peran,
+ * Pro) menumpang dengan cara dan batasan yang sama (lihat `DcaReminderService`).
  */
 class ReminderWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
@@ -37,6 +38,11 @@ class ReminderWorker(context: Context, params: WorkerParameters) : CoroutineWork
                 workspace.haulReminder.dueReminders(today).forEach { reminder ->
                     ReminderNotifier.showHaul(applicationContext, reminder.roomId.value, reminder.status)
                     workspace.haulReminder.markNotified(reminder)
+                }
+                workspace.dcaReminder.dueReminders(today).forEach { reminder ->
+                    val roomName = workspace.repositories.rooms.find(reminder.roomId)?.name.orEmpty()
+                    ReminderNotifier.showDca(applicationContext, reminder.roomId.value, roomName, reminder.view)
+                    workspace.dcaReminder.markNotified(reminder)
                 }
             }
             if (settings.enabled) ReminderScheduler.scheduleNext(applicationContext, settings)

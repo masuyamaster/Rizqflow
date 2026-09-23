@@ -79,6 +79,7 @@ import com.roziqrizal.rizqflow.domain.model.CategoryId
 import com.roziqrizal.rizqflow.domain.model.RoomId
 import com.roziqrizal.rizqflow.domain.model.TransactionId
 import com.roziqrizal.rizqflow.domain.model.TransactionKind
+import com.roziqrizal.rizqflow.domain.role.RiskWarning
 import com.roziqrizal.rizqflow.domain.money.Money
 import com.roziqrizal.rizqflow.ui.RizqflowIcons
 import com.roziqrizal.rizqflow.ui.formatDate
@@ -158,6 +159,7 @@ fun CatatFlow(
     var busy by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<LedgerError?>(null) }
     var warning by remember { mutableStateOf<BudgetWarning?>(null) }
+    var riskWarning by remember { mutableStateOf<RiskWarning?>(null) }
     var pickingDate by remember { mutableStateOf(false) }
     var asFavorite by rememberSaveable { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -167,6 +169,12 @@ fun CatatFlow(
         val room = draft.roomId
         warning = if (draft.mode == CatatMode.EXPENSE && draft.amount.isPositive && room != null) {
             workspace.ledger.budgetWarning(room, draft.amount, draft.date, excluding = editing)
+        } else {
+            null
+        }
+        // Ruang Trader (Pro): pengeluaran di atas batas risiko per trade diberi tahu, bukan diblokir.
+        riskWarning = if (draft.mode == CatatMode.EXPENSE && draft.amount.isPositive && room != null) {
+            workspace.roles.riskWarning(room, draft.amount)
         } else {
             null
         }
@@ -346,7 +354,12 @@ fun CatatFlow(
             }
 
             // Banner dan petunjuk tepat di bawah nominal supaya terlihat tanpa menggulir.
-            warning?.let { WarningBanner(it) }
+            warning?.let {
+                SoftBanner(stringResource(R.string.catat_over_budget, it.room.name, formatRupiah(it.spentAfter), formatRupiah(it.allocated)))
+            }
+            riskWarning?.let {
+                SoftBanner(stringResource(R.string.catat_over_risk, formatRupiah(it.maxRisk), formatRupiah(it.amount)))
+            }
             error?.let { Hint(stringResource(errorText(it))) }
             if (issue != null && draft.amount.isPositive) Hint(stringResource(issueText(issue)))
 
@@ -582,9 +595,9 @@ private fun Hint(text: String) {
     )
 }
 
-/** Banner lembut (bukan merah): jatah terlampaui, tetapi tetap bisa disimpan. */
+/** Banner lembut (bukan merah): jatah atau batas risiko terlampaui, tetapi tetap bisa disimpan. */
 @Composable
-private fun WarningBanner(warning: BudgetWarning) {
+private fun SoftBanner(text: String) {
     val spacing = MaterialTheme.spacing
     Row(
         modifier = Modifier
@@ -596,10 +609,7 @@ private fun WarningBanner(warning: BudgetWarning) {
         horizontalArrangement = Arrangement.spacedBy(spacing.s3),
     ) {
         Icon(RizqflowIcons.Peringatan, contentDescription = null, tint = MaterialTheme.rizqflow.statusWarning)
-        Text(
-            stringResource(R.string.catat_over_budget, warning.room.name, formatRupiah(warning.spentAfter), formatRupiah(warning.allocated)),
-            style = MaterialTheme.typography.bodyMedium,
-        )
+        Text(text, style = MaterialTheme.typography.bodyMedium)
     }
 }
 

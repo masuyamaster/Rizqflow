@@ -51,6 +51,8 @@ import com.roziqrizal.rizqflow.domain.ledger.RoomTransaction
 import com.roziqrizal.rizqflow.domain.model.RoomId
 import com.roziqrizal.rizqflow.domain.model.RoomKind
 import com.roziqrizal.rizqflow.domain.model.TransactionId
+import com.roziqrizal.rizqflow.domain.role.RoleKind
+import com.roziqrizal.rizqflow.domain.role.RoleOverview
 import com.roziqrizal.rizqflow.ui.Notifier
 import com.roziqrizal.rizqflow.ui.RizqflowIcons
 import com.roziqrizal.rizqflow.ui.RoomTile
@@ -89,9 +91,12 @@ fun RoomDetailScreen(
     onArchived: (ArchiveUndo) -> Unit,
     /** Ruang bertipe Menunaikan saja: membuka modul Memberi (S14 sampai S17). */
     onOpenZakat: (RoomId) -> Unit = {},
+    /** Sistem per peran (Pro): membuka layar Peran untuk ruang ini. */
+    onOpenRole: (RoomId) -> Unit = {},
 ) {
     val today = remember { LocalDate.now() }
     var detail by remember { mutableStateOf<RoomDetail?>(null) }
+    var role by remember { mutableStateOf<RoleOverview?>(null) }
     var loaded by remember { mutableStateOf(false) }
     var confirmingArchive by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -101,6 +106,7 @@ fun RoomDetailScreen(
     LaunchedEffect(roomId, month, refreshKey) {
         val repos = workspace.repositories
         detail = RoomDetailLoader(repos.rooms, repos.transactions).load(roomId, month, today)
+        role = workspace.roles.overview(roomId, today)
         loaded = true
     }
     BackHandler(onBack = onClose)
@@ -166,6 +172,27 @@ fun RoomDetailScreen(
                 }
             }
 
+            // Ruang Memberi punya modul Zakat sendiri; ruang lain bisa memasang peran (Trader/Investor).
+            if (room.kind != RoomKind.MENUNAIKAN && (!room.archived || role?.kind != null)) {
+                Row(
+                    modifier = Modifier
+                        .padding(top = spacing.s4)
+                        .fillMaxWidth()
+                        .clickable(role = Role.Button) { onOpenRole(room.id) }
+                        .background(MaterialTheme.colorScheme.surfaceContainerLow, RoundedCornerShape(12.dp))
+                        .padding(spacing.s3),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(spacing.s3),
+                ) {
+                    Icon(if (role?.kind == RoleKind.INVESTOR) RizqflowIcons.Tunas else RizqflowIcons.PanahAtas, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(stringResource(R.string.room_detail_role_title), style = MaterialTheme.typography.titleSmall)
+                        Text(roleSummary(role), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    Icon(RizqflowIcons.PanahKanan, contentDescription = null)
+                }
+            }
+
             Text(stringResource(R.string.room_detail_pos), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = spacing.s5, bottom = spacing.s2))
             if (data.categories.isEmpty()) {
                 Text(stringResource(R.string.room_detail_pos_empty), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -215,6 +242,14 @@ fun RoomDetailScreen(
             dismissButton = { TextButton(onClick = { confirmingArchive = false }) { Text(stringResource(R.string.catat_date_cancel)) } },
         )
     }
+}
+
+/** Satu baris ringkasan peran ruang untuk kartu Peran: kosong, Trader dengan batasnya, atau Investor dengan jadwalnya. */
+@Composable
+private fun roleSummary(role: RoleOverview?): String {
+    role?.trader?.let { return stringResource(R.string.room_detail_role_sub_trader, formatRupiah(it.maxRiskPerTrade)) }
+    role?.dca?.let { return stringResource(R.string.room_detail_role_sub_investor, formatRupiah(it.plan.amount), it.plan.dayOfMonth) }
+    return stringResource(R.string.room_detail_role_sub_none)
 }
 
 /** Cincin progres besar, terpakai dari jatah, status ikon plus teks, dan penjelasan singkat arti statusnya. */

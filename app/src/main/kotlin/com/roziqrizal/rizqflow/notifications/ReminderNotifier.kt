@@ -14,7 +14,9 @@ import androidx.core.app.RemoteInput
 import androidx.core.content.ContextCompat
 import com.roziqrizal.rizqflow.MainActivity
 import com.roziqrizal.rizqflow.R
+import com.roziqrizal.rizqflow.domain.role.DcaView
 import com.roziqrizal.rizqflow.domain.zakat.HaulStatus
+import com.roziqrizal.rizqflow.ui.formatRupiah
 
 /** Menyusun dan menampilkan notifikasi pengingat malam (S26) beserta aksi Balas dan Tidak ada. */
 object ReminderNotifier {
@@ -28,6 +30,10 @@ object ReminderNotifier {
     /** Pemicu khusus haul (Tahap 6): channel dan id notifikasi terpisah, tapi menumpang worker dan izin yang sama. */
     private const val CHANNEL_ID_HAUL = "reminder_haul"
     private const val NOTIFICATION_ID_HAUL_BASE = 2610
+
+    /** Pemicu jadwal DCA (sistem per peran, Pro): channel dan id terpisah, menumpang worker yang sama. */
+    private const val CHANNEL_ID_DCA = "reminder_dca"
+    private const val NOTIFICATION_ID_DCA_BASE = 2900
 
     fun ensureChannel(context: Context) {
         val manager = context.getSystemService(NotificationManager::class.java) ?: return
@@ -46,6 +52,16 @@ object ReminderNotifier {
             context.getString(R.string.reminder_haul_channel_name),
             NotificationManager.IMPORTANCE_DEFAULT,
         ).apply { description = context.getString(R.string.reminder_haul_channel_desc) }
+        manager.createNotificationChannel(channel)
+    }
+
+    private fun ensureDcaChannel(context: Context) {
+        val manager = context.getSystemService(NotificationManager::class.java) ?: return
+        val channel = NotificationChannel(
+            CHANNEL_ID_DCA,
+            context.getString(R.string.reminder_dca_channel_name),
+            NotificationManager.IMPORTANCE_DEFAULT,
+        ).apply { description = context.getString(R.string.reminder_dca_channel_desc) }
         manager.createNotificationChannel(channel)
     }
 
@@ -133,6 +149,27 @@ object ReminderNotifier {
             .build()
 
         NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_HAUL_BASE + (roomId.hashCode() and 0xFF), notification)
+    }
+
+    /**
+     * Jadwal DCA yang tanggalnya tiba dan belum dicatat bulan ini: satu notifikasi per ruang, sekali
+     * per bulan (penandanya ada di `DcaReminderService`). Tanpa aksi; mengetuknya membuka aplikasi.
+     */
+    fun showDca(context: Context, roomId: String, roomName: String, view: DcaView) {
+        if (!canNotify(context)) return
+        ensureDcaChannel(context)
+
+        val amount = formatRupiah(view.plan.amount)
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID_DCA)
+            .setSmallIcon(R.drawable.ic_quick_catat)
+            .setContentTitle(context.getString(R.string.reminder_dca_title))
+            .setContentText(context.getString(R.string.reminder_dca_body, amount, view.accountName, roomName))
+            .setContentIntent(openIntent(context))
+            .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .build()
+
+        NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_DCA_BASE + (roomId.hashCode() and 0xFF), notification)
     }
 
     private fun canNotify(context: Context): Boolean =

@@ -41,6 +41,7 @@ private val Feature.benefitText: Int
         Feature.UNLIMITED_ROOMS -> R.string.pro_benefit_unlimited_rooms
         Feature.UNLIMITED_ACCOUNTS -> R.string.pro_benefit_unlimited_accounts
         Feature.ADVANCED_ALLOCATION_RULES -> R.string.pro_benefit_advanced_rules
+        Feature.ROLE_SYSTEMS -> R.string.pro_benefit_role_systems
         Feature.MULTI_ZAKAT_PROFILE -> R.string.pro_benefit_multi_zakat
         Feature.AUTOMATIC_GOLD_PRICE -> R.string.pro_benefit_gold_price
         Feature.REPORTS_AND_INSIGHTS -> R.string.pro_benefit_reports

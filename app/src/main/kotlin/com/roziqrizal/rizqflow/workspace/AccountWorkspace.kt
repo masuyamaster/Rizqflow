@@ -13,6 +13,8 @@ import com.roziqrizal.rizqflow.domain.ledger.ReconciliationService
 import com.roziqrizal.rizqflow.domain.ledger.ReminderService
 import com.roziqrizal.rizqflow.domain.ledger.RuleService
 import com.roziqrizal.rizqflow.domain.ledger.WorkspaceSetup
+import com.roziqrizal.rizqflow.domain.role.DcaReminderService
+import com.roziqrizal.rizqflow.domain.role.RoleService
 import com.roziqrizal.rizqflow.domain.zakat.HaulReminderService
 import com.roziqrizal.rizqflow.domain.zakat.ZakatService
 import java.util.UUID
@@ -40,6 +42,8 @@ class AccountWorkspace private constructor(private val local: LocalLedger, val p
     val reconciliation = ReconciliationService(local.accounts, local.rooms, local.transactions, ledger)
     val reminder = ReminderService(local.settings, local.accounts, local.rooms, local.transactions, ledger)
     val haulReminder = HaulReminderService(local.rooms, zakat, local.settings)
+    val roles = RoleService(local.rooms, local.accounts, local.transactions, local.roles, ledger, entitlements)
+    val dcaReminder = DcaReminderService(roles, local.settings)
     val demo = DemoData(setup, ledger, management, favorites, local.rooms)
 
     override fun close() = local.close()
