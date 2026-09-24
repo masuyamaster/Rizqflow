@@ -82,6 +82,15 @@ enum class LedgerError {
 
     /** Jadwal berulang tidak sah: tanggal awal sudah lewat, atau tanggal akhir sebelum tanggal awal. */
     INVALID_SCHEDULE,
+
+    /** Tagihan atau cicilan yang dimaksud tidak (lagi) ada. */
+    BILL_NOT_FOUND,
+
+    /** Tagihan sudah lunas (sekali bayar sudah dibayar, atau seluruh cicilan sudah terbayar); tidak ada yang bisa dibayar lagi. */
+    BILL_FINISHED,
+
+    /** Jumlah cicilan tidak sah: kurang dari 1, dipasang pada tagihan sekali bayar, atau lebih kecil dari yang sudah dibayar. */
+    INVALID_INSTALLMENTS,
 }
 
 sealed interface LedgerResult<out T> {

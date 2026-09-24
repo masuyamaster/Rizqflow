@@ -13,7 +13,7 @@ enum class RoomKind { MENUNAIKAN, MENUMBUHKAN, MENCUKUPI }
 enum class TransactionKind { INCOME, EXPENSE, TRANSFER }
 
 /** Dari mana transaksi berasal. */
-enum class TransactionOrigin { MANUAL, QUICK, REPLY, CORRECTION, DRAFT, IMPORT, RECURRING }
+enum class TransactionOrigin { MANUAL, QUICK, REPLY, CORRECTION, DRAFT, IMPORT, RECURRING, BILL }
 
 /** Jenis baris di profil harta zakat; [DEDUCTION] adalah pengurang (utang jangka pendek). */
 enum class WealthKind { GOLD, CASH_SAVINGS, INVESTMENT, RECEIVABLE, OTHER, DEDUCTION }
