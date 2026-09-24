@@ -17,8 +17,9 @@ import com.roziqrizal.rizqflow.domain.model.TransactionOrigin
 import com.roziqrizal.rizqflow.domain.money.Money
 import com.roziqrizal.rizqflow.domain.recurring.Frequency
 import com.roziqrizal.rizqflow.domain.recurring.RecurrenceSchedule
+import com.roziqrizal.rizqflow.domain.reminder.DueReminders
+import com.roziqrizal.rizqflow.domain.reminder.DueStage
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 
 /*
  * Tagihan dan cicilan (Tahap 10, Gratis): kewajiban bayar yang punya tanggal jatuh tempo, sekali
@@ -73,15 +74,12 @@ data class Bill(
         !active -> BillStatus.PAUSED
         nextDue < today -> BillStatus.OVERDUE
         nextDue == today -> BillStatus.DUE_TODAY
-        nextDue <= today.plusDays(SOON_DAYS) -> BillStatus.DUE_SOON
+        nextDue <= today.plusDays(DueReminders.SOON_DAYS) -> BillStatus.DUE_SOON
         else -> BillStatus.UPCOMING
     }
 
     companion object {
         const val NAME_MAX = 40
-
-        /** Jatuh tempo dalam [SOON_DAYS] hari ke depan sudah dianggap dekat. */
-        const val SOON_DAYS = 3L
     }
 }
 
@@ -276,8 +274,8 @@ class BillService(
     }
 }
 
-/** Tahap pengingat satu tagihan; urutannya menentukan apakah sapaan baru perlu (hanya naik, tidak pernah turun). */
-enum class BillReminderStage { APPROACHING, DUE_TODAY, OVERDUE }
+/** Tahap pengingat satu tagihan; sama dengan tahap jatuh tempo umum ([DueStage]). */
+typealias BillReminderStage = DueStage
 
 /** Satu tagihan yang perlu disapa hari ini; [daysLeft] negatif berarti terlambat sekian hari. */
 data class BillReminder(val bill: Bill, val stage: BillReminderStage, val daysLeft: Int)
@@ -285,11 +283,8 @@ data class BillReminder(val bill: Bill, val stage: BillReminderStage, val daysLe
 /**
  * Pengingat tagihan yang menumpang jadwal harian pengingat malam (S26), seperti `HaulReminderService`
  * dan `DcaReminderService`: bukan penjadwal baru, jadi hanya jalan bila pengingat malam aktif.
- * Menyapa paling banyak tiga kali per jatuh tempo: tiga hari sebelumnya, pada harinya, dan sekali
- * saat terlambat, lalu diam sampai dibayar. Penanda tersimpan (`bill_reminder_notified_<tagihan>` =
- * `<jatuh tempo>:<tahap>`) terikat pada jatuh temponya, jadi membayar (jatuh tempo maju)
- * dengan sendirinya memulai daur baru tanpa perlu menghapus apa pun. Tagihan yang dijeda atau
- * lunas tidak pernah disapa.
+ * Menyapa paling banyak tiga kali per jatuh tempo (aturannya di [DueReminders]), penandanya
+ * `bill_reminder_notified_<tagihan>`. Tagihan yang dijeda atau lunas tidak pernah disapa.
  */
 class BillReminderService(
     private val bills: BillRepository,
@@ -299,23 +294,12 @@ class BillReminderService(
         .filter { it.active && !it.isFinished }
         .sortedBy { it.nextDue }
         .mapNotNull { bill ->
-            val daysLeft = ChronoUnit.DAYS.between(today, bill.nextDue).toInt()
-            val stage = when {
-                daysLeft < 0 -> BillReminderStage.OVERDUE
-                daysLeft == 0 -> BillReminderStage.DUE_TODAY
-                daysLeft <= Bill.SOON_DAYS -> BillReminderStage.APPROACHING
-                else -> return@mapNotNull null
-            }
-            if (alreadyNotified(bill, stage)) null else BillReminder(bill, stage, daysLeft)
+            val (stage, daysLeft) = DueReminders.stageOf(today, bill.nextDue) ?: return@mapNotNull null
+            if (DueReminders.alreadyNotified(settings, keyFor(bill.id), bill.nextDue, stage)) null else BillReminder(bill, stage, daysLeft)
         }
 
     suspend fun markNotified(reminder: BillReminder) {
-        settings.put(keyFor(reminder.bill.id), "${reminder.bill.nextDue.toEpochDay()}:${reminder.stage.ordinal}")
-    }
-
-    private suspend fun alreadyNotified(bill: Bill, stage: BillReminderStage): Boolean {
-        val (due, notifiedStage) = settings.get(keyFor(bill.id))?.split(':')?.takeIf { it.size == 2 }?.let { it[0].toLongOrNull() to it[1].toIntOrNull() } ?: return false
-        return due == bill.nextDue.toEpochDay() && notifiedStage != null && notifiedStage >= stage.ordinal
+        DueReminders.markNotified(settings, keyFor(reminder.bill.id), reminder.bill.nextDue, reminder.stage)
     }
 
     private fun keyFor(billId: String) = "$KEY_PREFIX$billId"
