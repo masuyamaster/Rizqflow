@@ -26,7 +26,7 @@ Aplikasi finansial berbasis "hak": rezeki yang masuk dialirkan ke ruang-ruang (M
 ## Proyek Android
 
 - Application ID: `com.roziqrizal.rizqflow`. Tetap setelah terbit di Play Store (diputuskan 2026-09-20).
-- Modul Gradle: `:domain` (Kotlin/JVM murni, tanpa Android), `:data` (Room, skema versi 5; lihat docs/model-data.md), `:app` (Compose). `:app` dan `:data` boleh bergantung pada `:domain`, tidak sebaliknya.
+- Modul Gradle: `:domain` (Kotlin/JVM murni, tanpa Android), `:data` (Room, skema versi 6; lihat docs/model-data.md), `:app` (Compose). `:app` dan `:data` boleh bergantung pada `:domain`, tidak sebaliknya.
 - Versi: Gradle 9.7.1, AGP 9.4.1 (Kotlin bawaan AGP, tanpa plugin `kotlin-android`), Kotlin 2.4.20, compileSdk dan targetSdk 37, min SDK 26. Semua versi ada di `gradle/libs.versions.toml`.
 - Build dari terminal butuh **JDK 17 atau lebih baru** lewat `JAVA_HOME` (bukan Java 8 yang ada di PATH). CI memakai 17; JDK 25 bawaan Android Studio juga sudah dicoba dan lulus. Path Android SDK ada di `local.properties`, yang tidak di-commit. Perintah: `./gradlew :domain:test` dan `./gradlew :app:assembleDebug`.
 - Android Studio harus **Quail 4 (2026.1.4) atau lebih baru** (syarat minimum AGP 9.4); pakai kanal Stable dan tolak Upgrade Assistant. Chipmunk (2021.2) tidak bisa membuka proyek ini.

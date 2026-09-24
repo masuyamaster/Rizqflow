@@ -82,7 +82,7 @@ Entitas Transaction. Nama tabel `money_transaction` karena `TRANSACTION` kata ku
 
 | Kolom | Tipe | Catatan |
 |---|---|---|
-| kind | teks | `INCOME`, `EXPENSE`, `TRANSFER` |
+| kind | teks | `INCOME`, `EXPENSE`, `TRANSFER`, `LOAN_OUT`, `LOAN_IN` (pinjaman, lihat "Utang-piutang") |
 | amount | Long | **Selalu positif** |
 | currency | teks | |
 | account_id | FK | Akun asal (pengeluaran dan transfer) atau akun tujuan (pemasukan) |
@@ -91,10 +91,10 @@ Entitas Transaction. Nama tabel `money_transaction` karena `TRANSACTION` kata ku
 | income_source | teks, boleh kosong | Hanya pemasukan: Gaji, Usaha, Freelance, Lainnya |
 | occurred_on | epochDay | Bulan transaksi menentukan jatah ruang bulan itu |
 | note | teks, boleh kosong | |
-| origin | teks | `MANUAL`, `QUICK`, `REPLY`, `CORRECTION`, `DRAFT`, `IMPORT`, `RECURRING` (transaksi berulang), `BILL` (pembayaran tagihan) |
+| origin | teks | `MANUAL`, `QUICK`, `REPLY`, `CORRECTION`, `DRAFT`, `IMPORT`, `RECURRING` (transaksi berulang), `BILL` (pembayaran tagihan), `LOAN` (perpindahan uang utang-piutang) |
 | created_at, updated_at | epochMillis | |
 
-Batasan: `TRANSFER` tidak punya ruang dan tidak dihitung sebagai pemasukan atau pengeluaran; `account_id` dan `to_account_id` harus berbeda. Koreksi saldo (S25) hanyalah `EXPENSE` kategori sistem `Tak terlacak` atau `INCOME` dengan `origin = CORRECTION`.
+Batasan: `TRANSFER` tidak punya ruang dan tidak dihitung sebagai pemasukan atau pengeluaran; `account_id` dan `to_account_id` harus berbeda. Koreksi saldo (S25) hanyalah `EXPENSE` kategori sistem `Tak terlacak` atau `INCOME` dengan `origin = CORRECTION`. `LOAN_OUT` dan `LOAN_IN` hanya menggeser saldo satu akun (keluar atau masuk): tanpa ruang, kategori, akun tujuan, atau sumber, tanpa potret alokasi, dan tidak dihitung sebagai pengeluaran atau pemasukan (jatah ruang, Sisa aman hari ini, dan ringkasan rezeki tidak berubah). Rumus saldo akun: pembuka + `INCOME` + `LOAN_IN` + transfer masuk − `EXPENSE` − `LOAN_OUT` − transfer keluar.
 
 ### allocation_entry
 Potret alokasi satu pemasukan.
@@ -226,6 +226,17 @@ Enam butir ini sudah tertanam di skema versi 1 dan di lapisan data. Pemilik belu
 - **Pengingat** (`BillReminderService`) menumpang `ReminderWorker` harian sehingga hanya jalan bila pengingat malam aktif, seperti haul dan DCA. Tiga tahap per jatuh tempo: `APPROACHING` (1 sampai 3 hari lagi), `DUE_TODAY`, dan `OVERDUE`, masing-masing sekali. Penanda di `app_setting` (`bill_reminder_notified_<id>` = `<jatuh tempo>:<tahap>`) terikat pada jatuh temponya, jadi membayar memulai daur baru tanpa menghapus apa pun; tahap yang sudah terlewat tidak disapa mundur. Tagihan yang dijeda atau lunas tidak disapa.
 - Menghapus tagihan tidak menghapus pengeluaran yang sudah tercatat.
 
+### Utang-piutang (Gratis, versi 6, 2026-09-24)
+- **debt**: `id`, `direction` (`LENT` = piutang, saya meminjamkan; `BORROWED` = utang, saya meminjam), `party` (nama pihak, paling banyak 40 karakter), `principal` (Long), `currency`, `account_id` dan `initial_transaction_id` (kosong bila uangnya bergerak sebelum dicatat di aplikasi), `start_date`, `due_date` (boleh kosong), `note`, `collectible` (piutang diperkirakan kembali; hanya bermakna untuk `LENT`). `account_id` `ON DELETE RESTRICT`; `initial_transaction_id` `ON DELETE SET NULL`.
+- **debt_payment**: `id`, `debt_id` (`ON DELETE CASCADE`), `amount` (Long), `paid_on`, `transaction_id` (kosong bila pelunasan hanya mengurangi sisa tanpa menyentuh saldo; `ON DELETE SET NULL`). Rupiah saja untuk sekarang: pelunasan memakai mata uang utangnya dan belum punya kolom sendiri.
+- **Sisa tidak disimpan.** Sisa = `principal` dikurangi jumlah `debt_payment`, dihitung tiap dibaca, persis seperti saldo akun. Pelunasan tidak boleh melebihi sisa (`DEBT_OVERPAID`); sisa nol berarti lunas.
+- **Perpindahan uang** lewat `LedgerService.recordLoanMovement` (`origin = LOAN`): piutang baru = `LOAN_OUT`, pelunasan piutang = `LOAN_IN`, utang baru = `LOAN_IN`, bayar utang = `LOAN_OUT`. Pengenal transaksi tetap (`debt-<id>-open`, `debt-<id>-pay-<pelunasan>`). Bila perpindahannya gagal (mis. akun diarsipkan), tidak ada yang tersimpan. Pinjaman lama yang uangnya sudah bergerak sebelum dicatat memakai `recordMovement = false` (saldo tidak disentuh); pelunasannya pun boleh tanpa akun.
+- **Transaksi pinjaman tidak bisa diubah dari layar Detail** (S09): nominalnya terikat pada sisa. Mengetuknya di daftar Transaksi membuka layar Utang-piutang; yang salah dibetulkan di sana (hapus satu pelunasan, atau hapus utangnya).
+- **Menghapus utang** menghapus semua pelunasan dan transaksi saldonya (transaksi pinjaman tidak bisa dihapus dari daftar Transaksi, jadi tidak dibiarkan menggantung); saldo akun kembali seperti sebelum dicatat. **Menghapus satu pelunasan** menambah sisa lagi dan mengembalikan saldonya. Urungkan setelah mencatat pelunasan sama dengan menghapusnya.
+- **Ubah** hanya untuk nama pihak, jatuh tempo, catatan, dan `collectible`; pokok, arah, akun, dan tanggal pinjam terikat pada transaksi awalnya.
+- **Saran untuk profil harta zakat** (`DebtService.zakatSuggestion`), tidak pernah masuk otomatis: `receivable` = sisa piutang `LENT` yang `collectible` dan belum lunas; `shortTermDebt` = sisa utang `BORROWED` yang belum lunas dan jatuh tempo dalam 12 bulan dari hari ini atau tanpa jatuh tempo. Di S15 muncul baris "Dari Utang-piutang: Rp X" di bawah Piutang lancar dan Hutang jangka pendek dengan tombol Pakai, yang mengisi kolomnya; nilai baru tersimpan lewat Simpan seperti biasa. **Batas 12 bulan dan pemisahan lancar/macet adalah asumsi kerja yang belum diverifikasi dengan kitab**, sama seperti asumsi fikih lainnya.
+- **Pengingat** (`DebtReminderService`) memakai aturan sapaan yang sama dengan tagihan (`DueReminders`, lihat "Tagihan dan cicilan"): tiga hari sebelum, hari-H, dan sekali saat terlambat, penanda `debt_reminder_notified_<id>`. Utang saya dan piutang sama-sama disapa, dengan kata yang lembut untuk piutang (mengingatkan menagih). Utang tanpa jatuh tempo dan yang sudah lunas tidak disapa; pelunasan sebagian tidak mengubah jatuh tempo, jadi tidak memulai daur baru, sedangkan mengubah jatuh tempo memulai daur baru.
+
 ## Status implementasi
 
 Skema versi 1 sudah ditulis di `data/src/main/kotlin/.../data/db/` (14 entity, 4 DAO, `RizqflowDatabase`). Kueri SQL diperiksa saat kompilasi oleh Room, dan berkas skema JSON tersimpan di `data/schemas/`. Room 2.8.5 dengan KSP 2.3.12 berjalan di Gradle 9.7 dan AGP 9.4 (built-in Kotlin).
@@ -237,3 +248,5 @@ Skema naik ke **versi 3** (2026-09-23, `MIGRATION_2_3`: tabel baru `trader_profi
 Skema naik ke **versi 4** (2026-09-24, `MIGRATION_3_4`: tabel baru `recurring_rule` untuk transaksi berulang). Aditif saja. `MigrationTest.kt` kini menjalankan 1 sampai 4 sekaligus; Room sendiri memeriksa skema hasil migrasi terhadap `4.json` saat database dibuka, dan tes memastikan tabel barunya kosong dan bisa dipakai lewat DAO. Migrasi 3 ke 4 juga teruji pada database sungguhan di emulator (pasang ulang di atas data lama, tanpa crash).
 
 Skema naik ke **versi 5** (2026-09-24, `MIGRATION_4_5`: tabel baru `bill` untuk tagihan dan cicilan). Aditif saja. `MigrationTest.kt` kini menjalankan 1 sampai 5 sekaligus; pernyataan SQL migrasi sama dengan `createSql` di `5.json`, dan tes memastikan tabelnya kosong dan bisa dipakai lewat DAO.
+
+Skema naik ke **versi 6** (2026-09-24, `MIGRATION_5_6`: tabel baru `debt` dan `debt_payment` untuk utang-piutang). Aditif saja: `TransactionKind` bertambah dua nilai (`LOAN_OUT`, `LOAN_IN`) yang disimpan sebagai teks, jadi tidak ada perubahan kolom. `MigrationTest.kt` kini menjalankan 1 sampai 6 sekaligus; pernyataan SQL migrasi sama dengan `createSql` di `6.json`, dan tes memastikan kedua tabelnya kosong dan bisa dipakai lewat DAO.
