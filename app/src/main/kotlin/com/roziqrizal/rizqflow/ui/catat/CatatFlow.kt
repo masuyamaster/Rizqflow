@@ -167,6 +167,7 @@ fun CatatFlow(
     var riskWarning by remember { mutableStateOf<RiskWarning?>(null) }
     var pickingDate by remember { mutableStateOf(false) }
     var asFavorite by rememberSaveable { mutableStateOf(false) }
+    var smartInputOpen by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     // Banner lembut jatah terlampaui: dihitung ulang setiap nominal, ruang, atau tanggal berubah.
@@ -337,7 +338,17 @@ fun CatatFlow(
                 IconButton(onClick = onClose, enabled = !busy) {
                     Icon(RizqflowIcons.Tutup, contentDescription = stringResource(R.string.catat_close))
                 }
-                Text(stringResource(if (editing != null) R.string.detail_title else R.string.catat_title), style = MaterialTheme.typography.titleLarge)
+                Text(
+                    stringResource(if (editing != null) R.string.detail_title else R.string.catat_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.weight(1f),
+                )
+                // Input cerdas (Tahap 11): hanya untuk catatan baru, tidak untuk Detail (S09).
+                if (editing == null) {
+                    IconButton(onClick = { smartInputOpen = true }, enabled = !busy) {
+                        Icon(RizqflowIcons.Petir, contentDescription = stringResource(R.string.catat_smart_input))
+                    }
+                }
             }
 
             if (editing == null) {
@@ -564,6 +575,19 @@ fun CatatFlow(
             },
             dismissButton = { TextButton(onClick = { pickingDate = false }) { Text(stringResource(R.string.catat_date_cancel)) } },
         ) { DatePicker(state = pickerState) }
+    }
+
+    if (smartInputOpen) {
+        SmartInputSheet(
+            workspace = workspace,
+            catatContext = context,
+            today = today,
+            onUse = {
+                change(it)
+                smartInputOpen = false
+            },
+            onDismiss = { smartInputOpen = false },
+        )
     }
 }
 

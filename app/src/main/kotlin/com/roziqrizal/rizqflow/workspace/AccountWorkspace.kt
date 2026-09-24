@@ -20,6 +20,7 @@ import com.roziqrizal.rizqflow.domain.ledger.WorkspaceSetup
 import com.roziqrizal.rizqflow.domain.role.DcaReminderService
 import com.roziqrizal.rizqflow.domain.recurring.RecurringService
 import com.roziqrizal.rizqflow.domain.role.RoleService
+import com.roziqrizal.rizqflow.domain.smartinput.SmartInputService
 import com.roziqrizal.rizqflow.domain.zakat.HaulReminderService
 import com.roziqrizal.rizqflow.domain.zakat.ZakatService
 import java.util.UUID
@@ -54,6 +55,7 @@ class AccountWorkspace private constructor(private val local: LocalLedger, val p
     val billReminder = BillReminderService(local.bills, local.settings)
     val debts = DebtService(local.debts, local.accounts, local.transactions, ledger, newId)
     val debtReminder = DebtReminderService(local.debts, local.settings)
+    val smartInput = SmartInputService(local.transactions)
     val demo = DemoData(setup, ledger, management, favorites, local.rooms)
 
     override fun close() = local.close()

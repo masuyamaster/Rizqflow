@@ -151,6 +151,12 @@
     <!-- Catat S06 dan Pratinjau alokasi S07 -->
     <string name="catat_title">Catat</string>
     <string name="catat_close">Tutup</string>
+    <string name="catat_smart_input">Catat cerdas</string>
+    <string name="catat_smart_input_title">Catat cerdas</string>
+    <string name="catat_smart_input_hint">Ketik dalam satu kalimat, misalnya "gojek 23rb dari gopay" atau "gaji masuk 8jt". Semuanya diproses di perangkat, tanpa jaringan.</string>
+    <string name="catat_smart_input_placeholder">gojek 23rb dari gopay</string>
+    <string name="catat_smart_input_unreadable">Belum ada nominal yang terbaca.</string>
+    <string name="catat_smart_input_use">Gunakan</string>
     <string name="catat_tab_income">Pemasukan</string>
     <string name="catat_tab_expense">Pengeluaran</string>
     <string name="catat_tab_transfer">Transfer</string>

@@ -149,6 +149,12 @@
     <!-- Record S06 and Allocation preview S07 -->
     <string name="catat_title">Record</string>
     <string name="catat_close">Close</string>
+    <string name="catat_smart_input">Smart entry</string>
+    <string name="catat_smart_input_title">Smart entry</string>
+    <string name="catat_smart_input_hint">Type one sentence, like "gojek 23rb dari gopay" or "gaji masuk 8jt". Everything runs on-device, no network.</string>
+    <string name="catat_smart_input_placeholder">gojek 23rb dari gopay</string>
+    <string name="catat_smart_input_unreadable">No amount recognized yet.</string>
+    <string name="catat_smart_input_use">Use</string>
     <string name="catat_tab_income">Income</string>
     <string name="catat_tab_expense">Expense</string>
     <string name="catat_tab_transfer">Transfer</string>
