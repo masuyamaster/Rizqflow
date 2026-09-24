@@ -91,7 +91,7 @@ Entitas Transaction. Nama tabel `money_transaction` karena `TRANSACTION` kata ku
 | income_source | teks, boleh kosong | Hanya pemasukan: Gaji, Usaha, Freelance, Lainnya |
 | occurred_on | epochDay | Bulan transaksi menentukan jatah ruang bulan itu |
 | note | teks, boleh kosong | |
-| origin | teks | `MANUAL`, `QUICK`, `REPLY`, `CORRECTION`, `DRAFT`, `IMPORT`, `RECURRING` (transaksi berulang) |
+| origin | teks | `MANUAL`, `QUICK`, `REPLY`, `CORRECTION`, `DRAFT`, `IMPORT`, `RECURRING` (transaksi berulang), `BILL` (pembayaran tagihan) |
 | created_at, updated_at | epochMillis | |
 
 Batasan: `TRANSFER` tidak punya ruang dan tidak dihitung sebagai pemasukan atau pengeluaran; `account_id` dan `to_account_id` harus berbeda. Koreksi saldo (S25) hanyalah `EXPENSE` kategori sistem `Tak terlacak` atau `INCOME` dengan `origin = CORRECTION`.
@@ -215,6 +215,17 @@ Enam butir ini sudah tertanam di skema versi 1 dan di lapisan data. Pemilik belu
 - Kemunculan yang gagal (akun, ruang, atau kategori sudah diarsipkan) menahan aturan itu di tempatnya dan dilaporkan; aturan lain jalan terus. Setelah diperbaiki atau dipulihkan, yang tertahan disusul. Menjeda lalu melanjutkan **tidak** mengejar yang terlewat selama dijeda.
 - Aturan baru tidak boleh mulai sebelum hari ini (yang sudah lewat dicatat sendiri oleh pengguna). Menghapus aturan tidak menghapus transaksi yang sudah dicatat.
 
+### Tagihan dan cicilan (Gratis, versi 5, 2026-09-24)
+- **bill**: `id`, `name`, `amount` (Long), `currency`, `account_id`, `room_id`, `category_id` (selalu pengeluaran, jadi ketiganya wajib), `note`, `frequency` (`WEEKLY`, `MONTHLY`, atau kosong = sekali bayar), `start_date` (jangkar jadwal), `next_due` (jatuh tempo yang belum dibayar), `total_installments` (kosong = tanpa batas; hanya untuk tagihan berulang), `paid_count`, `active` (false = dijeda). Ketiga kunci asing `ON DELETE RESTRICT`.
+- **Beda dari transaksi berulang:** pembayaran tagihan terjadi di luar aplikasi, jadi tagihan **tidak pernah dicatat otomatis**. `BillService.pay` dipanggil saat pengguna mengetuk Bayar: mencatat pengeluaran lewat `LedgerService` (`origin = BILL`) lalu memajukan `next_due` dan `paid_count`. Jatuh tempo boleh sudah lewat (terlambat); membayar tagihan yang terlambat memajukan **satu** jatuh tempo saja, jadi tunggakan dua bulan dibayar dua kali.
+- **Tidak menggandakan.** Pengenal transaksi tetap `bill-<id tagihan>-<jatuh tempo>`; bila aplikasi mati setelah pengeluaran tersimpan tetapi sebelum tagihan maju, pembayaran berikutnya menemukan transaksinya dan hanya memajukan tagihan.
+- **Nominal yang dibayar boleh berbeda** dari `amount` (listrik dan air berubah tiap bulan); `amount` tidak ikut berubah. Catatan pengeluarannya nama tagihan, ditambah "(n/total)" untuk cicilan.
+- **Lunas:** tagihan sekali bayar setelah dibayar sekali; cicilan setelah `paid_count` mencapai `total_installments`. `next_due` tidak dimajukan lagi setelah lunas. Tagihan lunas tidak bisa dibayar (`BILL_FINISHED`).
+- **Urungkan** (`undoPay`) menghapus pengeluarannya dan mengembalikan tagihan persis seperti sebelum dibayar.
+- **Jadwal** memakai `RecurrenceSchedule` dari `start_date` seperti transaksi berulang; mengubah tanggal jatuh tempo di layar memindahkan jangkar, tanpa perubahan jangkar lama dipertahankan.
+- **Pengingat** (`BillReminderService`) menumpang `ReminderWorker` harian sehingga hanya jalan bila pengingat malam aktif, seperti haul dan DCA. Tiga tahap per jatuh tempo: `APPROACHING` (1 sampai 3 hari lagi), `DUE_TODAY`, dan `OVERDUE`, masing-masing sekali. Penanda di `app_setting` (`bill_reminder_notified_<id>` = `<jatuh tempo>:<tahap>`) terikat pada jatuh temponya, jadi membayar memulai daur baru tanpa menghapus apa pun; tahap yang sudah terlewat tidak disapa mundur. Tagihan yang dijeda atau lunas tidak disapa.
+- Menghapus tagihan tidak menghapus pengeluaran yang sudah tercatat.
+
 ## Status implementasi
 
 Skema versi 1 sudah ditulis di `data/src/main/kotlin/.../data/db/` (14 entity, 4 DAO, `RizqflowDatabase`). Kueri SQL diperiksa saat kompilasi oleh Room, dan berkas skema JSON tersimpan di `data/schemas/`. Room 2.8.5 dengan KSP 2.3.12 berjalan di Gradle 9.7 dan AGP 9.4 (built-in Kotlin).
@@ -224,3 +235,5 @@ Skema naik ke **versi 2** (2026-09-23, `MIGRATION_1_2`: `allocation_rule.cap_amo
 Skema naik ke **versi 3** (2026-09-23, `MIGRATION_2_3`: tabel baru `trader_profile` dan `dca_plan` untuk sistem per peran). Aditif saja. `MigrationTest.kt` kini menjalankan 1 sampai 3 sekaligus, memeriksa tabel baru kosong dan bisa dipakai lewat DAO; pernyataan SQL migrasi sama dengan `createSql` di `3.json`.
 
 Skema naik ke **versi 4** (2026-09-24, `MIGRATION_3_4`: tabel baru `recurring_rule` untuk transaksi berulang). Aditif saja. `MigrationTest.kt` kini menjalankan 1 sampai 4 sekaligus; Room sendiri memeriksa skema hasil migrasi terhadap `4.json` saat database dibuka, dan tes memastikan tabel barunya kosong dan bisa dipakai lewat DAO. Migrasi 3 ke 4 juga teruji pada database sungguhan di emulator (pasang ulang di atas data lama, tanpa crash).
+
+Skema naik ke **versi 5** (2026-09-24, `MIGRATION_4_5`: tabel baru `bill` untuk tagihan dan cicilan). Aditif saja. `MigrationTest.kt` kini menjalankan 1 sampai 5 sekaligus; pernyataan SQL migrasi sama dengan `createSql` di `5.json`, dan tes memastikan tabelnya kosong dan bisa dipakai lewat DAO.
