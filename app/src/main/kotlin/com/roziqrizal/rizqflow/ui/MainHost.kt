@@ -23,6 +23,7 @@ import com.roziqrizal.rizqflow.ui.bill.BillsScreen
 import com.roziqrizal.rizqflow.domain.bill.BillPayment
 import com.roziqrizal.rizqflow.domain.debt.DebtPayment
 import com.roziqrizal.rizqflow.ui.debt.DebtsScreen
+import com.roziqrizal.rizqflow.ui.report.ReportScreen
 import com.roziqrizal.rizqflow.ui.reminder.ReminderSettingsScreen
 import com.roziqrizal.rizqflow.ui.security.SecuritySettingsScreen
 import com.roziqrizal.rizqflow.ui.theme.ThemePreference
@@ -129,6 +130,7 @@ fun MainHost(
     var recurringOpen by rememberSaveable { mutableStateOf(false) }
     var billsOpen by rememberSaveable { mutableStateOf(false) }
     var debtsOpen by rememberSaveable { mutableStateOf(false) }
+    var reportOpen by rememberSaveable { mutableStateOf(false) }
     var backupOpen by rememberSaveable { mutableStateOf(false) }
     var tampilanOpen by rememberSaveable { mutableStateOf(false) }
     var paywallOpen by rememberSaveable { mutableStateOf(false) }
@@ -386,6 +388,7 @@ fun MainHost(
         onOpenRecurring = { recurringOpen = true },
         onOpenBills = { billsOpen = true },
         onOpenDebts = { debtsOpen = true },
+        onOpenReport = { reportOpen = true },
         onOpenPaywall = { openPaywall() },
         proOwned = Plan.PRO in ownedPlans,
     )
@@ -402,6 +405,11 @@ fun MainHost(
     if (recurringOpen) {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             RecurringScreen(workspace = workspace, onClose = { recurringOpen = false }, onChanged = { version++ })
+        }
+    }
+    if (reportOpen) {
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            ReportScreen(workspace = workspace, refreshKey = version, onClose = { reportOpen = false })
         }
     }
     if (debtsOpen) {

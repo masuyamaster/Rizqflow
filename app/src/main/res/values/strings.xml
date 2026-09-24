@@ -818,6 +818,21 @@
 
     <string name="menu_debts">Utang-piutang</string>
     <string name="menu_debts_sub">Pinjam ke atau dari teman dan keluarga, dengan pelunasan bertahap</string>
+    <string name="menu_report">Laporan</string>
+    <string name="menu_report_sub">Ringkasan bulanan dan perbandingan bulan lalu</string>
+    <string name="report_title">Laporan</string>
+    <string name="report_income">Pemasukan</string>
+    <string name="report_expense">Pengeluaran</string>
+    <string name="report_net">Sisa bulan ini</string>
+    <string name="report_up">Naik %1$s</string>
+    <string name="report_down">Turun %1$s</string>
+    <string name="report_vs_last_month">%1$s dari bulan lalu (%2$s)</string>
+    <string name="report_same_as_last_month">Sama dengan bulan lalu (%1$s)</string>
+    <string name="report_no_previous_data">Belum ada data bulan lalu</string>
+    <string name="report_by_room">Pengeluaran per ruang</string>
+    <string name="report_by_category">Kategori terbesar</string>
+    <string name="report_empty">Belum ada transaksi bulan ini.</string>
+    <string name="report_empty_hint">Ringkasan pemasukan, pengeluaran, dan perbandingan bulan lalu akan muncul di sini begitu ada transaksi.</string>
     <string name="debts_title">Utang-piutang</string>
     <string name="debts_add">Catat utang atau piutang</string>
     <string name="debts_empty">Belum ada utang atau piutang.</string>

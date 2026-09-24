@@ -819,6 +819,21 @@
 
     <string name="menu_debts">Debts and loans</string>
     <string name="menu_debts_sub">Money lent to or borrowed from friends and family, repaid in steps</string>
+    <string name="menu_report">Report</string>
+    <string name="menu_report_sub">Monthly summary and comparison to last month</string>
+    <string name="report_title">Report</string>
+    <string name="report_income">Income</string>
+    <string name="report_expense">Expense</string>
+    <string name="report_net">Left this month</string>
+    <string name="report_up">Up %1$s</string>
+    <string name="report_down">Down %1$s</string>
+    <string name="report_vs_last_month">%1$s from last month (%2$s)</string>
+    <string name="report_same_as_last_month">Same as last month (%1$s)</string>
+    <string name="report_no_previous_data">No data for last month yet</string>
+    <string name="report_by_room">Spending by room</string>
+    <string name="report_by_category">Biggest categories</string>
+    <string name="report_empty">No transactions this month yet.</string>
+    <string name="report_empty_hint">A summary of income, expenses, and comparison to last month will appear here once you have transactions.</string>
     <string name="debts_title">Debts and loans</string>
     <string name="debts_add">Add debt or loan</string>
     <string name="debts_empty">No debts or loans yet.</string>
