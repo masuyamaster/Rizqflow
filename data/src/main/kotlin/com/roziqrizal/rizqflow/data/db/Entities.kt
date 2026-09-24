@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.roziqrizal.rizqflow.domain.debt.DebtDirection
 import com.roziqrizal.rizqflow.domain.model.AccountKind
 import com.roziqrizal.rizqflow.domain.model.GoldPriceSource
 import com.roziqrizal.rizqflow.domain.model.RoomKind
@@ -314,4 +315,48 @@ data class BillEntity(
     @ColumnInfo(name = "total_installments") val totalInstallments: Int?,
     @ColumnInfo(name = "paid_count") val paidCount: Int,
     val active: Boolean,
+)
+
+/**
+ * Utang atau piutang (versi 6, Tahap 10). Uang berupa Long satuan terkecil, tanggal berupa epochDay.
+ * [accountId] dan [initialTransactionId] kosong untuk pinjaman lama yang uangnya bergerak sebelum dicatat;
+ * transaksi awalnya `ON DELETE SET NULL` supaya menghapusnya di tempat lain tidak menghalangi apa pun.
+ */
+@Entity(
+    tableName = "debt",
+    foreignKeys = [
+        ForeignKey(AccountEntity::class, ["id"], ["account_id"], onDelete = ForeignKey.RESTRICT),
+        ForeignKey(TransactionEntity::class, ["id"], ["initial_transaction_id"], onDelete = ForeignKey.SET_NULL),
+    ],
+    indices = [Index("account_id"), Index("initial_transaction_id"), Index("due_date")],
+)
+data class DebtEntity(
+    @PrimaryKey val id: String,
+    val direction: DebtDirection,
+    val party: String,
+    val principal: Long,
+    val currency: String,
+    @ColumnInfo(name = "account_id") val accountId: String?,
+    @ColumnInfo(name = "initial_transaction_id") val initialTransactionId: String?,
+    @ColumnInfo(name = "start_date") val startDate: Long,
+    @ColumnInfo(name = "due_date") val dueDate: Long?,
+    val note: String?,
+    val collectible: Boolean,
+)
+
+/** Satu pelunasan; ikut terhapus bersama utangnya. [transactionId] kosong bila tidak dicatat ke saldo akun. */
+@Entity(
+    tableName = "debt_payment",
+    foreignKeys = [
+        ForeignKey(DebtEntity::class, ["id"], ["debt_id"], onDelete = ForeignKey.CASCADE),
+        ForeignKey(TransactionEntity::class, ["id"], ["transaction_id"], onDelete = ForeignKey.SET_NULL),
+    ],
+    indices = [Index("debt_id"), Index("transaction_id")],
+)
+data class DebtPaymentEntity(
+    @PrimaryKey val id: String,
+    @ColumnInfo(name = "debt_id") val debtId: String,
+    val amount: Long,
+    @ColumnInfo(name = "paid_on") val paidOn: Long,
+    @ColumnInfo(name = "transaction_id") val transactionId: String?,
 )

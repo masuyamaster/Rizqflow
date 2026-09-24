@@ -294,3 +294,30 @@ interface BillDao {
     @Query("DELETE FROM bill WHERE id = :id")
     suspend fun delete(id: String)
 }
+
+@Dao
+interface DebtDao {
+    @Query("SELECT * FROM debt ORDER BY start_date, id")
+    suspend fun all(): List<DebtEntity>
+
+    @Query("SELECT * FROM debt WHERE id = :id")
+    suspend fun find(id: String): DebtEntity?
+
+    @Upsert
+    suspend fun upsert(debt: DebtEntity)
+
+    @Query("DELETE FROM debt WHERE id = :id")
+    suspend fun delete(id: String)
+
+    @Query("SELECT * FROM debt_payment ORDER BY paid_on, id")
+    suspend fun allPayments(): List<DebtPaymentEntity>
+
+    @Query("SELECT * FROM debt_payment WHERE id = :id")
+    suspend fun findPayment(id: String): DebtPaymentEntity?
+
+    @Upsert
+    suspend fun upsertPayment(payment: DebtPaymentEntity)
+
+    @Query("DELETE FROM debt_payment WHERE id = :id")
+    suspend fun deletePayment(id: String)
+}

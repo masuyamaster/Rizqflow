@@ -7,6 +7,7 @@ import com.roziqrizal.rizqflow.data.db.MIGRATION_1_2
 import com.roziqrizal.rizqflow.data.db.MIGRATION_2_3
 import com.roziqrizal.rizqflow.data.db.MIGRATION_3_4
 import com.roziqrizal.rizqflow.data.db.MIGRATION_4_5
+import com.roziqrizal.rizqflow.data.db.MIGRATION_5_6
 import com.roziqrizal.rizqflow.data.db.RizqflowDatabase
 import org.json.JSONObject
 import org.junit.Test
@@ -33,7 +34,7 @@ import kotlin.test.assertTrue
 class MigrationTest {
 
     @Test
-    fun `versi 1 sampai 5 menambah cap_amount tanpa menghapus data yang ada`() {
+    fun `versi 1 sampai 6 menambah cap_amount tanpa menghapus data yang ada`() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val dbFile = context.getDatabasePath(TEST_DB)
         dbFile.delete()
@@ -41,7 +42,7 @@ class MigrationTest {
         buildSchemaVersion1(context, dbFile.path)
 
         val db = Room.databaseBuilder(context, RizqflowDatabase::class.java, TEST_DB)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
             .build()
         try {
             db.openHelper.writableDatabase.query("SELECT share_bp, cap_amount FROM allocation_rule WHERE room_id = 'r1'").use { cursor ->
@@ -49,14 +50,14 @@ class MigrationTest {
                 assertEquals(10_000, cursor.getInt(0))
                 assertTrue(cursor.isNull(1))
             }
-            assertEquals(5, db.openHelper.readableDatabase.version)
+            assertEquals(6, db.openHelper.readableDatabase.version)
         } finally {
             db.close()
         }
     }
 
     @Test
-    fun `versi 1 sampai 5 menambah tabel peran yang kosong dan bisa dipakai`() {
+    fun `versi 1 sampai 6 menambah tabel peran yang kosong dan bisa dipakai`() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val dbFile = context.getDatabasePath(TEST_DB)
         dbFile.delete()
@@ -64,7 +65,7 @@ class MigrationTest {
         buildSchemaVersion1(context, dbFile.path)
 
         val db = Room.databaseBuilder(context, RizqflowDatabase::class.java, TEST_DB)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
             .build()
         try {
             val sqlite = db.openHelper.writableDatabase
@@ -82,7 +83,7 @@ class MigrationTest {
     }
 
     @Test
-    fun `versi 1 sampai 5 menambah tabel transaksi berulang yang kosong dan bisa dipakai`() {
+    fun `versi 1 sampai 6 menambah tabel transaksi berulang yang kosong dan bisa dipakai`() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val dbFile = context.getDatabasePath(TEST_DB)
         dbFile.delete()
@@ -90,7 +91,7 @@ class MigrationTest {
         buildSchemaVersion1(context, dbFile.path)
 
         val db = Room.databaseBuilder(context, RizqflowDatabase::class.java, TEST_DB)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
             .build()
         try {
             db.openHelper.writableDatabase.query("SELECT COUNT(*) FROM recurring_rule").use { assertTrue(it.moveToFirst()); assertEquals(0, it.getInt(0)) }
@@ -110,7 +111,7 @@ class MigrationTest {
     }
 
     @Test
-    fun `versi 1 sampai 5 menambah tabel tagihan yang kosong dan bisa dipakai`() {
+    fun `versi 1 sampai 6 menambah tabel tagihan yang kosong dan bisa dipakai`() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val dbFile = context.getDatabasePath(TEST_DB)
         dbFile.delete()
@@ -118,7 +119,7 @@ class MigrationTest {
         buildSchemaVersion1(context, dbFile.path)
 
         val db = Room.databaseBuilder(context, RizqflowDatabase::class.java, TEST_DB)
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
             .build()
         try {
             db.openHelper.writableDatabase.query("SELECT COUNT(*) FROM bill").use { assertTrue(it.moveToFirst()); assertEquals(0, it.getInt(0)) }
@@ -132,6 +133,35 @@ class MigrationTest {
                     ),
                 )
                 assertEquals(12, db.bills().find("b1")!!.totalInstallments)
+            }
+        } finally {
+            db.close()
+        }
+    }
+
+    @Test
+    fun `versi 1 sampai 6 menambah tabel utang piutang yang kosong dan bisa dipakai`() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val dbFile = context.getDatabasePath(TEST_DB)
+        dbFile.delete()
+
+        buildSchemaVersion1(context, dbFile.path)
+
+        val db = Room.databaseBuilder(context, RizqflowDatabase::class.java, TEST_DB)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+            .build()
+        try {
+            val sqlite = db.openHelper.writableDatabase
+            sqlite.query("SELECT COUNT(*) FROM debt").use { assertTrue(it.moveToFirst()); assertEquals(0, it.getInt(0)) }
+            sqlite.query("SELECT COUNT(*) FROM debt_payment").use { assertTrue(it.moveToFirst()); assertEquals(0, it.getInt(0)) }
+            kotlinx.coroutines.runBlocking {
+                db.debts().upsert(
+                    com.roziqrizal.rizqflow.data.db.DebtEntity(
+                        "d1", com.roziqrizal.rizqflow.domain.debt.DebtDirection.LENT, "Budi", 200_000, "IDR", null, null, 20_000, null, null, true,
+                    ),
+                )
+                db.debts().upsertPayment(com.roziqrizal.rizqflow.data.db.DebtPaymentEntity("p1", "d1", 50_000, 20_001, null))
+                assertEquals(50_000, db.debts().allPayments().single().amount)
             }
         } finally {
             db.close()

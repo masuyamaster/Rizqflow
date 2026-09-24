@@ -18,6 +18,9 @@ import androidx.room.RoomDatabase
  *
  * Versi 5 (2026-09-24): menambah tabel `bill` untuk tagihan dan cicilan (Tahap 10, Gratis);
  * lihat [MIGRATION_4_5].
+ *
+ * Versi 6 (2026-09-24): menambah tabel `debt` dan `debt_payment` untuk utang-piutang (Tahap 10, Gratis);
+ * lihat [MIGRATION_5_6].
  */
 @Database(
     entities = [
@@ -39,8 +42,10 @@ import androidx.room.RoomDatabase
         DcaPlanEntity::class,
         RecurringRuleEntity::class,
         BillEntity::class,
+        DebtEntity::class,
+        DebtPaymentEntity::class,
     ],
-    version = 5,
+    version = 6,
     exportSchema = true,
 )
 abstract class RizqflowDatabase : RoomDatabase() {
@@ -53,4 +58,5 @@ abstract class RizqflowDatabase : RoomDatabase() {
     abstract fun roles(): RoleDao
     abstract fun recurring(): RecurringDao
     abstract fun bills(): BillDao
+    abstract fun debts(): DebtDao
 }

@@ -90,3 +90,33 @@ val MIGRATION_4_5 = object : Migration(4, 5) {
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_bill_next_due` ON `bill` (`next_due`)")
     }
 }
+
+/**
+ * Versi 5 ke 6 (2026-09-24): menambah `debt` dan `debt_payment` untuk utang-piutang (Tahap 10, Gratis).
+ * Aditif saja: dua tabel baru yang kosong, tidak ada baris lama yang tersentuh. Pernyataannya sama
+ * dengan `createSql` di berkas skema 6.json supaya skema hasil migrasi identik dengan skema yang
+ * dibuat dari nol.
+ */
+val MIGRATION_5_6 = object : Migration(5, 6) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS `debt` (`id` TEXT NOT NULL, `direction` TEXT NOT NULL, `party` TEXT NOT NULL, " +
+                "`principal` INTEGER NOT NULL, `currency` TEXT NOT NULL, `account_id` TEXT, `initial_transaction_id` TEXT, " +
+                "`start_date` INTEGER NOT NULL, `due_date` INTEGER, `note` TEXT, `collectible` INTEGER NOT NULL, " +
+                "PRIMARY KEY(`id`), " +
+                "FOREIGN KEY(`account_id`) REFERENCES `account`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT , " +
+                "FOREIGN KEY(`initial_transaction_id`) REFERENCES `money_transaction`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        )
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_debt_account_id` ON `debt` (`account_id`)")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_debt_initial_transaction_id` ON `debt` (`initial_transaction_id`)")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_debt_due_date` ON `debt` (`due_date`)")
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS `debt_payment` (`id` TEXT NOT NULL, `debt_id` TEXT NOT NULL, `amount` INTEGER NOT NULL, " +
+                "`paid_on` INTEGER NOT NULL, `transaction_id` TEXT, PRIMARY KEY(`id`), " +
+                "FOREIGN KEY(`debt_id`) REFERENCES `debt`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE , " +
+                "FOREIGN KEY(`transaction_id`) REFERENCES `money_transaction`(`id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        )
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_debt_payment_debt_id` ON `debt_payment` (`debt_id`)")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_debt_payment_transaction_id` ON `debt_payment` (`transaction_id`)")
+    }
+}
