@@ -277,3 +277,18 @@ interface RecurringDao {
     @Query("DELETE FROM recurring_rule WHERE id = :id")
     suspend fun delete(id: String)
 }
+
+@Dao
+interface BillDao {
+    @Query("SELECT * FROM bill ORDER BY next_due, id")
+    suspend fun all(): List<BillEntity>
+
+    @Query("SELECT * FROM bill WHERE id = :id")
+    suspend fun find(id: String): BillEntity?
+
+    @Upsert
+    suspend fun upsert(bill: BillEntity)
+
+    @Query("DELETE FROM bill WHERE id = :id")
+    suspend fun delete(id: String)
+}

@@ -5,8 +5,10 @@ import androidx.room.Room
 import com.roziqrizal.rizqflow.data.db.MIGRATION_1_2
 import com.roziqrizal.rizqflow.data.db.MIGRATION_2_3
 import com.roziqrizal.rizqflow.data.db.MIGRATION_3_4
+import com.roziqrizal.rizqflow.data.db.MIGRATION_4_5
 import com.roziqrizal.rizqflow.data.db.RizqflowDatabase
 import com.roziqrizal.rizqflow.data.repo.LocalAccountRepository
+import com.roziqrizal.rizqflow.data.repo.LocalBillRepository
 import com.roziqrizal.rizqflow.data.repo.LocalFavoriteRepository
 import com.roziqrizal.rizqflow.data.repo.LocalRecurringRepository
 import com.roziqrizal.rizqflow.data.repo.LocalRoleRepository
@@ -32,6 +34,7 @@ class LocalLedger(val db: RizqflowDatabase) : AutoCloseable {
     val zakat = LocalZakatRepository(db)
     val roles = LocalRoleRepository(db)
     val recurring = LocalRecurringRepository(db)
+    val bills = LocalBillRepository(db)
     val settings = LocalSettingsRepository(db)
 
     /** Berkas SQLite di balik database ini, dipakai apa adanya untuk cadangan (S20). */
@@ -57,7 +60,7 @@ class LocalLedger(val db: RizqflowDatabase) : AutoCloseable {
                 context.applicationContext,
                 RizqflowDatabase::class.java,
                 AccountStorage.databaseName(accountId),
-            ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4).build()
+            ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5).build()
             return LocalLedger(db)
         }
     }

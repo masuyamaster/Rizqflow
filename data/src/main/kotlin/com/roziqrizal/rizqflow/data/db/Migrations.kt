@@ -66,3 +66,27 @@ val MIGRATION_3_4 = object : Migration(3, 4) {
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_recurring_rule_next_due` ON `recurring_rule` (`next_due`)")
     }
 }
+
+/**
+ * Versi 4 ke 5 (2026-09-24): menambah `bill` untuk tagihan dan cicilan (Tahap 10, Gratis). Aditif
+ * saja: satu tabel baru yang kosong, tidak ada baris lama yang tersentuh. Pernyataannya sama
+ * dengan `createSql` di berkas skema 5.json supaya skema hasil migrasi identik dengan skema yang
+ * dibuat dari nol.
+ */
+val MIGRATION_4_5 = object : Migration(4, 5) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS `bill` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `amount` INTEGER NOT NULL, " +
+                "`currency` TEXT NOT NULL, `account_id` TEXT NOT NULL, `room_id` TEXT NOT NULL, `category_id` TEXT NOT NULL, " +
+                "`note` TEXT, `frequency` TEXT, `start_date` INTEGER NOT NULL, `next_due` INTEGER NOT NULL, " +
+                "`total_installments` INTEGER, `paid_count` INTEGER NOT NULL, `active` INTEGER NOT NULL, PRIMARY KEY(`id`), " +
+                "FOREIGN KEY(`account_id`) REFERENCES `account`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT , " +
+                "FOREIGN KEY(`room_id`) REFERENCES `room`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT , " +
+                "FOREIGN KEY(`category_id`) REFERENCES `category`(`id`) ON UPDATE NO ACTION ON DELETE RESTRICT )",
+        )
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_bill_account_id` ON `bill` (`account_id`)")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_bill_room_id` ON `bill` (`room_id`)")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_bill_category_id` ON `bill` (`category_id`)")
+        db.execSQL("CREATE INDEX IF NOT EXISTS `index_bill_next_due` ON `bill` (`next_due`)")
+    }
+}

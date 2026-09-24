@@ -15,6 +15,9 @@ import androidx.room.RoomDatabase
  *
  * Versi 4 (2026-09-24): menambah tabel `recurring_rule` untuk transaksi berulang (Tahap 10, Gratis);
  * lihat [MIGRATION_3_4].
+ *
+ * Versi 5 (2026-09-24): menambah tabel `bill` untuk tagihan dan cicilan (Tahap 10, Gratis);
+ * lihat [MIGRATION_4_5].
  */
 @Database(
     entities = [
@@ -35,8 +38,9 @@ import androidx.room.RoomDatabase
         TraderProfileEntity::class,
         DcaPlanEntity::class,
         RecurringRuleEntity::class,
+        BillEntity::class,
     ],
-    version = 4,
+    version = 5,
     exportSchema = true,
 )
 abstract class RizqflowDatabase : RoomDatabase() {
@@ -48,4 +52,5 @@ abstract class RizqflowDatabase : RoomDatabase() {
     abstract fun zakat(): ZakatDao
     abstract fun roles(): RoleDao
     abstract fun recurring(): RecurringDao
+    abstract fun bills(): BillDao
 }

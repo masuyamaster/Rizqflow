@@ -284,3 +284,34 @@ data class RecurringRuleEntity(
     @ColumnInfo(name = "end_date") val endDate: Long?,
     val active: Boolean,
 )
+
+/**
+ * Tagihan dan cicilan (versi 5, Tahap 10). Uang berupa Long satuan terkecil, tanggal berupa epochDay.
+ * [frequency] null berarti sekali bayar; [totalInstallments] null berarti tanpa batas cicilan.
+ * [nextDue] adalah jatuh tempo yang belum dibayar; [startDate] adalah jangkar penghitungan jadwal.
+ */
+@Entity(
+    tableName = "bill",
+    foreignKeys = [
+        ForeignKey(AccountEntity::class, ["id"], ["account_id"], onDelete = ForeignKey.RESTRICT),
+        ForeignKey(RoomEntity::class, ["id"], ["room_id"], onDelete = ForeignKey.RESTRICT),
+        ForeignKey(CategoryEntity::class, ["id"], ["category_id"], onDelete = ForeignKey.RESTRICT),
+    ],
+    indices = [Index("account_id"), Index("room_id"), Index("category_id"), Index("next_due")],
+)
+data class BillEntity(
+    @PrimaryKey val id: String,
+    val name: String,
+    val amount: Long,
+    val currency: String,
+    @ColumnInfo(name = "account_id") val accountId: String,
+    @ColumnInfo(name = "room_id") val roomId: String,
+    @ColumnInfo(name = "category_id") val categoryId: String,
+    val note: String?,
+    val frequency: Frequency?,
+    @ColumnInfo(name = "start_date") val startDate: Long,
+    @ColumnInfo(name = "next_due") val nextDue: Long,
+    @ColumnInfo(name = "total_installments") val totalInstallments: Int?,
+    @ColumnInfo(name = "paid_count") val paidCount: Int,
+    val active: Boolean,
+)
