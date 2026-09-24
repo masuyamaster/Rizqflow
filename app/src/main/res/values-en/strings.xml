@@ -382,6 +382,13 @@
     <string name="backup_section_title">Encrypted backup</string>
     <string name="backup_create_action">Back up now</string>
     <string name="backup_restore_action">Restore from file</string>
+    <string name="backup_shortcut_title">Folder shortcut</string>
+    <string name="backup_shortcut_hint">Pick a folder once, such as one in Google Drive, so the next Back up goes straight there without choosing a location again.</string>
+    <string name="backup_shortcut_pick">Pick folder</string>
+    <string name="backup_shortcut_saved_to">Backing up automatically to %1$s</string>
+    <string name="backup_shortcut_change">Change</string>
+    <string name="backup_shortcut_remove">Remove</string>
+    <string name="backup_shortcut_unavailable">This folder can no longer be reached. Pick another one.</string>
     <string name="backup_footer">Data only exists on this device. Back up regularly, especially before switching devices.</string>
     <string name="backup_sheet_title">Back up data</string>
     <string name="backup_password_label">Password</string>

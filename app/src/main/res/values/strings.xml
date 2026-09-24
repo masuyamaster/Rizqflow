@@ -384,6 +384,13 @@
     <string name="backup_section_title">Cadangan terenkripsi</string>
     <string name="backup_create_action">Cadangkan sekarang</string>
     <string name="backup_restore_action">Pulihkan dari berkas</string>
+    <string name="backup_shortcut_title">Pintasan folder</string>
+    <string name="backup_shortcut_hint">Pilih folder sekali, misalnya folder di Google Drive, supaya Cadangkan berikutnya langsung tersimpan ke sana tanpa memilih lokasi lagi.</string>
+    <string name="backup_shortcut_pick">Pilih folder</string>
+    <string name="backup_shortcut_saved_to">Cadangan otomatis ke %1$s</string>
+    <string name="backup_shortcut_change">Ganti</string>
+    <string name="backup_shortcut_remove">Hapus</string>
+    <string name="backup_shortcut_unavailable">Folder tidak lagi bisa diakses. Pilih folder lain.</string>
     <string name="backup_footer">Data hanya ada di perangkat ini. Cadangkan secara berkala, terutama sebelum berganti perangkat.</string>
     <string name="backup_sheet_title">Cadangkan data</string>
     <string name="backup_password_label">Sandi</string>

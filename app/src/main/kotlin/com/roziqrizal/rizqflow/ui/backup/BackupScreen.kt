@@ -5,6 +5,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +38,7 @@ import android.net.Uri
 import com.roziqrizal.rizqflow.R
 import com.roziqrizal.rizqflow.backup.BackupFileService
 import com.roziqrizal.rizqflow.backup.BackupPrefs
+import com.roziqrizal.rizqflow.backup.BackupShortcutFolder
 import com.roziqrizal.rizqflow.domain.backup.BackupCorruptOrWrongPassword
 import com.roziqrizal.rizqflow.domain.backup.BackupCrypto
 import com.roziqrizal.rizqflow.ui.Notifier
@@ -73,18 +76,23 @@ fun BackupScreen(workspace: AccountWorkspace, notifier: Notifier, onClose: () ->
     // ditutup dan hasil pemilih berkas kembali (proses tidak mati di antara keduanya).
     var pendingBackupPassword by remember { mutableStateOf<String?>(null) }
 
-    val backupLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) { uri ->
-        if (uri == null) return@rememberLauncherForActivityResult
-        val password = pendingBackupPassword
-        pendingBackupPassword = null
-        if (password == null) return@rememberLauncherForActivityResult
+    // Pintasan folder (Tahap 10): sekali dipilih, Cadangkan berikutnya langsung menulis ke sini
+    // tanpa dialog "Simpan sebagai". Nama folder dimuat ulang tiap URI berubah karena bisa saja
+    // izinnya sudah dicabut dari luar aplikasi (folder dihapus, akun Drive dicabut, dsb).
+    var shortcutFolderUri by rememberSaveable { mutableStateOf(prefs.shortcutFolderUri?.let(Uri::parse)) }
+    var shortcutFolderName by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(shortcutFolderUri) {
+        shortcutFolderName = shortcutFolderUri?.let { BackupShortcutFolder.displayName(context, it) }
+    }
+
+    fun runBackup(password: String, writer: suspend (ByteArray) -> Boolean) {
         busy = true
         scope.launch {
             val ok = runCatching {
                 val plain = BackupFileService.snapshot(workspace)
                 val encrypted = withContext(Dispatchers.Default) { BackupCrypto.encrypt(plain, password) }
-                context.contentResolver.openOutputStream(uri)?.use { it.write(encrypted) }
-            }.isSuccess
+                writer(encrypted)
+            }.getOrDefault(false)
             busy = false
             if (ok) {
                 val now = System.currentTimeMillis()
@@ -95,6 +103,22 @@ fun BackupScreen(workspace: AccountWorkspace, notifier: Notifier, onClose: () ->
                 notifier.show(context.getString(R.string.backup_failed))
             }
         }
+    }
+
+    val backupLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        val password = pendingBackupPassword
+        pendingBackupPassword = null
+        if (password == null) return@rememberLauncherForActivityResult
+        runBackup(password) { encrypted -> context.contentResolver.openOutputStream(uri)?.use { it.write(encrypted) } != null }
+    }
+
+    val folderLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        shortcutFolderUri?.let { BackupShortcutFolder.release(context, it) }
+        BackupShortcutFolder.persist(context, uri)
+        prefs.shortcutFolderUri = uri.toString()
+        shortcutFolderUri = uri
     }
 
     val restoreLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
@@ -134,6 +158,59 @@ fun BackupScreen(workspace: AccountWorkspace, notifier: Notifier, onClose: () ->
                 modifier = Modifier.padding(top = spacing.s2).fillMaxWidth().height(52.dp),
             ) { Text(stringResource(R.string.backup_restore_action)) }
 
+            Text(stringResource(R.string.backup_shortcut_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = spacing.s5))
+            val folderUri = shortcutFolderUri
+            when {
+                folderUri == null -> {
+                    Text(
+                        stringResource(R.string.backup_shortcut_hint),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = spacing.s1),
+                    )
+                    OutlinedButton(
+                        onClick = { folderLauncher.launch(null) },
+                        enabled = !busy,
+                        modifier = Modifier.padding(top = spacing.s2).fillMaxWidth().height(48.dp),
+                    ) { Text(stringResource(R.string.backup_shortcut_pick)) }
+                }
+
+                shortcutFolderName == null -> {
+                    // Izin sudah dicabut dari luar aplikasi (folder dihapus, akun Drive dicabut, dsb).
+                    Text(
+                        stringResource(R.string.backup_shortcut_unavailable),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = spacing.s1),
+                    )
+                    OutlinedButton(
+                        onClick = { folderLauncher.launch(null) },
+                        enabled = !busy,
+                        modifier = Modifier.padding(top = spacing.s2).fillMaxWidth().height(48.dp),
+                    ) { Text(stringResource(R.string.backup_shortcut_pick)) }
+                }
+
+                else -> {
+                    Text(
+                        stringResource(R.string.backup_shortcut_saved_to, shortcutFolderName ?: ""),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = spacing.s1),
+                    )
+                    Row(modifier = Modifier.padding(top = spacing.s2)) {
+                        TextButton(onClick = { folderLauncher.launch(null) }, enabled = !busy) { Text(stringResource(R.string.backup_shortcut_change)) }
+                        TextButton(
+                            onClick = {
+                                BackupShortcutFolder.release(context, folderUri)
+                                prefs.shortcutFolderUri = null
+                                shortcutFolderUri = null
+                            },
+                            enabled = !busy,
+                        ) { Text(stringResource(R.string.backup_shortcut_remove)) }
+                    }
+                }
+            }
+
             Text(
                 stringResource(R.string.backup_footer),
                 style = MaterialTheme.typography.bodySmall,
@@ -148,9 +225,14 @@ fun BackupScreen(workspace: AccountWorkspace, notifier: Notifier, onClose: () ->
             busy = busy,
             onDismiss = { backupSheet = false },
             onConfirm = { password ->
-                pendingBackupPassword = password
                 backupSheet = false
-                backupLauncher.launch(defaultBackupName())
+                val folder = shortcutFolderUri
+                if (folder != null) {
+                    runBackup(password) { encrypted -> BackupShortcutFolder.write(context, folder, defaultBackupName(), encrypted) }
+                } else {
+                    pendingBackupPassword = password
+                    backupLauncher.launch(defaultBackupName())
+                }
             },
         )
     }
