@@ -31,7 +31,7 @@ import com.roziqrizal.rizqflow.ui.theme.ThemePreference
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-private const val SPLASH_MIN_MILLIS = 1500L
+private const val SPLASH_MIN_MILLIS = 3000L
 
 /**
  * Akar tampilan: splash (sistem) lalu halaman masuk, atau langsung menu utama bila sudah punya

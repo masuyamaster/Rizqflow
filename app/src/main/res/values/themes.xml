@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Tema jendela saja (latar saat aplikasi dibuka); tampilan sebenarnya memakai Compose (ui/theme). -->
+    <!-- Tema jendela saja (latar saat aplikasi dibuka); tampilan sebenarnya memakai Compose (ui/theme).
+         windowBackground disamakan dengan ic_launcher_background (bukan rf_background) supaya window
+         yang sama dipakai splash sistem tidak pernah kelihatan warna salah sebelum Compose sempat
+         menggambar SplashContent(); dampaknya cuma kelihatan sekejap saat window pertama kali dibuat. -->
     <style name="Theme.Rizqflow" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:windowBackground">@color/rf_background</item>
+        <item name="android:windowBackground">@color/ic_launcher_background</item>
     </style>
 
-    <!-- Splash: latar sama dengan warna latar launcher icon (ic_launcher_background) supaya menyatu; ikon splash sistem = ikon aplikasi (seperti Al-Kaukaba), layar splash dengan wordmark besar ada di AppRoot; setelah siap beralih ke Theme.Rizqflow. -->
+    <!-- Splash: layar polos ic_launcher_background tanpa ikon terlihat; API Theme.SplashScreen
+         mewajibkan windowSplashScreenAnimatedIcon diisi, jadi dibuat warna solid sama dengan
+         background supaya menyatu dan tidak kelihatan sebagai ikon. Splash sistem lepas begitu
+         frame pertama Compose (SplashContent, wordmark) siap. -->
     <style name="Theme.Rizqflow.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/ic_launcher_background</item>
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="windowSplashScreenAnimatedIcon">@color/ic_launcher_background</item>
         <item name="postSplashScreenTheme">@style/Theme.Rizqflow</item>
     </style>
 </resources>
