@@ -35,6 +35,8 @@ object CsvExporter {
         TransactionKind.INCOME -> "Pemasukan"
         TransactionKind.EXPENSE -> "Pengeluaran"
         TransactionKind.TRANSFER -> "Transfer"
+        TransactionKind.LOAN_OUT -> "Pinjaman keluar"
+        TransactionKind.LOAN_IN -> "Pinjaman masuk"
     }
 
     internal fun escape(value: String): String =

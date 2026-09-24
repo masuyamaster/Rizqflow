@@ -222,6 +222,8 @@
     <string name="tx_income_default">Pemasukan</string>
     <string name="tx_expense_default">Pengeluaran</string>
     <string name="tx_transfer_default">Transfer</string>
+    <string name="tx_loan_out_default">Pinjaman keluar</string>
+    <string name="tx_loan_in_default">Pinjaman masuk</string>
     <string name="tx_sub_allocated">dialirkan ke %1$d ruang</string>
     <string name="tx_sub_unallocated">belum dialirkan</string>
     <string name="detail_title">Detail transaksi</string>

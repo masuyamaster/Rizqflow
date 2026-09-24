@@ -42,6 +42,8 @@ interface AccountDao {
              + COALESCE((SELECT SUM(amount) FROM money_transaction WHERE kind = 'INCOME' AND account_id = a.id), 0)
              - COALESCE((SELECT SUM(amount) FROM money_transaction WHERE kind = 'EXPENSE' AND account_id = a.id), 0)
              - COALESCE((SELECT SUM(amount) FROM money_transaction WHERE kind = 'TRANSFER' AND account_id = a.id), 0)
+             + COALESCE((SELECT SUM(amount) FROM money_transaction WHERE kind = 'LOAN_IN' AND account_id = a.id), 0)
+             - COALESCE((SELECT SUM(amount) FROM money_transaction WHERE kind = 'LOAN_OUT' AND account_id = a.id), 0)
              + COALESCE((SELECT SUM(amount) FROM money_transaction WHERE kind = 'TRANSFER' AND to_account_id = a.id), 0)
         FROM account a WHERE a.id = :accountId
         """,

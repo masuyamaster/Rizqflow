@@ -91,6 +91,18 @@ enum class LedgerError {
 
     /** Jumlah cicilan tidak sah: kurang dari 1, dipasang pada tagihan sekali bayar, atau lebih kecil dari yang sudah dibayar. */
     INVALID_INSTALLMENTS,
+
+    /** Utang atau piutang yang dimaksud tidak (lagi) ada. */
+    DEBT_NOT_FOUND,
+
+    /** Pelunasan melebihi sisa utang atau piutang (atau yang sudah lunas dibayar lagi). */
+    DEBT_OVERPAID,
+
+    /** Jatuh tempo utang atau piutang sebelum tanggal pinjam. */
+    INVALID_DUE_DATE,
+
+    /** Nama pihak (teman, keluarga, atau lainnya) kosong atau terlalu panjang. */
+    INVALID_PARTY,
 }
 
 sealed interface LedgerResult<out T> {
@@ -122,6 +134,20 @@ data class NewExpense(
     val occurredOn: LocalDate,
     val note: String? = null,
     val origin: TransactionOrigin = TransactionOrigin.MANUAL,
+    /** Lihat [NewIncome.id]. */
+    val id: String? = null,
+)
+
+/**
+ * Perpindahan uang utang-piutang: [kind] adalah [TransactionKind.LOAN_OUT] (uang keluar dari akun,
+ * mis. meminjamkan atau membayar utang) atau [TransactionKind.LOAN_IN] (uang masuk ke akun).
+ */
+data class NewLoanMovement(
+    val kind: TransactionKind,
+    val amount: Money,
+    val accountId: AccountId,
+    val occurredOn: LocalDate,
+    val note: String? = null,
     /** Lihat [NewIncome.id]. */
     val id: String? = null,
 )
@@ -248,6 +274,32 @@ class LedgerService(
     }
 
     /**
+     * Mencatat perpindahan uang utang-piutang: hanya menggeser saldo akun, tanpa ruang, kategori,
+     * atau alokasi. Dipanggil `DebtService`; layar Catat tidak menawarkannya.
+     */
+    suspend fun recordLoanMovement(command: NewLoanMovement): LedgerResult<MoneyTransaction> {
+        if (command.kind != TransactionKind.LOAN_OUT && command.kind != TransactionKind.LOAN_IN) return failure(LedgerError.KIND_MISMATCH)
+        if (!command.amount.isPositive) return failure(LedgerError.AMOUNT_NOT_POSITIVE)
+        val note = cleanNote(command.note) ?: return failure(LedgerError.NOTE_TOO_LONG)
+        checkAccount(command.accountId, command.amount)?.let { return failure(it) }
+
+        val now = nowMillis()
+        val transaction = MoneyTransaction(
+            id = TransactionId(command.id ?: newId()),
+            kind = command.kind,
+            amount = command.amount,
+            accountId = command.accountId,
+            occurredOn = command.occurredOn,
+            note = note.value,
+            origin = TransactionOrigin.LOAN,
+            createdAtMillis = now,
+            updatedAtMillis = now,
+        )
+        transactions.save(transaction)
+        return LedgerResult.Success(transaction)
+    }
+
+    /**
      * Mengubah nominal pemasukan (S09). Alokasi dihitung ulang dengan persentase potret lama;
      * ruang dan persentasenya tidak berubah, dan aturan alokasi saat ini tidak dipakai.
      */
@@ -338,6 +390,9 @@ class LedgerService(
                     current.copy(amount = amount, accountId = from, toAccountId = to, occurredOn = draft.date, note = note.value, updatedAtMillis = now),
                 )
             }
+
+            // Transaksi pinjaman dikelola di Utang-piutang; nominalnya terikat pada sisa utang, jadi tidak diubah dari sini.
+            TransactionKind.LOAN_OUT, TransactionKind.LOAN_IN -> return failure(LedgerError.KIND_MISMATCH)
         }
         return LedgerResult.Success(before)
     }

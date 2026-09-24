@@ -319,6 +319,8 @@ fun MainHost(
                 context.getString(R.string.saved_expense, amount) + extra
             }
             TransactionKind.TRANSFER -> context.getString(R.string.saved_transfer, amount)
+            // Transaksi pinjaman dicatat dari layar Utang-piutang, yang mengumumkannya sendiri.
+            TransactionKind.LOAN_OUT, TransactionKind.LOAN_IN -> context.getString(R.string.saved_transfer, amount)
         }
         scope.launch {
             snackbar.currentSnackbarData?.dismiss()

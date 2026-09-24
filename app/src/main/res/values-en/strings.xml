@@ -220,6 +220,8 @@
     <string name="tx_income_default">Income</string>
     <string name="tx_expense_default">Expense</string>
     <string name="tx_transfer_default">Transfer</string>
+    <string name="tx_loan_out_default">Loan out</string>
+    <string name="tx_loan_in_default">Loan in</string>
     <string name="tx_sub_allocated">flowed into %1$d rooms</string>
     <string name="tx_sub_unallocated">not yet allocated</string>
     <string name="detail_title">Transaction detail</string>

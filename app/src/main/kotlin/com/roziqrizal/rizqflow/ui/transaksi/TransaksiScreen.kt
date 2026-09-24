@@ -90,6 +90,8 @@ fun TransaksiScreen(
     notifier: Notifier,
     onOpen: (TransactionId) -> Unit,
     onQuickCatat: () -> Unit,
+    /** Transaksi pinjaman (utang-piutang) tidak dibuka di Detail; ketukannya membuka layar Utang-piutang. */
+    onOpenLoan: () -> Unit = {},
 ) {
     val today = remember { LocalDate.now() }
     var filter by rememberSaveable(stateSaver = FilterSaver) { mutableStateOf(ListFilter(YearMonth.from(today))) }
@@ -202,7 +204,7 @@ fun TransaksiScreen(
                             modifier = Modifier.padding(top = spacing.s3, bottom = spacing.s1),
                         )
                     }
-                    items(group.rows, key = { it.transaction.id.value }) { row -> TransactionItem(row) { onOpen(row.transaction.id) } }
+                    items(group.rows, key = { it.transaction.id.value }) { row -> TransactionItem(row) { if (row.transaction.kind.isLoan()) onOpenLoan() else onOpen(row.transaction.id) } }
                 }
             }
         }
@@ -288,6 +290,8 @@ private fun TransactionItem(row: TransactionRow, onClick: () -> Unit) {
         TransactionKind.EXPENSE -> tx.note ?: row.categoryName ?: stringResource(R.string.tx_expense_default)
         TransactionKind.INCOME -> tx.note ?: tx.incomeSource ?: stringResource(R.string.tx_income_default)
         TransactionKind.TRANSFER -> tx.note ?: stringResource(R.string.tx_transfer_default)
+        TransactionKind.LOAN_OUT -> tx.note ?: stringResource(R.string.tx_loan_out_default)
+        TransactionKind.LOAN_IN -> tx.note ?: stringResource(R.string.tx_loan_in_default)
     }
     val subtitle = when (tx.kind) {
         TransactionKind.EXPENSE -> listOfNotNull(row.categoryName, row.accountName.ifEmpty { null }).joinToString(" · ")
@@ -298,11 +302,13 @@ private fun TransactionItem(row: TransactionRow, onClick: () -> Unit) {
         }
 
         TransactionKind.TRANSFER -> "${row.accountName} → ${row.toAccountName.orEmpty()}"
+        TransactionKind.LOAN_OUT, TransactionKind.LOAN_IN -> row.accountName
     }
     val amountText = formatRupiah(tx.amount).removePrefix("Rp ").let {
         when (tx.kind) {
             TransactionKind.INCOME -> "+$it"
-            TransactionKind.EXPENSE -> "−$it"
+            TransactionKind.EXPENSE, TransactionKind.LOAN_OUT -> "−$it"
+            TransactionKind.LOAN_IN -> "+$it"
             TransactionKind.TRANSFER -> it
         }
     }
@@ -339,8 +345,12 @@ private fun RowIcon(row: TransactionRow) {
         TransactionKind.EXPENSE -> RoomTile(row.room?.iconKey.orEmpty(), row.room?.colorSlot ?: 1, size = 40)
         TransactionKind.INCOME -> GlyphTile(RizqflowIcons.PanahAtas, MaterialTheme.rizqflow.statusGood)
         TransactionKind.TRANSFER -> GlyphTile(RizqflowIcons.Transfer, MaterialTheme.colorScheme.onSurfaceVariant)
+        TransactionKind.LOAN_OUT -> GlyphTile(RizqflowIcons.PanahBawah, MaterialTheme.colorScheme.onSurfaceVariant)
+        TransactionKind.LOAN_IN -> GlyphTile(RizqflowIcons.PanahAtas, MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
+
+private fun TransactionKind.isLoan(): Boolean = this == TransactionKind.LOAN_OUT || this == TransactionKind.LOAN_IN
 
 @Composable
 private fun GlyphTile(icon: ImageVector, tint: androidx.compose.ui.graphics.Color) {

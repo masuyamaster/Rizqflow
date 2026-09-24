@@ -71,6 +71,8 @@ class InMemoryLedger : WorkspaceRepository, AccountRepository, RoomRepository, T
                     if (t.accountId == id) total -= t.amount
                     if (t.toAccountId == id) total += t.amount
                 }
+                TransactionKind.LOAN_OUT -> if (t.accountId == id) total -= t.amount
+                TransactionKind.LOAN_IN -> if (t.accountId == id) total += t.amount
             }
         }
         return total

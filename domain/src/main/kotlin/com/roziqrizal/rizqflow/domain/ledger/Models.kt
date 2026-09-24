@@ -92,6 +92,7 @@ data class Category(
  * - Pemasukan: satu akun, tanpa ruang dan kategori (dialirkan lewat [AllocationEntry]).
  * - Pengeluaran: satu akun, satu ruang, satu kategori milik ruang itu.
  * - Transfer: dua akun berbeda, tanpa ruang; bukan pemasukan dan bukan pengeluaran.
+ * - Pinjaman keluar atau masuk (utang-piutang): satu akun, tanpa ruang dan kategori; hanya menggeser saldo.
  */
 data class MoneyTransaction(
     val id: TransactionId,
@@ -123,6 +124,10 @@ data class MoneyTransaction(
             TransactionKind.TRANSFER -> {
                 require(toAccountId != null && toAccountId != accountId) { "Transfer butuh dua akun berbeda" }
                 require(roomId == null && categoryId == null && incomeSource == null) { "Transfer tidak punya ruang, kategori, atau sumber" }
+            }
+
+            TransactionKind.LOAN_OUT, TransactionKind.LOAN_IN -> require(toAccountId == null && roomId == null && categoryId == null && incomeSource == null) {
+                "Pinjaman tidak punya akun tujuan, ruang, kategori, atau sumber"
             }
         }
     }

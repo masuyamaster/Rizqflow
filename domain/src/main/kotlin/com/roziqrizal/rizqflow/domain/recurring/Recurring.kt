@@ -263,6 +263,8 @@ class RecurringService(
                 val to = rule.toAccountId ?: return LedgerError.ACCOUNT_NOT_FOUND
                 ledger.recordTransfer(NewTransfer(rule.amount, rule.accountId, to, date, rule.note, TransactionOrigin.RECURRING, id = transactionId))
             }
+
+            TransactionKind.LOAN_OUT, TransactionKind.LOAN_IN -> return LedgerError.KIND_MISMATCH
         }
         return (result as? LedgerResult.Failure)?.error
     }
@@ -288,6 +290,8 @@ class RecurringService(
                 if (to == draft.accountId) return LedgerError.SAME_ACCOUNT
                 checkAccount(to, draft.amount)?.let { return it }
             }
+
+            TransactionKind.LOAN_OUT, TransactionKind.LOAN_IN -> return LedgerError.KIND_MISMATCH
         }
         return null
     }

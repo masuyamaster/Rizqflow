@@ -164,11 +164,13 @@ private fun RuleRow(row: RecurringRow, today: LocalDate, onClick: () -> Unit) {
             TransactionKind.EXPENSE -> row.categoryName.orEmpty()
             TransactionKind.INCOME -> rule.incomeSource ?: stringResource(R.string.catat_tab_income)
             TransactionKind.TRANSFER -> stringResource(R.string.catat_tab_transfer) + " → " + row.toAccountName.orEmpty()
+            TransactionKind.LOAN_OUT, TransactionKind.LOAN_IN -> ""
         }
     val where = when (rule.kind) {
         TransactionKind.EXPENSE -> "${row.roomName.orEmpty()}, ${row.categoryName.orEmpty()}, ${row.accountName}"
         TransactionKind.INCOME -> stringResource(R.string.recurring_into, row.accountName)
         TransactionKind.TRANSFER -> "${row.accountName} → ${row.toAccountName.orEmpty()}"
+        TransactionKind.LOAN_OUT, TransactionKind.LOAN_IN -> row.accountName
     }
     val status = when {
         rule.isFinished -> stringResource(R.string.recurring_status_finished)
@@ -271,6 +273,7 @@ private fun RuleForm(
         TransactionKind.INCOME -> true
         TransactionKind.EXPENSE -> roomId != null && categoryId != null
         TransactionKind.TRANSFER -> toAccountId != null && toAccountId != accountId
+        TransactionKind.LOAN_OUT, TransactionKind.LOAN_IN -> false
     }
 
     fun save() {
@@ -383,6 +386,9 @@ private fun RuleForm(
                 Label(R.string.catat_to)
                 AccountChips(context, toAccountId) { toAccountId = it }
             }
+
+            // Transaksi pinjaman dibuat dari layar Utang-piutang, tidak pernah dari aturan berulang.
+            TransactionKind.LOAN_OUT, TransactionKind.LOAN_IN -> Unit
         }
 
         Label(R.string.recurring_frequency)

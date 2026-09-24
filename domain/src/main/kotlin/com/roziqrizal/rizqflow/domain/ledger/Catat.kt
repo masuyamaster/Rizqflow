@@ -137,6 +137,8 @@ data class CatatDraft(
                 TransactionKind.INCOME -> CatatMode.INCOME
                 TransactionKind.EXPENSE -> CatatMode.EXPENSE
                 TransactionKind.TRANSFER -> CatatMode.TRANSFER
+                TransactionKind.LOAN_OUT, TransactionKind.LOAN_IN ->
+                    throw IllegalArgumentException("Transaksi pinjaman dikelola di Utang-piutang, bukan di layar Catat")
             },
             digits = transaction.amount.minor.toString(),
             source = transaction.incomeSource,
