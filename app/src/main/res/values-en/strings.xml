@@ -287,6 +287,7 @@
     <string name="manage_system">System category</string>
     <string name="manage_add_category">Add category</string>
     <string name="manage_new_category">New category in %1$s</string>
+    <string name="manage_category_suggestions">Local suggestions</string>
     <string name="manage_edit_category">Edit category</string>
     <string name="manage_archived_category">Archived: %1$s</string>
     <string name="manage_favorites_hint">Shown in Quick record (up to %1$d)</string>

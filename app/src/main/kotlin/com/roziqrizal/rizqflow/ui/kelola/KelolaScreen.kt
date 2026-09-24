@@ -59,6 +59,7 @@ import com.roziqrizal.rizqflow.domain.ledger.Category
 import com.roziqrizal.rizqflow.domain.ledger.FavoriteRow
 import com.roziqrizal.rizqflow.domain.ledger.LedgerError
 import com.roziqrizal.rizqflow.domain.ledger.LedgerResult
+import com.roziqrizal.rizqflow.domain.ledger.LOCAL_CATEGORY_TEMPLATES
 import com.roziqrizal.rizqflow.domain.ledger.NewAccount
 import com.roziqrizal.rizqflow.domain.ledger.QuickFavorite
 import com.roziqrizal.rizqflow.domain.ledger.RoomCategories
@@ -425,6 +426,11 @@ private fun CategoriesTab(workspace: AccountWorkspace, notifier: Notifier, versi
     }
 
     sheet?.let { current ->
+        // Kategori yang sudah aktif di ruang itu tidak ditawarkan lagi sebagai usulan.
+        val suggestions = (current as? CategorySheet.New)?.let { new ->
+            val existing = data.firstOrNull { it.room.id == new.roomId }?.categories.orEmpty().map { it.name.lowercase() }.toSet()
+            LOCAL_CATEGORY_TEMPLATES.filter { it.lowercase() !in existing }
+        }.orEmpty()
         ModalBottomSheet(onDismissRequest = { sheet = null }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
             CategoryForm(
                 title = when (current) {
@@ -432,6 +438,7 @@ private fun CategoriesTab(workspace: AccountWorkspace, notifier: Notifier, versi
                     is CategorySheet.Edit -> stringResource(R.string.manage_edit_category)
                 },
                 initialName = (current as? CategorySheet.Edit)?.category?.name.orEmpty(),
+                suggestions = suggestions,
                 onCancel = { sheet = null },
                 onSave = { name ->
                     val result = when (current) {
@@ -462,10 +469,12 @@ private fun CategoriesTab(workspace: AccountWorkspace, notifier: Notifier, versi
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun CategoryForm(
     title: String,
     initialName: String,
+    suggestions: List<String> = emptyList(),
     onCancel: () -> Unit,
     onSave: suspend (String) -> LedgerError?,
     onArchive: (suspend () -> LedgerError?)?,
@@ -492,6 +501,27 @@ private fun CategoryForm(
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             modifier = Modifier.fillMaxWidth().padding(top = spacing.s3),
         )
+        if (suggestions.isNotEmpty()) {
+            Text(
+                stringResource(R.string.manage_category_suggestions),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = spacing.s3, bottom = spacing.s1),
+            )
+            FlowRow(horizontalArrangement = Arrangement.spacedBy(spacing.s2)) {
+                suggestions.forEach { suggestion ->
+                    FilterChip(
+                        selected = name == suggestion,
+                        onClick = {
+                            name = suggestion
+                            error = null
+                        },
+                        label = { Text(suggestion) },
+                        colors = rizqflowFilterChipColors(),
+                    )
+                }
+            }
+        }
         Button(
             onClick = {
                 busy = true

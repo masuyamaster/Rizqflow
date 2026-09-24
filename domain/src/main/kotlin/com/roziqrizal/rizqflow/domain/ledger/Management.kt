@@ -7,6 +7,14 @@ import com.roziqrizal.rizqflow.domain.model.CategoryId
 import com.roziqrizal.rizqflow.domain.model.RoomId
 import com.roziqrizal.rizqflow.domain.money.Money
 
+/**
+ * Nama kategori usulan untuk pos lokal Indonesia yang belum dilayani aplikasi global (S13, Tahap 10,
+ * Gratis; docs/research-market/research.md): arisan, THR dan Lebaran, kiriman ke orang tua, cicilan
+ * atau paylater. Hanya usulan nama saat menambah kategori; pengguna tetap bisa mengetik nama lain,
+ * dan usulan yang sudah dipakai di ruang itu tidak ditawarkan lagi.
+ */
+val LOCAL_CATEGORY_TEMPLATES = listOf("Arisan", "THR & Lebaran", "Kiriman orang tua", "Cicilan & paylater")
+
 data class NewAccount(val name: String, val kind: AccountKind, val openingBalance: Money)
 
 data class AccountRow(val account: Account, val balance: Money)

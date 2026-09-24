@@ -289,6 +289,7 @@
     <string name="manage_system">Kategori sistem</string>
     <string name="manage_add_category">Tambah kategori</string>
     <string name="manage_new_category">Kategori baru di %1$s</string>
+    <string name="manage_category_suggestions">Usulan pos lokal</string>
     <string name="manage_edit_category">Ubah kategori</string>
     <string name="manage_archived_category">Diarsipkan: %1$s</string>
     <string name="manage_favorites_hint">Tampil di Catat kilat (maksimal %1$d)</string>
