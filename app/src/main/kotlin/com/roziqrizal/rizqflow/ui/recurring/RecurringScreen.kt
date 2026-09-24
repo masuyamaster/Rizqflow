@@ -208,7 +208,7 @@ private fun recurringErrorText(error: LedgerError): Int = when (error) {
     else -> errorText(error)
 }
 
-private fun digitsOnly(text: String): String = text.filter(Char::isDigit).take(12)
+internal fun digitsOnly(text: String): String = text.filter(Char::isDigit).take(12)
 
 private fun LocalDate.toPickerMillis(): Long = atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
 
@@ -502,7 +502,7 @@ private fun RuleForm(
 private const val NO_DATE = Long.MIN_VALUE
 
 @Composable
-private fun Label(label: Int) {
+internal fun Label(label: Int) {
     Text(
         text = stringResource(label),
         style = MaterialTheme.typography.titleSmall,
@@ -512,7 +512,7 @@ private fun Label(label: Int) {
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun AccountChips(context: CatatContext, selected: String?, onPick: (String) -> Unit) {
+internal fun AccountChips(context: CatatContext, selected: String?, onPick: (String) -> Unit) {
     FlowRow(horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.s2)) {
         context.accounts.forEach { account ->
             FilterChip(selected = selected == account.id.value, onClick = { onPick(account.id.value) }, label = { Text(account.name) }, colors = rizqflowFilterChipColors())
@@ -522,7 +522,7 @@ private fun AccountChips(context: CatatContext, selected: String?, onPick: (Stri
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DateDialog(initial: LocalDate, minimum: LocalDate, onPicked: (LocalDate) -> Unit, onDismiss: () -> Unit) {
+internal fun DateDialog(initial: LocalDate, minimum: LocalDate, onPicked: (LocalDate) -> Unit, onDismiss: () -> Unit) {
     val minimumMillis = minimum.toPickerMillis()
     val state = rememberDatePickerState(
         initialSelectedDateMillis = maxOf(initial, minimum).toPickerMillis(),

@@ -19,6 +19,8 @@ import com.roziqrizal.rizqflow.ui.reconciliation.ReconciliationScreen
 import com.roziqrizal.rizqflow.ui.backup.BackupScreen
 import com.roziqrizal.rizqflow.ui.csv.CsvScreen
 import com.roziqrizal.rizqflow.ui.recurring.RecurringScreen
+import com.roziqrizal.rizqflow.ui.bill.BillsScreen
+import com.roziqrizal.rizqflow.domain.bill.BillPayment
 import com.roziqrizal.rizqflow.ui.reminder.ReminderSettingsScreen
 import com.roziqrizal.rizqflow.ui.security.SecuritySettingsScreen
 import com.roziqrizal.rizqflow.ui.theme.ThemePreference
@@ -123,6 +125,7 @@ fun MainHost(
     var securityOpen by rememberSaveable { mutableStateOf(false) }
     var csvOpen by rememberSaveable { mutableStateOf(false) }
     var recurringOpen by rememberSaveable { mutableStateOf(false) }
+    var billsOpen by rememberSaveable { mutableStateOf(false) }
     var backupOpen by rememberSaveable { mutableStateOf(false) }
     var tampilanOpen by rememberSaveable { mutableStateOf(false) }
     var paywallOpen by rememberSaveable { mutableStateOf(false) }
@@ -241,6 +244,30 @@ fun MainHost(
         }
     }
 
+    // Berjalan di scope MainHost supaya Urungkan tetap hidup setelah layar Tagihan ditutup.
+    fun announceBillPaid(payment: BillPayment) {
+        version++
+        val name = payment.updated.name
+        val message = if (payment.updated.isFinished) {
+            context.getString(R.string.bills_paid_done, name)
+        } else {
+            val next = formatDateWith(
+                payment.updated.nextDue,
+                LocalDate.now(),
+                context.getString(R.string.date_today),
+                context.getString(R.string.date_yesterday),
+                context.resources.getStringArray(R.array.month_abbrev).toList(),
+            )
+            context.getString(R.string.bills_paid_next, name, next)
+        }
+        scope.launch {
+            if (notifier.show(message, undoLabel)) {
+                workspace.bills.undoPay(payment)
+                version++
+            }
+        }
+    }
+
     fun announceFavorite(use: FavoriteUse) {
         version++
         scope.launch {
@@ -341,6 +368,7 @@ fun MainHost(
         onOpenBackup = { backupOpen = true },
         onOpenTampilan = { tampilanOpen = true },
         onOpenRecurring = { recurringOpen = true },
+        onOpenBills = { billsOpen = true },
         onOpenPaywall = { openPaywall() },
         proOwned = Plan.PRO in ownedPlans,
     )
@@ -357,6 +385,21 @@ fun MainHost(
     if (recurringOpen) {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             RecurringScreen(workspace = workspace, onClose = { recurringOpen = false }, onChanged = { version++ })
+        }
+    }
+    if (billsOpen) {
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            Box {
+                BillsScreen(
+                    workspace = workspace,
+                    refreshKey = version,
+                    onClose = { billsOpen = false },
+                    onChanged = { version++ },
+                    onPaid = ::announceBillPaid,
+                )
+                // Layar ini menutupi Scaffold beserta snackbar-nya, jadi ia membawa SnackbarHost sendiri.
+                SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp))
+            }
         }
     }
     if (csvOpen) {

@@ -712,11 +712,11 @@
 
     <!-- Recurring transactions (Stage 10) -->
     <string name="menu_recurring">Recurring transactions</string>
-    <string name="menu_recurring_sub">Salary, rent, or installments recorded automatically</string>
+    <string name="menu_recurring_sub">Salary or rent recorded automatically</string>
     <string name="recurring_title">Recurring transactions</string>
     <string name="recurring_add">Add recurring transaction</string>
     <string name="recurring_empty">No recurring transactions yet.</string>
-    <string name="recurring_empty_hint">Good for monthly salary, rent, or installments. The app records them when the date arrives, including any missed while the app was closed.</string>
+    <string name="recurring_empty_hint">Good for monthly salary or rent. The app records them when the date arrives, including any missed while the app was closed.</string>
     <string name="recurring_new">New recurring transaction</string>
     <string name="recurring_edit">Edit recurring transaction</string>
     <string name="recurring_frequency">Repeat</string>
@@ -749,4 +749,63 @@
         <item quantity="one">%d recurring transaction is blocked. Check its account, room, or category.</item>
         <item quantity="other">%d recurring transactions are blocked. Check their account, room, or category.</item>
     </plurals>
+
+    <string name="menu_bills">Bills and installments</string>
+    <string name="menu_bills_sub">Due-date reminders, pay with one tap</string>
+    <string name="bills_title">Bills and installments</string>
+    <string name="bills_add">Add bill</string>
+    <string name="bills_empty">No bills or installments yet.</string>
+    <string name="bills_empty_hint">Add electricity, internet, installments, or taxes. Rizqflow reminds you three days before, on the due date, and once if it is late. The expense is only recorded when you tap Pay, because the payment itself happens outside the app.</string>
+    <string name="bills_reminder_hint">Reminders follow the Evening reminder schedule; turn it on in the Evening reminder menu so bill notifications appear.</string>
+    <string name="bills_new">New bill</string>
+    <string name="bills_edit">Edit bill</string>
+    <string name="bills_name">Bill name</string>
+    <string name="bills_name_hint">For example Electricity or Motorbike installment</string>
+    <string name="bills_frequency">Repeats</string>
+    <string name="bills_freq_once">One time</string>
+    <string name="bills_due">Next due date</string>
+    <string name="bills_due_hint">A past date is fine if this bill is already late. Monthly bills due on the 31st fall on the last day of shorter months.</string>
+    <string name="bills_installments">Number of installments (optional)</string>
+    <string name="bills_installments_hint">Leave empty if there is no limit, such as electricity or a subscription.</string>
+    <string name="bills_already_paid">Already paid before</string>
+    <string name="bills_already_paid_hint">Fill this in if the installments started before you added them here.</string>
+    <string name="bills_row_due">Due %1$s</string>
+    <string name="bills_row_meta">%1$s · %2$s</string>
+    <string name="bills_row_where">%1$s, %2$s, %3$s</string>
+    <string name="bills_progress">Installment %1$d of %2$d</string>
+    <string name="bills_paid_times">Paid %1$d times</string>
+    <string name="bills_once">One time</string>
+    <string name="bills_status_overdue">Late</string>
+    <string name="bills_status_today">Today</string>
+    <string name="bills_status_soon">Soon</string>
+    <string name="bills_status_upcoming">Upcoming</string>
+    <string name="bills_status_paused">Paused</string>
+    <string name="bills_status_finished">Paid off</string>
+    <string name="bills_status_unusable">Blocked: its account, room, or category is archived. Edit this bill.</string>
+    <string name="bills_pay">Pay</string>
+    <string name="bills_pay_title">Pay %1$s</string>
+    <string name="bills_pay_body">The expense is recorded today from %1$s. Change the amount if this month\'s bill is different.</string>
+    <string name="bills_pay_amount">Amount paid</string>
+    <string name="bills_paid_next">%1$s paid. Next due %2$s.</string>
+    <string name="bills_paid_done">%1$s paid and settled.</string>
+    <string name="bills_pause">Pause reminders</string>
+    <string name="bills_resume">Resume</string>
+    <string name="bills_delete">Delete bill</string>
+    <string name="bills_delete_title">Delete bill?</string>
+    <string name="bills_delete_body">Expenses already recorded from its payments stay.</string>
+    <string name="bills_delete_confirm">Delete</string>
+    <string name="bills_err_installments">The number of installments must be at least 1 and only applies to repeating bills; the number already paid must be smaller than the total.</string>
+    <string name="bills_err_finished">This bill is already paid off.</string>
+    <string name="reminder_bill_channel_name">Bill reminders</string>
+    <string name="reminder_bill_channel_desc">Notification when a bill or installment is close to its due date or late</string>
+    <plurals name="reminder_bill_approaching">
+        <item quantity="one">%1$s is due in %2$d day</item>
+        <item quantity="other">%1$s is due in %2$d days</item>
+    </plurals>
+    <string name="reminder_bill_today">%1$s is due today</string>
+    <plurals name="reminder_bill_overdue">
+        <item quantity="one">%1$s is %2$d day late</item>
+        <item quantity="other">%1$s is %2$d days late</item>
+    </plurals>
+    <string name="reminder_bill_body">%1$s from %2$s, room %3$s.</string>
 </resources>

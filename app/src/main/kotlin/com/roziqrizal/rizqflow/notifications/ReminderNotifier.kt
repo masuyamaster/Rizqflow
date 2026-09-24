@@ -14,6 +14,8 @@ import androidx.core.app.RemoteInput
 import androidx.core.content.ContextCompat
 import com.roziqrizal.rizqflow.MainActivity
 import com.roziqrizal.rizqflow.R
+import com.roziqrizal.rizqflow.domain.bill.BillReminder
+import com.roziqrizal.rizqflow.domain.bill.BillReminderStage
 import com.roziqrizal.rizqflow.domain.role.DcaView
 import com.roziqrizal.rizqflow.domain.zakat.HaulStatus
 import com.roziqrizal.rizqflow.ui.formatRupiah
@@ -34,6 +36,10 @@ object ReminderNotifier {
     /** Pemicu jadwal DCA (sistem per peran, Pro): channel dan id terpisah, menumpang worker yang sama. */
     private const val CHANNEL_ID_DCA = "reminder_dca"
     private const val NOTIFICATION_ID_DCA_BASE = 2900
+
+    /** Pemicu tagihan dan cicilan (Tahap 10): channel dan id terpisah, menumpang worker yang sama. */
+    private const val CHANNEL_ID_BILL = "reminder_bill"
+    private const val NOTIFICATION_ID_BILL_BASE = 3200
 
     fun ensureChannel(context: Context) {
         val manager = context.getSystemService(NotificationManager::class.java) ?: return
@@ -62,6 +68,16 @@ object ReminderNotifier {
             context.getString(R.string.reminder_dca_channel_name),
             NotificationManager.IMPORTANCE_DEFAULT,
         ).apply { description = context.getString(R.string.reminder_dca_channel_desc) }
+        manager.createNotificationChannel(channel)
+    }
+
+    private fun ensureBillChannel(context: Context) {
+        val manager = context.getSystemService(NotificationManager::class.java) ?: return
+        val channel = NotificationChannel(
+            CHANNEL_ID_BILL,
+            context.getString(R.string.reminder_bill_channel_name),
+            NotificationManager.IMPORTANCE_DEFAULT,
+        ).apply { description = context.getString(R.string.reminder_bill_channel_desc) }
         manager.createNotificationChannel(channel)
     }
 
@@ -172,6 +188,38 @@ object ReminderNotifier {
             .build()
 
         NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_DCA_BASE + (roomId.hashCode() and 0xFF), notification)
+    }
+
+    /**
+     * Tagihan atau cicilan yang mendekati jatuh tempo, jatuh tempo hari ini, atau terlambat: satu
+     * notifikasi per tagihan, paling banyak tiga kali per jatuh tempo (penandanya ada di
+     * `BillReminderService`). Tanpa aksi; mengetuknya membuka aplikasi. Bayar dilakukan di layar
+     * Tagihan, bukan dari notifikasi, supaya nominalnya bisa diperiksa dulu.
+     */
+    fun showBill(context: Context, reminder: BillReminder, roomName: String, accountName: String) {
+        if (!canNotify(context)) return
+        ensureBillChannel(context)
+
+        val bill = reminder.bill
+        val title = when (reminder.stage) {
+            BillReminderStage.APPROACHING ->
+                context.resources.getQuantityString(R.plurals.reminder_bill_approaching, reminder.daysLeft, bill.name, reminder.daysLeft)
+
+            BillReminderStage.DUE_TODAY -> context.getString(R.string.reminder_bill_today, bill.name)
+
+            BillReminderStage.OVERDUE ->
+                context.resources.getQuantityString(R.plurals.reminder_bill_overdue, -reminder.daysLeft, bill.name, -reminder.daysLeft)
+        }
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID_BILL)
+            .setSmallIcon(R.drawable.ic_quick_catat)
+            .setContentTitle(title)
+            .setContentText(context.getString(R.string.reminder_bill_body, formatRupiah(bill.amount), accountName, roomName))
+            .setContentIntent(openIntent(context))
+            .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .build()
+
+        NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_BILL_BASE + (bill.id.hashCode() and 0xFF), notification)
     }
 
     private fun canNotify(context: Context): Boolean =

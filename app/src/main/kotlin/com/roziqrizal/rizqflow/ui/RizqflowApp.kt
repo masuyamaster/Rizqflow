@@ -93,6 +93,7 @@ fun RizqflowApp(
     onOpenTampilan: (() -> Unit)? = null,
     onOpenPaywall: (() -> Unit)? = null,
     onOpenRecurring: (() -> Unit)? = null,
+    onOpenBills: (() -> Unit)? = null,
     /** Paket Pro sudah dimiliki perangkat ini (lihat `PurchaseStore`); menentukan subjudul baris Rizqflow Pro. */
     proOwned: Boolean = false,
 ) {
@@ -150,7 +151,7 @@ fun RizqflowApp(
             TopTab.entries.forEach { tab ->
                 composable(tab.route) {
                     if (tab == TopTab.Lainnya && account != null) {
-                        LainnyaScreen(account, onConnectGmail, onSignOut, onDismissNotice, onOpenRules, onOpenManage, demo, onToggleDemo, onOpenAbout, onOpenReconciliation, onOpenReminder, onOpenSecurity, onOpenCsv, onOpenBackup, onOpenTampilan, onOpenPaywall, proOwned, onOpenRecurring)
+                        LainnyaScreen(account, onConnectGmail, onSignOut, onDismissNotice, onOpenRules, onOpenManage, demo, onToggleDemo, onOpenAbout, onOpenReconciliation, onOpenReminder, onOpenSecurity, onOpenCsv, onOpenBackup, onOpenTampilan, onOpenPaywall, proOwned, onOpenRecurring, onOpenBills)
                     } else if (tab == TopTab.Transaksi && transaksiContent != null) {
                         transaksiContent()
                     } else if (tab == TopTab.Ruang && ruangContent != null) {
@@ -235,6 +236,7 @@ private fun LainnyaScreen(
     onOpenPaywall: (() -> Unit)? = null,
     proOwned: Boolean = false,
     onOpenRecurring: (() -> Unit)? = null,
+    onOpenBills: (() -> Unit)? = null,
 ) {
     val spacing = MaterialTheme.spacing
     Column(
@@ -253,6 +255,7 @@ private fun LainnyaScreen(
         if (onOpenRules != null) MenuRow(stringResource(R.string.menu_rules), stringResource(R.string.menu_rules_sub), onOpenRules)
         if (onOpenManage != null) MenuRow(stringResource(R.string.menu_manage), stringResource(R.string.menu_manage_sub), onOpenManage)
         if (onOpenRecurring != null) MenuRow(stringResource(R.string.menu_recurring), stringResource(R.string.menu_recurring_sub), onOpenRecurring)
+        if (onOpenBills != null) MenuRow(stringResource(R.string.menu_bills), stringResource(R.string.menu_bills_sub), onOpenBills)
         if (onToggleDemo != null) {
             MenuRow(
                 stringResource(R.string.menu_demo),

@@ -715,11 +715,11 @@
 
     <!-- Transaksi berulang (Tahap 10) -->
     <string name="menu_recurring">Transaksi berulang</string>
-    <string name="menu_recurring_sub">Gaji, sewa, atau cicilan yang dicatat otomatis</string>
+    <string name="menu_recurring_sub">Gaji atau sewa yang dicatat otomatis</string>
     <string name="recurring_title">Transaksi berulang</string>
     <string name="recurring_add">Tambah transaksi berulang</string>
     <string name="recurring_empty">Belum ada transaksi berulang.</string>
-    <string name="recurring_empty_hint">Cocok untuk gaji bulanan, sewa, atau cicilan. Aplikasi mencatatnya sendiri saat tanggalnya tiba, termasuk yang terlewat selama aplikasi tidak dibuka.</string>
+    <string name="recurring_empty_hint">Cocok untuk gaji bulanan atau sewa. Aplikasi mencatatnya sendiri saat tanggalnya tiba, termasuk yang terlewat selama aplikasi tidak dibuka.</string>
     <string name="recurring_new">Transaksi berulang baru</string>
     <string name="recurring_edit">Ubah transaksi berulang</string>
     <string name="recurring_frequency">Ulangi</string>
@@ -750,4 +750,61 @@
     <plurals name="recurring_blocked_notice">
         <item quantity="other">%d transaksi berulang tertahan. Periksa akun, ruang, atau kategorinya.</item>
     </plurals>
+
+    <string name="menu_bills">Tagihan dan cicilan</string>
+    <string name="menu_bills_sub">Pengingat jatuh tempo, bayar dengan sekali ketuk</string>
+    <string name="bills_title">Tagihan dan cicilan</string>
+    <string name="bills_add">Tambah tagihan</string>
+    <string name="bills_empty">Belum ada tagihan atau cicilan.</string>
+    <string name="bills_empty_hint">Catat listrik, internet, cicilan, atau pajak. Rizqflow mengingatkan tiga hari sebelumnya, pada hari jatuh tempo, dan sekali bila terlambat. Pengeluaran baru tercatat saat Anda mengetuk Bayar, karena pembayarannya terjadi di luar aplikasi.</string>
+    <string name="bills_reminder_hint">Pengingat ikut jadwal Pengingat malam; nyalakan di menu Pengingat malam agar notifikasi tagihan muncul.</string>
+    <string name="bills_new">Tagihan baru</string>
+    <string name="bills_edit">Ubah tagihan</string>
+    <string name="bills_name">Nama tagihan</string>
+    <string name="bills_name_hint">Misalnya Listrik atau Cicilan motor</string>
+    <string name="bills_frequency">Berulang</string>
+    <string name="bills_freq_once">Sekali bayar</string>
+    <string name="bills_due">Jatuh tempo berikutnya</string>
+    <string name="bills_due_hint">Boleh tanggal yang sudah lewat bila tagihan ini terlambat. Tagihan bulanan yang jatuh tanggal 31 mengikuti hari terakhir bulan yang lebih pendek.</string>
+    <string name="bills_installments">Jumlah cicilan (opsional)</string>
+    <string name="bills_installments_hint">Kosongkan bila tanpa batas, misalnya listrik atau langganan.</string>
+    <string name="bills_already_paid">Sudah dibayar sebelumnya</string>
+    <string name="bills_already_paid_hint">Isi bila cicilan ini sudah berjalan sebelum dicatat di sini.</string>
+    <string name="bills_row_due">Jatuh tempo %1$s</string>
+    <string name="bills_row_meta">%1$s · %2$s</string>
+    <string name="bills_row_where">%1$s, %2$s, %3$s</string>
+    <string name="bills_progress">Cicilan ke-%1$d dari %2$d</string>
+    <string name="bills_paid_times">Sudah dibayar %1$d kali</string>
+    <string name="bills_once">Sekali bayar</string>
+    <string name="bills_status_overdue">Terlambat</string>
+    <string name="bills_status_today">Hari ini</string>
+    <string name="bills_status_soon">Segera</string>
+    <string name="bills_status_upcoming">Mendatang</string>
+    <string name="bills_status_paused">Dijeda</string>
+    <string name="bills_status_finished">Lunas</string>
+    <string name="bills_status_unusable">Tertahan: akun, ruang, atau kategorinya diarsipkan. Ubah tagihan ini.</string>
+    <string name="bills_pay">Bayar</string>
+    <string name="bills_pay_title">Bayar %1$s</string>
+    <string name="bills_pay_body">Pengeluaran dicatat hari ini dari %1$s. Ubah nominalnya bila tagihan bulan ini berbeda.</string>
+    <string name="bills_pay_amount">Nominal dibayar</string>
+    <string name="bills_paid_next">%1$s dibayar. Jatuh tempo berikutnya %2$s.</string>
+    <string name="bills_paid_done">%1$s dibayar dan lunas.</string>
+    <string name="bills_pause">Jeda pengingat</string>
+    <string name="bills_resume">Lanjutkan</string>
+    <string name="bills_delete">Hapus tagihan</string>
+    <string name="bills_delete_title">Hapus tagihan?</string>
+    <string name="bills_delete_body">Pengeluaran yang sudah tercatat dari pembayarannya tetap ada.</string>
+    <string name="bills_delete_confirm">Hapus</string>
+    <string name="bills_err_installments">Jumlah cicilan minimal 1 dan hanya untuk tagihan berulang; yang sudah dibayar harus lebih kecil dari jumlah cicilan.</string>
+    <string name="bills_err_finished">Tagihan ini sudah lunas.</string>
+    <string name="reminder_bill_channel_name">Pengingat tagihan</string>
+    <string name="reminder_bill_channel_desc">Notifikasi saat tagihan atau cicilan mendekati jatuh tempo atau terlambat</string>
+    <plurals name="reminder_bill_approaching">
+        <item quantity="other">%1$s jatuh tempo %2$d hari lagi</item>
+    </plurals>
+    <string name="reminder_bill_today">%1$s jatuh tempo hari ini</string>
+    <plurals name="reminder_bill_overdue">
+        <item quantity="other">%1$s terlambat %2$d hari</item>
+    </plurals>
+    <string name="reminder_bill_body">%1$s dari %2$s, ruang %3$s.</string>
 </resources>
