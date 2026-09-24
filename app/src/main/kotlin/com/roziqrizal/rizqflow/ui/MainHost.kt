@@ -21,6 +21,8 @@ import com.roziqrizal.rizqflow.ui.csv.CsvScreen
 import com.roziqrizal.rizqflow.ui.recurring.RecurringScreen
 import com.roziqrizal.rizqflow.ui.bill.BillsScreen
 import com.roziqrizal.rizqflow.domain.bill.BillPayment
+import com.roziqrizal.rizqflow.domain.debt.DebtPayment
+import com.roziqrizal.rizqflow.ui.debt.DebtsScreen
 import com.roziqrizal.rizqflow.ui.reminder.ReminderSettingsScreen
 import com.roziqrizal.rizqflow.ui.security.SecuritySettingsScreen
 import com.roziqrizal.rizqflow.ui.theme.ThemePreference
@@ -126,6 +128,7 @@ fun MainHost(
     var csvOpen by rememberSaveable { mutableStateOf(false) }
     var recurringOpen by rememberSaveable { mutableStateOf(false) }
     var billsOpen by rememberSaveable { mutableStateOf(false) }
+    var debtsOpen by rememberSaveable { mutableStateOf(false) }
     var backupOpen by rememberSaveable { mutableStateOf(false) }
     var tampilanOpen by rememberSaveable { mutableStateOf(false) }
     var paywallOpen by rememberSaveable { mutableStateOf(false) }
@@ -268,6 +271,17 @@ fun MainHost(
         }
     }
 
+    // Berjalan di scope MainHost supaya Urungkan tetap hidup setelah layar Utang-piutang ditutup.
+    fun announceRepaid(message: String, payment: DebtPayment) {
+        version++
+        scope.launch {
+            if (notifier.show(message, undoLabel)) {
+                workspace.debts.undoRepay(payment)
+                version++
+            }
+        }
+    }
+
     fun announceFavorite(use: FavoriteUse) {
         version++
         scope.launch {
@@ -339,7 +353,7 @@ fun MainHost(
         onSignOut = onSignOut,
         onDismissNotice = onDismissNotice,
         snackbarHostState = snackbar,
-        transaksiContent = { TransaksiScreen(workspace, refreshKey = version, notifier = notifier, onOpen = { editId = it.value }, onQuickCatat = { quick = true }) },
+        transaksiContent = { TransaksiScreen(workspace, refreshKey = version, notifier = notifier, onOpen = { editId = it.value }, onQuickCatat = { quick = true }, onOpenLoan = { debtsOpen = true }) },
         denahContent = {
             DenahScreen(
                 workspace, refreshKey = version, onCatat = { catat = true }, onOpenRules = { aturan = true }, onChanged = { version++ },
@@ -371,6 +385,7 @@ fun MainHost(
         onOpenTampilan = { tampilanOpen = true },
         onOpenRecurring = { recurringOpen = true },
         onOpenBills = { billsOpen = true },
+        onOpenDebts = { debtsOpen = true },
         onOpenPaywall = { openPaywall() },
         proOwned = Plan.PRO in ownedPlans,
     )
@@ -387,6 +402,21 @@ fun MainHost(
     if (recurringOpen) {
         Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
             RecurringScreen(workspace = workspace, onClose = { recurringOpen = false }, onChanged = { version++ })
+        }
+    }
+    if (debtsOpen) {
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            Box {
+                DebtsScreen(
+                    workspace = workspace,
+                    refreshKey = version,
+                    onClose = { debtsOpen = false },
+                    onChanged = { version++ },
+                    onRepaid = ::announceRepaid,
+                )
+                // Layar ini menutupi Scaffold beserta snackbar-nya, jadi ia membawa SnackbarHost sendiri.
+                SnackbarHost(snackbar, modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 24.dp))
+            }
         }
     }
     if (billsOpen) {

@@ -16,6 +16,8 @@ import com.roziqrizal.rizqflow.MainActivity
 import com.roziqrizal.rizqflow.R
 import com.roziqrizal.rizqflow.domain.bill.BillReminder
 import com.roziqrizal.rizqflow.domain.bill.BillReminderStage
+import com.roziqrizal.rizqflow.domain.debt.DebtDirection
+import com.roziqrizal.rizqflow.domain.debt.DebtReminder
 import com.roziqrizal.rizqflow.domain.role.DcaView
 import com.roziqrizal.rizqflow.domain.zakat.HaulStatus
 import com.roziqrizal.rizqflow.ui.formatRupiah
@@ -40,6 +42,10 @@ object ReminderNotifier {
     /** Pemicu tagihan dan cicilan (Tahap 10): channel dan id terpisah, menumpang worker yang sama. */
     private const val CHANNEL_ID_BILL = "reminder_bill"
     private const val NOTIFICATION_ID_BILL_BASE = 3200
+
+    /** Pemicu utang-piutang (Tahap 10): channel dan id terpisah, menumpang worker yang sama. */
+    private const val CHANNEL_ID_DEBT = "reminder_debt"
+    private const val NOTIFICATION_ID_DEBT_BASE = 3500
 
     fun ensureChannel(context: Context) {
         val manager = context.getSystemService(NotificationManager::class.java) ?: return
@@ -78,6 +84,16 @@ object ReminderNotifier {
             context.getString(R.string.reminder_bill_channel_name),
             NotificationManager.IMPORTANCE_DEFAULT,
         ).apply { description = context.getString(R.string.reminder_bill_channel_desc) }
+        manager.createNotificationChannel(channel)
+    }
+
+    private fun ensureDebtChannel(context: Context) {
+        val manager = context.getSystemService(NotificationManager::class.java) ?: return
+        val channel = NotificationChannel(
+            CHANNEL_ID_DEBT,
+            context.getString(R.string.reminder_debt_channel_name),
+            NotificationManager.IMPORTANCE_DEFAULT,
+        ).apply { description = context.getString(R.string.reminder_debt_channel_desc) }
         manager.createNotificationChannel(channel)
     }
 
@@ -220,6 +236,40 @@ object ReminderNotifier {
             .build()
 
         NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_BILL_BASE + (bill.id.hashCode() and 0xFF), notification)
+    }
+
+    /**
+     * Utang atau piutang yang mendekati jatuh tempo, jatuh tempo hari ini, atau terlambat: satu
+     * notifikasi per catatan, paling banyak tiga kali per jatuh tempo (penandanya ada di
+     * `DebtReminderService`). Piutang memakai kata yang lembut karena yang diingatkan adalah
+     * menagih orang lain. Tanpa aksi; mengetuknya membuka aplikasi.
+     */
+    fun showDebt(context: Context, reminder: DebtReminder) {
+        if (!canNotify(context)) return
+        ensureDebtChannel(context)
+
+        val debt = reminder.debt
+        val lent = debt.direction == DebtDirection.LENT
+        val resources = context.resources
+        val title = when (reminder.stage) {
+            BillReminderStage.APPROACHING ->
+                resources.getQuantityString(if (lent) R.plurals.reminder_debt_lent_approaching else R.plurals.reminder_debt_borrowed_approaching, reminder.daysLeft, debt.party, reminder.daysLeft)
+
+            BillReminderStage.DUE_TODAY -> context.getString(if (lent) R.string.reminder_debt_lent_today else R.string.reminder_debt_borrowed_today, debt.party)
+
+            BillReminderStage.OVERDUE ->
+                resources.getQuantityString(if (lent) R.plurals.reminder_debt_lent_overdue else R.plurals.reminder_debt_borrowed_overdue, -reminder.daysLeft, debt.party, -reminder.daysLeft)
+        }
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID_DEBT)
+            .setSmallIcon(R.drawable.ic_quick_catat)
+            .setContentTitle(title)
+            .setContentText(context.getString(if (lent) R.string.reminder_debt_body_lent else R.string.reminder_debt_body_borrowed, formatRupiah(reminder.outstanding)))
+            .setContentIntent(openIntent(context))
+            .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .build()
+
+        NotificationManagerCompat.from(context).notify(NOTIFICATION_ID_DEBT_BASE + (debt.id.hashCode() and 0xFF), notification)
     }
 
     private fun canNotify(context: Context): Boolean =

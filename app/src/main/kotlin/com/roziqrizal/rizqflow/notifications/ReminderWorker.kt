@@ -22,7 +22,7 @@ import java.time.LocalDate
  * pengingat haul hanya jalan bila pengingat malam aktif — sengaja, supaya tidak menduplikasi
  * infrastruktur penjadwalan yang sudah ada (lihat roadmap Tahap 6). Jadwal DCA (sistem per peran,
  * Pro) dan tagihan atau cicilan (Tahap 10) menumpang dengan cara dan batasan yang sama (lihat
- * `DcaReminderService` dan `BillReminderService`).
+ * `DcaReminderService`, `BillReminderService`, dan `DebtReminderService`).
  */
 class ReminderWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
     override suspend fun doWork(): Result {
@@ -50,6 +50,10 @@ class ReminderWorker(context: Context, params: WorkerParameters) : CoroutineWork
                     val accountName = workspace.repositories.accounts.find(reminder.bill.accountId)?.name.orEmpty()
                     ReminderNotifier.showBill(applicationContext, reminder, roomName, accountName)
                     workspace.billReminder.markNotified(reminder)
+                }
+                workspace.debtReminder.dueReminders(today).forEach { reminder ->
+                    ReminderNotifier.showDebt(applicationContext, reminder)
+                    workspace.debtReminder.markNotified(reminder)
                 }
             }
             if (settings.enabled) ReminderScheduler.scheduleNext(applicationContext, settings)

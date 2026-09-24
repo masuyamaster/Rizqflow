@@ -5,6 +5,8 @@ import com.roziqrizal.rizqflow.billing.PurchaseStore
 import com.roziqrizal.rizqflow.data.LocalLedger
 import com.roziqrizal.rizqflow.domain.bill.BillReminderService
 import com.roziqrizal.rizqflow.domain.bill.BillService
+import com.roziqrizal.rizqflow.domain.debt.DebtReminderService
+import com.roziqrizal.rizqflow.domain.debt.DebtService
 import com.roziqrizal.rizqflow.domain.entitlement.Entitlements
 import com.roziqrizal.rizqflow.domain.entitlement.LivePlanEntitlements
 import com.roziqrizal.rizqflow.domain.ledger.DemoData
@@ -50,6 +52,8 @@ class AccountWorkspace private constructor(private val local: LocalLedger, val p
     val recurring = RecurringService(local.recurring, local.accounts, local.rooms, local.transactions, ledger, newId)
     val bills = BillService(local.bills, local.accounts, local.rooms, local.transactions, ledger, newId)
     val billReminder = BillReminderService(local.bills, local.settings)
+    val debts = DebtService(local.debts, local.accounts, local.transactions, ledger, newId)
+    val debtReminder = DebtReminderService(local.debts, local.settings)
     val demo = DemoData(setup, ledger, management, favorites, local.rooms)
 
     override fun close() = local.close()

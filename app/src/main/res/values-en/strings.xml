@@ -810,4 +810,87 @@
         <item quantity="other">%1$s is %2$d days late</item>
     </plurals>
     <string name="reminder_bill_body">%1$s from %2$s, room %3$s.</string>
+
+    <string name="menu_debts">Debts and loans</string>
+    <string name="menu_debts_sub">Money lent to or borrowed from friends and family, repaid in steps</string>
+    <string name="debts_title">Debts and loans</string>
+    <string name="debts_add">Add debt or loan</string>
+    <string name="debts_empty">No debts or loans yet.</string>
+    <string name="debts_empty_hint">Record money you lent to friends or family, or money you borrowed. Partial or full repayments move your account balance without eating into a room\'s budget. If you set a due date and the Nightly reminder is on, Rizqflow reminds you three days before, on the day, and once if it is late.</string>
+    <string name="debts_sum_receivable">Owed to you</string>
+    <string name="debts_sum_payable">You owe</string>
+    <string name="debts_kind_lent">Lent</string>
+    <string name="debts_kind_borrowed">Borrowed</string>
+    <string name="debts_kind_lent_hint">I lent money to someone.</string>
+    <string name="debts_kind_borrowed_hint">I borrowed money from someone.</string>
+    <string name="debts_new">New debt or loan</string>
+    <string name="debts_party">Person</string>
+    <string name="debts_party_hint">For example Budi or Mom</string>
+    <string name="debts_start">Date lent or borrowed</string>
+    <string name="debts_due">Due date (optional)</string>
+    <string name="debts_no_due">No due date</string>
+    <string name="debts_move">Change account balance now</string>
+    <string name="debts_move_lent_hint">The money leaves the chosen account without becoming an expense. Turn off if the money left before you added it here.</string>
+    <string name="debts_move_borrowed_hint">The money enters the chosen account without becoming income. Turn off if you received it before you added it here.</string>
+    <string name="debts_collectible">Expected to come back</string>
+    <string name="debts_collectible_hint">Loans you consider lost are not suggested for the zakat wealth profile.</string>
+    <string name="debts_row_due">Due %1$s</string>
+    <string name="debts_outstanding">%1$s left</string>
+    <string name="debts_of">of %1$s</string>
+    <string name="debts_status_overdue">Late</string>
+    <string name="debts_status_today">Today</string>
+    <string name="debts_status_soon">Soon</string>
+    <string name="debts_status_open">Open</string>
+    <string name="debts_status_settled">Settled</string>
+    <string name="debts_receive">Receive</string>
+    <string name="debts_pay">Pay</string>
+    <string name="debts_repay_title_lent">Receive repayment from %1$s</string>
+    <string name="debts_repay_title_borrowed">Pay your debt to %1$s</string>
+    <string name="debts_repay_full">Settle in full</string>
+    <string name="debts_repay_button">Record repayment</string>
+    <string name="debts_move_short">Change account balance</string>
+    <string name="debts_repay_move_lent_hint">The money received enters the chosen account. Turn off to only reduce what is left.</string>
+    <string name="debts_repay_move_borrowed_hint">The money paid leaves the chosen account. Turn off to only reduce what is left.</string>
+    <string name="debts_repaid">%2$s: repayment of %1$s recorded. %3$s left.</string>
+    <string name="debts_repaid_settled">%2$s: repayment of %1$s recorded. Settled.</string>
+    <string name="debts_detail_meta">%1$s · since %2$s</string>
+    <string name="debts_from_account">Account: %1$s</string>
+    <string name="debts_no_movement">Account balance was not changed</string>
+    <string name="debts_progress">Repaid %1$s of %2$s</string>
+    <string name="debts_history">Repayment history</string>
+    <string name="debts_history_empty">No repayments yet.</string>
+    <string name="debts_history_delete_title">Delete this repayment?</string>
+    <string name="debts_history_delete_body">What is left goes back up, and the account balance change recorded from it is reversed.</string>
+    <string name="debts_delete">Delete this debt or loan</string>
+    <string name="debts_delete_title">Delete this debt or loan?</string>
+    <string name="debts_delete_body">All repayments and account balance changes recorded from it are deleted too; the account balance goes back to what it was before.</string>
+    <string name="debts_delete_confirm">Delete</string>
+    <string name="debts_err_party">Enter a name, at most 40 characters.</string>
+    <string name="debts_err_due">The due date cannot be before the date lent or borrowed.</string>
+    <string name="debts_err_overpaid">The repayment is more than what is left.</string>
+    <string name="reminder_debt_channel_name">Debt and loan reminders</string>
+    <string name="reminder_debt_channel_desc">Notification when a debt or loan is close to its due date or late</string>
+    <plurals name="reminder_debt_lent_approaching">
+        <item quantity="one">Loan to %1$s is due in %2$d day</item>
+        <item quantity="other">Loan to %1$s is due in %2$d days</item>
+    </plurals>
+    <string name="reminder_debt_lent_today">Loan to %1$s is due today</string>
+    <plurals name="reminder_debt_lent_overdue">
+        <item quantity="one">Loan to %1$s is %2$d day late</item>
+        <item quantity="other">Loan to %1$s is %2$d days late</item>
+    </plurals>
+    <plurals name="reminder_debt_borrowed_approaching">
+        <item quantity="one">Debt to %1$s is due in %2$d day</item>
+        <item quantity="other">Debt to %1$s is due in %2$d days</item>
+    </plurals>
+    <string name="reminder_debt_borrowed_today">Debt to %1$s is due today</string>
+    <plurals name="reminder_debt_borrowed_overdue">
+        <item quantity="one">Debt to %1$s is %2$d day late</item>
+        <item quantity="other">Debt to %1$s is %2$d days late</item>
+    </plurals>
+    <string name="reminder_debt_body_lent">%1$s left. A gentle nudge may help.</string>
+    <string name="reminder_debt_body_borrowed">%1$s left. Get the payment ready.</string>
+    <string name="wealth_suggest_receivable">From Debts and loans: %1$s (what is left of loans expected to come back)</string>
+    <string name="wealth_suggest_debt">From Debts and loans: %1$s (what is left of debts due within 12 months or with no due date)</string>
+    <string name="wealth_suggest_use">Use</string>
 </resources>

@@ -809,4 +809,83 @@
         <item quantity="other">%1$s terlambat %2$d hari</item>
     </plurals>
     <string name="reminder_bill_body">%1$s dari %2$s, ruang %3$s.</string>
+
+    <string name="menu_debts">Utang-piutang</string>
+    <string name="menu_debts_sub">Pinjam ke atau dari teman dan keluarga, dengan pelunasan bertahap</string>
+    <string name="debts_title">Utang-piutang</string>
+    <string name="debts_add">Catat utang atau piutang</string>
+    <string name="debts_empty">Belum ada utang atau piutang.</string>
+    <string name="debts_empty_hint">Catat uang yang Anda pinjamkan ke teman atau keluarga, atau yang Anda pinjam. Pelunasan sebagian atau penuh ikut menggeser saldo akun tanpa memakan jatah ruang. Bila jatuh tempo diisi dan Pengingat malam aktif, Rizqflow mengingatkan tiga hari sebelumnya, pada harinya, dan sekali bila terlambat.</string>
+    <string name="debts_sum_receivable">Sisa piutang</string>
+    <string name="debts_sum_payable">Sisa utang</string>
+    <string name="debts_kind_lent">Piutang</string>
+    <string name="debts_kind_borrowed">Utang</string>
+    <string name="debts_kind_lent_hint">Saya meminjamkan uang ke orang lain.</string>
+    <string name="debts_kind_borrowed_hint">Saya meminjam uang dari orang lain.</string>
+    <string name="debts_new">Utang-piutang baru</string>
+    <string name="debts_party">Nama pihak</string>
+    <string name="debts_party_hint">Misalnya Budi atau Ibu</string>
+    <string name="debts_start">Tanggal pinjam</string>
+    <string name="debts_due">Jatuh tempo (opsional)</string>
+    <string name="debts_no_due">Tanpa jatuh tempo</string>
+    <string name="debts_move">Ubah saldo akun sekarang</string>
+    <string name="debts_move_lent_hint">Uang keluar dari akun yang dipilih, tanpa menjadi pengeluaran. Matikan bila uangnya sudah keluar sebelum dicatat di sini.</string>
+    <string name="debts_move_borrowed_hint">Uang masuk ke akun yang dipilih, tanpa menjadi pemasukan. Matikan bila uangnya sudah diterima sebelum dicatat di sini.</string>
+    <string name="debts_collectible">Diperkirakan kembali</string>
+    <string name="debts_collectible_hint">Piutang yang dianggap macet tidak disarankan masuk harta zakat.</string>
+    <string name="debts_row_due">Jatuh tempo %1$s</string>
+    <string name="debts_outstanding">Sisa %1$s</string>
+    <string name="debts_of">dari %1$s</string>
+    <string name="debts_status_overdue">Terlambat</string>
+    <string name="debts_status_today">Hari ini</string>
+    <string name="debts_status_soon">Segera</string>
+    <string name="debts_status_open">Berjalan</string>
+    <string name="debts_status_settled">Lunas</string>
+    <string name="debts_receive">Terima</string>
+    <string name="debts_pay">Bayar</string>
+    <string name="debts_repay_title_lent">Terima pelunasan dari %1$s</string>
+    <string name="debts_repay_title_borrowed">Bayar utang ke %1$s</string>
+    <string name="debts_repay_full">Lunasi semua</string>
+    <string name="debts_repay_button">Catat pelunasan</string>
+    <string name="debts_move_short">Ubah saldo akun</string>
+    <string name="debts_repay_move_lent_hint">Uang yang diterima masuk ke akun yang dipilih. Matikan bila hanya ingin mengurangi sisa.</string>
+    <string name="debts_repay_move_borrowed_hint">Uang yang dibayar keluar dari akun yang dipilih. Matikan bila hanya ingin mengurangi sisa.</string>
+    <string name="debts_repaid">%2$s: pelunasan %1$s dicatat. Sisa %3$s.</string>
+    <string name="debts_repaid_settled">%2$s: pelunasan %1$s dicatat. Sudah lunas.</string>
+    <string name="debts_detail_meta">%1$s · sejak %2$s</string>
+    <string name="debts_from_account">Akun: %1$s</string>
+    <string name="debts_no_movement">Saldo akun tidak diubah</string>
+    <string name="debts_progress">Dilunasi %1$s dari %2$s</string>
+    <string name="debts_history">Riwayat pelunasan</string>
+    <string name="debts_history_empty">Belum ada pelunasan.</string>
+    <string name="debts_history_delete_title">Hapus pelunasan ini?</string>
+    <string name="debts_history_delete_body">Sisa bertambah lagi, dan perubahan saldo akun yang tercatat darinya ikut kembali.</string>
+    <string name="debts_delete">Hapus utang-piutang ini</string>
+    <string name="debts_delete_title">Hapus utang-piutang ini?</string>
+    <string name="debts_delete_body">Semua pelunasan dan perubahan saldo akun yang tercatat darinya ikut terhapus; saldo akun kembali seperti sebelum dicatat.</string>
+    <string name="debts_delete_confirm">Hapus</string>
+    <string name="debts_err_party">Isi nama pihak, paling banyak 40 karakter.</string>
+    <string name="debts_err_due">Jatuh tempo tidak boleh sebelum tanggal pinjam.</string>
+    <string name="debts_err_overpaid">Pelunasan melebihi sisa.</string>
+    <string name="reminder_debt_channel_name">Pengingat utang-piutang</string>
+    <string name="reminder_debt_channel_desc">Notifikasi saat utang atau piutang mendekati jatuh tempo atau terlambat</string>
+    <plurals name="reminder_debt_lent_approaching">
+        <item quantity="other">Piutang dari %1$s jatuh tempo %2$d hari lagi</item>
+    </plurals>
+    <string name="reminder_debt_lent_today">Piutang dari %1$s jatuh tempo hari ini</string>
+    <plurals name="reminder_debt_lent_overdue">
+        <item quantity="other">Piutang dari %1$s terlambat %2$d hari</item>
+    </plurals>
+    <plurals name="reminder_debt_borrowed_approaching">
+        <item quantity="other">Utang ke %1$s jatuh tempo %2$d hari lagi</item>
+    </plurals>
+    <string name="reminder_debt_borrowed_today">Utang ke %1$s jatuh tempo hari ini</string>
+    <plurals name="reminder_debt_borrowed_overdue">
+        <item quantity="other">Utang ke %1$s terlambat %2$d hari</item>
+    </plurals>
+    <string name="reminder_debt_body_lent">Sisa %1$s. Ingatkan dengan lembut ya.</string>
+    <string name="reminder_debt_body_borrowed">Sisa %1$s. Siapkan pembayarannya.</string>
+    <string name="wealth_suggest_receivable">Dari Utang-piutang: %1$s (sisa piutang yang diperkirakan kembali)</string>
+    <string name="wealth_suggest_debt">Dari Utang-piutang: %1$s (sisa utang yang jatuh tempo dalam 12 bulan atau tanpa jatuh tempo)</string>
+    <string name="wealth_suggest_use">Pakai</string>
 </resources>

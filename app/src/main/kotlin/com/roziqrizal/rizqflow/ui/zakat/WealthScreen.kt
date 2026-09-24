@@ -21,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -33,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.roziqrizal.rizqflow.R
+import com.roziqrizal.rizqflow.domain.debt.ZakatDebtSuggestion
 import com.roziqrizal.rizqflow.domain.ledger.LedgerError
 import com.roziqrizal.rizqflow.domain.ledger.LedgerResult
 import com.roziqrizal.rizqflow.domain.model.WealthKind
@@ -78,6 +80,9 @@ fun WealthScreen(workspace: AccountWorkspace, overview: GivingOverview, profileI
     }
     var error by remember { mutableStateOf<LedgerError?>(null) }
     var busy by remember { mutableStateOf(false) }
+    // Saran dari Utang-piutang; tidak pernah masuk sendiri, hanya bila pengguna menekan Pakai.
+    var suggestion by remember { mutableStateOf<ZakatDebtSuggestion?>(null) }
+    LaunchedEffect(Unit) { suggestion = workspace.debts.zakatSuggestion(today) }
 
     val goldValue = goldPrice.toLongOrNull()?.let { price -> (goldGrams.toLongOrNull() ?: 0L) * price }
 
@@ -108,6 +113,9 @@ fun WealthScreen(workspace: AccountWorkspace, overview: GivingOverview, profileI
         WealthRow(stringResource(R.string.wealth_kind_cash), cash, { cash = digitsOnly(it) })
         WealthRow(stringResource(R.string.wealth_kind_investment), investment, { investment = digitsOnly(it) })
         WealthRow(stringResource(R.string.wealth_kind_receivable), receivable, { receivable = digitsOnly(it) })
+        suggestion?.receivable?.takeIf { it.isPositive && it.minor.toString() != receivable }?.let { suggested ->
+            DebtSuggestion(stringResource(R.string.wealth_suggest_receivable, formatRupiah(suggested))) { receivable = suggested.minor.toString() }
+        }
         customs.forEachIndexed { index, row ->
             CustomWealthRow(
                 row = row,
@@ -122,6 +130,9 @@ fun WealthScreen(workspace: AccountWorkspace, overview: GivingOverview, profileI
 
         Text(stringResource(R.string.wealth_deductions), style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = spacing.s4, bottom = spacing.s2))
         WealthRow(stringResource(R.string.wealth_kind_deduction), debt, { debt = digitsOnly(it) })
+        suggestion?.shortTermDebt?.takeIf { it.isPositive && it.minor.toString() != debt }?.let { suggested ->
+            DebtSuggestion(stringResource(R.string.wealth_suggest_debt, formatRupiah(suggested))) { debt = suggested.minor.toString() }
+        }
 
         val net = (goldValue ?: 0) + (cash.toLongOrNull() ?: 0) + (investment.toLongOrNull() ?: 0) + (receivable.toLongOrNull() ?: 0) +
             customs.sumOf { it.value.toLongOrNull() ?: 0 } - (debt.toLongOrNull() ?: 0)
@@ -164,6 +175,15 @@ fun WealthScreen(workspace: AccountWorkspace, overview: GivingOverview, profileI
             modifier = Modifier.padding(top = spacing.s5).fillMaxWidth().height(52.dp),
         ) { Text(stringResource(R.string.wealth_save)) }
         TextButton(onClick = onCancel, modifier = Modifier.fillMaxWidth()) { Text(stringResource(R.string.catat_date_cancel)) }
+    }
+}
+
+/** Baris saran nilai dari Utang-piutang dengan tombol Pakai; nilainya baru dipakai setelah diketuk dan disimpan. */
+@Composable
+private fun DebtSuggestion(text: String, onUse: () -> Unit) {
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+        Text(text, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f))
+        TextButton(onClick = onUse) { Text(stringResource(R.string.wealth_suggest_use)) }
     }
 }
 
