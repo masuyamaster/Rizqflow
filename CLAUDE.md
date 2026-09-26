@@ -27,7 +27,8 @@ Aplikasi finansial berbasis "hak": rezeki yang masuk dialirkan ke ruang-ruang (M
 - Catat progres lewat skill **`/pengembangan-rizqflow`** (Notion + dokumentasi repo). Detail mapping dan ID database ada di skill itu.
 - Platform: **Android saja**, dirilis di Google Play Store. Stack: **Kotlin + Jetpack Compose + Room** (diputuskan 2026-09-19). Web tidak dibuat.
 - Arah visual: **opsi A**, pakai ulang identitas homepage roziqrizal.com (diputuskan 2026-09-19); warna dan font disimpan sebagai design tokens, angka besar selalu Manrope.
-- Masih terbuka: **detail stack** (modul domain terpisah, min/target SDK, DI, enkripsi database; usulan di `docs/konsep.md`). Jangan memutuskan sendiri; tanyakan dulu.
+- Detail stack (diputuskan 2026-09-26): modul `domain` Kotlin murni terpisah dari `app`; min SDK 26; DI Hilt; tanpa SQLCipher di v1 (backup tetap terenkripsi kata sandi). Rinciannya di `docs/konsep.md`.
+- Masih terbuka: **komponen UI** (basis Material 3 atau kustom). Jangan memutuskan sendiri; tanyakan dulu.
 
 ## Konvensi
 

@@ -26,7 +26,8 @@ T8 -.-> T9["9 Sync (fase 2)"]
 
 - Platform: **Android saja**, rilis di Google Play Store. Stack: **Kotlin + Jetpack Compose + Room** (2026-09-19).
 - Arah visual: **opsi A**, pakai ulang identitas homepage roziqrizal.com (2026-09-19).
-- Masih perlu diputuskan: **detail stack** (modul domain terpisah, min SDK, DI, enkripsi database; sebelum Tahap 2).
+- Detail stack diputuskan (2026-09-26): modul `domain` Kotlin murni, min SDK 26, Hilt, tanpa SQLCipher di v1 (lihat [konsep.md](konsep.md)).
+- Masih perlu diputuskan: **komponen UI** (Material 3 atau kustom; sebelum Tahap 3).
 - Tahap 1 (desain) dan Tahap 2 (inti domain) bisa berjalan paralel setelah Tahap 0 selesai.
 - Tahap 9 sengaja opsional: mulai hanya bila ada sinyal kebutuhan dari pengguna nyata.
 
@@ -41,6 +42,7 @@ Menetapkan keputusan yang menentukan arah teknis dan bisnis sebelum kode ditulis
 - [x] Pasang tracking Notion, skill `pengembangan-rizqflow`, dan CLAUDE.md repo
 - [x] Putuskan platform: Android saja, rilis di Play Store (2026-09-19)
 - [x] Putuskan stack Android: Kotlin + Jetpack Compose + Room (2026-09-19)
+- [x] Putuskan detail stack: modul domain Kotlin murni, min SDK 26, Hilt, tanpa SQLCipher di v1 (2026-09-26)
 - [ ] Cek ketersediaan nama (Play Store, domain, GitHub, Google); cadangan: Rizqly
 - [ ] Riset sumber harga emas untuk nisab
 - [ ] Putuskan kalender Hijriyah untuk haul (dan kemungkinan memakai ulang modul hisab Al-Kaukaba)

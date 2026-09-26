@@ -133,15 +133,15 @@ Semua nominal disimpan sebagai **bilangan bulat dalam satuan terkecil** (value o
 - Selisih Koreksi saldo dicatat di **ruang dari pengeluaran terakhir di akun itu** (2026-09-20). Bila akun belum punya pengeluaran, usulannya ruang bertipe Mencukupi. Selisih adalah transaksi biasa, jadi ikut dihitung dalam jatah ruang itu.
 - Pengingat malam **aktif secara bawaan** dan bisa dimatikan (2026-09-20).
 - **Tangkap otomatis dari notifikasi** disetujui: dikerjakan di versi 1.1 setelah rilis, dan masuk **Pro** (2026-09-20).
+- Detail stack Android (2026-09-26):
+  - **Modul domain Kotlin murni** (tanpa dependensi Android) untuk alokasi, nisab, dan haul, supaya unit test berjalan cepat di JVM; modul `app` untuk UI. Ikuti `docs/strategi-unit-test.md` di alkaukabaandroid (JUnit + MockK).
+  - **Min SDK 26** (Android 8.0): `java.time` bawaan untuk hitung tanggal dan haul, notification channel untuk pengingat malam. Target SDK mengikuti syarat Google Play terbaru.
+  - **DI: Hilt.**
+  - **Tanpa SQLCipher di v1.** Perlindungan data lewat sandbox Android, enkripsi file bawaan perangkat, kunci PIN/biometrik, dan backup terenkripsi kata sandi. PIN hanya mengunci UI, bukan file database; enkripsi database bisa ditambahkan di versi berikutnya lewat migrasi.
 
 ## Keputusan yang masih terbuka
 
-- **Detail stack Android** (perlu sebelum Tahap 2; inti stack sudah diputuskan). Usulan, belum diputuskan:
-  - **Modul domain Kotlin murni** (tanpa dependensi Android) untuk alokasi, nisab, dan haul, supaya unit test berjalan cepat di JVM; modul `app` untuk UI. Ikuti `docs/strategi-unit-test.md` di alkaukabaandroid (JUnit + MockK).
-  - Target SDK mengikuti syarat Google Play terbaru; min SDK ditentukan bersama.
-  - DI: alkaukabaandroid tanpa framework DI; untuk Rizqflow bisa manual atau Hilt/Koin.
-  - Enkripsi: backup dienkripsi dengan kata sandi; enkripsi database itu sendiri (mis. SQLCipher) diputuskan terpisah.
-  - Komponen UI: basis Material 3 atau kustom mengikuti keputusan arah visual.
+- **Komponen UI** (perlu sebelum Tahap 3): basis Material 3 atau kustom mengikuti keputusan arah visual.
 - **Cek ketersediaan nama:** Play Store, domain, GitHub, hasil pencarian Google.
 - **Sumber harga emas** untuk nisab (API atau input manual).
 - **Kalender Hijriyah untuk haul:** hisab Al-Kaukaba, Umm al-Qura, atau kriteria Kemenag; selisih satu hari memengaruhi tanggal haul.
