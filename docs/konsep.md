@@ -84,7 +84,7 @@ Semua mekanisme mengikuti prinsip "tenang, bukan panik": tanpa streak, tanpa war
 
 ## Draft model data
 
-- **Room** — ruang/peran (nama, tipe ruang, target bulanan)
+- **Room** — ruang/peran (nama, tipe ruang, target bulanan, ikon, slot warna 1–8 atau kosong untuk netral)
 - **AllocationRule** — cara membagi pemasukan ke ruang (persentase, prioritas)
 - **Account** — dompet/rekening tempat uang berada (bank, dompet digital, tunai), seperti tabel Akun di jurnal Ruang Finansial
 - **Category** — pos pengeluaran/pemasukan di dalam sebuah ruang, seperti tabel Kategori di jurnal Ruang Finansial
@@ -138,6 +138,7 @@ Semua nominal disimpan sebagai **bilangan bulat dalam satuan terkecil** (value o
   - **Min SDK 26** (Android 8.0): `java.time` bawaan untuk hitung tanggal dan haul, notification channel untuk pengingat malam. Target SDK mengikuti syarat Google Play terbaru.
   - **DI: Hilt.**
   - **Tanpa SQLCipher di v1.** Perlindungan data lewat sandbox Android, enkripsi file bawaan perangkat, kunci PIN/biometrik, dan backup terenkripsi kata sandi. PIN hanya mengunci UI, bukan file database; enkripsi database bisa ditambahkan di versi berikutnya lewat migrasi.
+- **Warna ruang custom** (2026-09-26): ruang custom mendapat 5 slot warna tambahan (slot 4–8, total 8 slot) dari palet yang divalidasi; ruang ke-9+ netral. Warna melekat pada ruang, tidak diputar ulang. Aturan dan validasi di [design/README.md](design/README.md#warna-ruang-custom-slot-4-sampai-8).
 
 ## Keputusan yang masih terbuka
 
