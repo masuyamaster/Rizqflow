@@ -18,13 +18,28 @@
       <aside class="panel" aria-label="Petunjuk prototipe">
         <h1>Prototipe Rizqflow</h1>
         <p>
-          Prototipe klik untuk layar kunci, dengan arah visual opsi A (identitas homepage
+          Prototipe klik untuk seluruh layar S01–S28, dengan arah visual opsi A (identitas homepage
           roziqrizal.com). Semua angka adalah contoh, bukan data nyata.
         </p>
 
         <h2>Yang bisa dicoba</h2>
         <ol>
+          <li>
+            <b>Splash, masuk, dan daftar (F0, S29–S31):</b> tombol <i>Mulai dari splash</i> di bawah. Setelah 1,4 detik
+            muncul halaman masuk. Coba <i>Daftar</i> (nama pengguna dan sandi, aturannya sama dengan aplikasi), lalu keluar
+            dari Lainnya dan masuk lagi dengan akun itu; salah sandi memberi pesan lembut. Simbol G (simulasi) lanjut ke
+            pola ruang. Di browser yang sudah pernah masuk, splash langsung ke Denah.
+          </li>
+          <li>
+            <b>Pertama kali (F1, S01–S04):</b> tombol <i>Mulai dari awal</i> di bawah. Coba kedua pola
+            ruang, geser persentase, isi akun pertama, lalu lihat Denah kosong dan <i>Coba data contoh</i>.
+          </li>
           <li><b>Denah (S05):</b> lihat status tiap ruang dan kartu ringkasan.</li>
+          <li>
+            <b>Ubah aturan (F4, S12):</b> tab Ruang, <i>Pembagian rezeki</i> (atau tombol Atur aturan di
+            detail ruang). Total harus tepat 100% baru bisa disimpan; lalu alirkan rezeki lagi dan lihat
+            pembagian baru.
+          </li>
           <li>
             <b>Rezeki masuk (F2):</b> tap <i>Alirkan</i> pada peringatan kuning, lalu tap
             <i>Alirkan</i> lagi. Perhatikan bar dan cincin bergerak, dan status Keluarga
@@ -38,8 +53,55 @@
           <li>
             <b>Zakat dan haul (S16):</b> buka ruang Memberi, lalu tap kartu Zakat mal.
           </li>
-          <li><b>Paywall (S21):</b> tab Lainnya, lalu Rizqflow Pro.</li>
+          <li>
+            <b>Paywall (S21):</b> tab Lainnya. Tiga pemicu: Rizqflow Pro, Tangkap otomatis, dan
+            Widget catat kilat (manfaat yang tampil menyesuaikan pemicunya).
+          </li>
+          <li>
+            <b>Catat kilat (S24):</b> pakai tombol pemicu di bawah. Ketuk favorit untuk langsung
+            menyimpan, atau ketik nominal. Di Catat (Pengeluaran) ada saklar <i>Jadikan favorit</i>.
+          </li>
+          <li>
+            <b>Koreksi saldo (S25):</b> Denah, butir <i>Saldo GoPay belum dicocokkan</i>, atau tab
+            Lainnya. Coba saldo sebenarnya 150000 (ada selisih), 185000 (cocok), atau 200000 (lebih
+            besar dari catatan).
+          </li>
+          <li>
+            <b>Pengingat harian (S26):</b> tab Lainnya. Untuk notifikasi malam dengan balasan
+            langsung, pakai tombol pemicu di bawah dan ketik <i>kopi 25000</i>.
+          </li>
+          <li><b>Hari kosong (S08):</b> tab Transaksi menampilkan banner lembut untuk kemarin.</li>
+          <li>
+            <b>Tangkap otomatis (S27, S28, v1.1):</b> tab Lainnya, lalu Tangkap otomatis. Beli
+            (simulasi), beri akses, lalu setujui draf di tab Transaksi.
+          </li>
+          <li>
+            <b>Zakat (F5, S14–S17):</b> tab Lainnya, Zakat (atau kartu Zakat di ruang Memberi). Isi harta
+            (S15), lihat status, lalu di kartu <i>Hanya di prototipe</i> pilih <i>Haul genap</i> untuk
+            mencoba Tunaikan zakat (S17).
+          </li>
+          <li>
+            <b>Backup dan restore (F7, S20):</b> Lainnya, Backup. Buat cadangan (sandi minimal 6), ubah
+            data, lalu pulihkan. Coba juga sandi salah dan berkas rusak.
+          </li>
+          <li>
+            <b>Layar lain:</b> ketuk baris transaksi (S09); tab <i>Transfer</i> di Catat; <i>Tambah ruang</i>
+            dan <i>Arsipkan ruang</i> (S10, S11); Lainnya untuk Akun dan kategori (S13), Keamanan (S19),
+            Tampilan (S22), dan Tentang (S23). Di tab Transaksi ada pencarian dan filter (S08).
+          </li>
         </ol>
+
+        <h2>Pemicu dari luar aplikasi (F8)</h2>
+        <div class="triggers">
+          <button type="button" class="control__reset" data-action="kilat">Pintasan ikon atau tile: Catat kilat</button>
+          <button type="button" class="control__reset" data-action="sim-notif">Notifikasi malam</button>
+        </div>
+
+        <h2>Onboarding (F1)</h2>
+        <div class="triggers">
+          <button type="button" class="control__reset" data-action="logout">Mulai dari splash (F0)</button>
+          <button type="button" class="control__reset" data-action="ob-restart">Mulai dari awal (pengguna baru)</button>
+        </div>
 
         <h2>Pengaturan tampilan</h2>
         <div class="control">

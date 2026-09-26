@@ -25,20 +25,56 @@ Langsung ke layar tertentu lewat parameter URL: `prototype.html?screen=denah&the
 | `detail-memberi`, `detail-diri`, `detail-keluarga` | S11 Detail ruang |
 | `haul` | S16 Kartu haul |
 | `pro` | S21 Paywall |
+| `kilat` | S24 Catat kilat |
+| `koreksi` (opsional `&acct=tunai&actual=265000`) | S25 Koreksi saldo |
+| `pengingat` | S26 Pengingat harian |
+| `notif` | Notifikasi malam (F8) |
+| `draf`, `tangkap` | S27 Draf dan S28 Tangkap otomatis (otomatis dalam mode Pro; `&pro=1` membuka mode Pro di layar mana pun) |
+| `splash`, `masuk`, `daftar` | S29 Splash (beralih sendiri setelah 1,4 detik), S30 Masuk (kolom nama pengguna dan sandi, Google, Gmail), S31 Daftar. Akun lokal disimulasikan di `rf-accounts` (nama pengguna dan sidik sederhana, bukan keamanan). Riwayat masuk disimulasikan di penyimpanan browser (`rf-login`); tombol *Mulai dari splash* di panel kiri dan Lainnya, *Akun Google* mengosongkannya |
+| `sambutan`, `pola`, `persen`, `akun` | S01–S04 Onboarding (tambah `&template=kosong` untuk pola Mulai kosong). Tombol *Mulai dari awal* di panel kiri menjalankan seluruh F1 |
+| `kosong`, `kosong-tanpa-ruang` | S05 Denah pengguna baru: dengan pola Tiga hak, atau tanpa ruang sama sekali |
+| `aturan` (opsional `&focus=diri`) | S12 Aturan alokasi |
+| `txdetail` (opsional `&id=t7`) | S09 Detail dan edit transaksi (`t1` sampai `t7` adalah data contoh) |
+| `kelola` (opsional `&tab=kategori` atau `favorit`) | S13 Akun, kategori, dan favorit |
+| `zakat` (opsional `&haul=genap`), `harta`, `tunai` | S14 Beranda Zakat, S15 Profil harta, S17 Tunaikan zakat |
+| `keamanan`, `pin`, `kunci` | S19 Keamanan, buat PIN, simulasi kunci aplikasi |
+| `cadangan`, `impor` | S20 Backup dan restore, pratinjau impor dari Transaksi Harian |
+| `tampilan`, `tentang` | S22 Tampilan dan bahasa, S23 Tentang dan disclaimer |
 
 ## Cakupan prototipe
 
 **Sudah ada:** S05 Denah, S06 Catat (pemasukan dan pengeluaran), S07 Pratinjau alokasi (termasuk Ubah sekali ini), S11 Detail ruang, S16 Kartu haul, S21 Paywall. Versi ringkas: S08 Transaksi, S10 Ruang, S18 Lainnya.
 
+**Ditambah 2026-09-20 (kemudahan mencatat):** S24 Catat kilat, S25 Koreksi saldo, S26 Pengingat harian, notifikasi malam dengan balasan langsung, petunjuk hari kosong di S08, saklar Jadikan favorit di S06, serta S27 Draf dari notifikasi dan S28 Tangkap otomatis (keduanya v1.1, Pro).
+
 **Flow yang bisa dicoba:**
+- **F0** splash lalu masuk (2026-09-21, permintaan pemilik): S29 Splash, S30 Masuk dengan Google dan Gmail (simulasi), lalu pola ruang (F1). Yang sudah pernah masuk langsung ke Denah. S30 menggantikan S01 Sambutan; alur awal default prototipe tetap Denah data contoh supaya tes lama tidak berubah, dan F0 dijalankan lewat `?screen=splash` atau tombol di panel.
+- **F5** dari harta sampai zakat ditunaikan: kartu Zakat di ruang Memberi atau Lainnya, Zakat; isi harta (S15); di bawah nisab dipantau, mencapai nisab memulai haul; kartu *Hanya di prototipe* mempercepat haul supaya Tunaikan zakat (S17) bisa dicoba.
+- **F7** backup dan restore: buat cadangan, ubah data, pulihkan; sandi salah dan berkas rusak menampilkan pesan tanpa menyentuh data.
+- **F1** pertama kali membuka aplikasi: S01 Sambutan, S02 pola (Tiga hak atau Mulai kosong), S03 persentase (slider, Keluarga otomatis menerima sisa sehingga total selalu 100%), S04 akun pertama dan saldo awal, lalu Denah kosong dengan dua jalan (catat rezeki pertama, atau coba data contoh). Pola Mulai kosong berakhir di Denah tanpa ruang dengan tombol Pakai pola Tiga hak.
+- **F4** ubah aturan: Ruang, Pembagian rezeki (atau Atur aturan di detail ruang), geser persentase; Simpan aktif hanya bila total 100% dan ada perubahan; keluar dengan perubahan menanyakan Buang perubahan; aturan baru langsung dipakai pemasukan berikutnya.
 - **F2** rezeki masuk dialirkan, penuh: bar dan cincin bergerak, status ruang berubah.
 - **F3** pengeluaran, penuh: banner lembut saat jatah terlampaui (tidak pernah memblokir) dan snackbar Urungkan.
 - **F5** sebagian: ruang Memberi lalu kartu Zakat mal lalu kartu haul.
-- **F6** hanya tampilan sheet; tidak ada pembayaran.
+- **F6** sheet Pro dengan tiga pemicu (Rizqflow Pro, Tangkap otomatis, Widget catat kilat): manfaat menyesuaikan pemicu, dan aksi tadi dilanjutkan setelah beli. Tidak ada pembayaran sungguhan.
+- **F8** mengejar yang terlewat: Catat kilat (favorit satu ketukan), notifikasi malam dengan balasan seperti "kopi 25000", Koreksi saldo (selisih, saldo lebih besar, cocok), dan petunjuk hari kosong.
+- **F9** tangkap otomatis (v1.1): beli, beri akses (simulasi), simulasikan pembayaran masuk, lalu Setujui, Ubah, atau Abaikan draf, termasuk tanda "Mungkin sudah dicatat".
 
-**Belum ada:** onboarding S01–S04 (F1), S09, S12–S15, S17, S19, S20, S22, S23; flow F4 dan F7.
+**Ditambah 2026-09-21:** onboarding S01–S04 (flow F1), S12 Aturan alokasi (flow F4), Denah pengguna baru (kosong, tanpa ruang), dan mode demo yang terpisah dari data pengguna (penanda di header, keluar dari demo mengembalikan data pengguna). Rezeki yang tidak habis terbagi kini tersimpan sebagai "belum dialirkan" (sebelumnya hilang saat total persentase kurang dari 100%).
 
-**Diuji:** skrip klik otomatis (Chrome headless) menjalankan F2 dan F3 termasuk Urungkan tanpa error konsol; tampilan diperiksa di mode terang, gelap, dan teks 150% dan 200%.
+**Ditambah 2026-09-21 (melengkapi seluruh layar):** S09 detail dan edit transaksi (ubah, hapus, Urungkan; pemasukan menghitung ulang alokasi dari persentase saat itu), tab Transfer di S06, pencarian dan filter di S08, tambah dan arsipkan ruang (S10, S11; ruang ke-6 memicu paywall; ruang ke-4 dan seterusnya berwarna netral), S13 akun, kategori, dan favorit, S14 sampai S17 zakat (harga emas dan harta bisa diubah, status nisab dan haul dihitung, Tunaikan zakat membuat transaksi dan memulai haul baru; tanggal Hijriyah dari kalender Umm al-Qura milik browser), S19 keamanan (buat PIN dua kali, kunci simulasi, salah lima kali menahan sementara), S20 backup dan restore (sandi, sandi salah, berkas rusak, konfirmasi timpa, ekspor CSV, pratinjau impor), S22 tampilan, S23 tentang. Pembulatan alokasi kini sisa terbesar, sama dengan `AllocationEngine` di `:domain`.
+
+**Belum ada:** tidak ada layar S01–S28 yang belum dibuat. Yang masih disimulasikan: pembayaran, izin, notifikasi, berbagi berkas, pilih berkas CSV, sidik jari, dan harga emas otomatis. Wireframe teks ada di [../wireframe.md](../wireframe.md).
+
+**Diuji splash dan masuk (F0) 2026-09-21:** 17 pemeriksaan klik otomatis (splash beralih sendiri, masuk simulasi, riwayat di penyimpanan browser, langsung ke Denah bila sudah pernah masuk, Keluar, dan tanpa overflow di mode gelap dan teks 200%). Regresi 82 dan 116 pemeriksaan sebelumnya tetap lulus.
+
+**Diuji layar lengkap 2026-09-21:** 116 pemeriksaan klik otomatis (Chrome headless, tidak disimpan di repo) untuk tab Transfer, S08 sampai S10, S13 sampai S15, S17, S19, S20, S22, dan S23, ditambah pemeriksaan overflow 15 layar di mode gelap dan teks 200%; tanpa galat konsol. Bersama 82 pemeriksaan layar awal, seluruhnya lulus.
+
+**Diuji dengan pola data nyata 2026-09-21:** 26 baris representatif dari Transaksi Harian (deskripsi panjang, catatan panjang, pasangan transfer, gaji Rp 17.805.137) dimuat ke prototipe di salinan sementara (isi data nyata tidak masuk repo). Temuan tata letak di teks 200%: baris daftar terjepit karena nominal 8 digit berdampingan dengan teks (nominal kini pindah ke baris bawah pada 150% dan 200%), keterangan yang tidak terpecah, dan kolom cari terpotong (teksnya dipendekkan). Pembagian Rp 17.805.137 menjadi 1.780.514 / 5.341.541 / 10.683.082 habis tanpa selisih. Temuan tentang data (transfer dua baris, tanda nominal tidak konsisten) ada di [../model-data.md](../model-data.md).
+
+**Diuji 2026-09-21 (layar awal):** skrip klik otomatis baru (Chrome headless, tidak disimpan di repo) menjalankan 82 pemeriksaan: regresi F2 dan F3, F1 penuh (kedua pola, batas slider, nama akun wajib), rezeki pertama di data baru, F4 (total 105%, simpan, buang perubahan, aturan baru dipakai), jalur tanpa ruang (sisa tidak menggandakan saldo), mode demo, dan Tangkap otomatis di data baru; tanpa galat konsol. Layar baru diperiksa di mode terang, gelap, dan teks 200% tanpa overflow.
+
+**Diuji sebelumnya:** skrip klik otomatis (Chrome headless) menjalankan F2 dan F3 termasuk Urungkan tanpa error konsol; tampilan diperiksa di mode terang, gelap, dan teks 150% dan 200%. Pembaruan 2026-09-20: skrip klik otomatis baru (Chrome headless, tidak disimpan di repo) menjalankan 63 pemeriksaan untuk F2, F3, F6, F8, dan F9 tanpa galat konsol; layar baru diperiksa di mode gelap dan teks 200%, yang menemukan keterangan draf pecah baris dan sudah diperbaiki.
 
 ## Keputusan desain
 
@@ -49,7 +85,7 @@ Langsung ke layar tertentu lewat parameter URL: `prototype.html?screen=denah&the
 - **Aturan bar dan cincin** (dari panduan visualisasi data): tebal 16px, jeda 2px antar segmen, ujung data membulat 4px, jalur cincin berupa warna ruang yang lebih muda, legenda selalu ada, teks tidak diwarnai warna seri.
 - **Denah = grid kartu**, bukan ilustrasi denah harfiah, supaya tetap rapi saat ruangnya banyak.
 - **Teks besar (sp) ikut skala, ukuran elemen (dp) tidak.** Angka hero dibatasi 1,25x dan label navigasi 1,3x; kartu ruang menjadi 1 kolom di 150% ke atas. Pengujian 200% menemukan angka hero pecah di tengah, dan ini yang diperbaiki.
-- **Status ruang mengikuti tipe ruang** (usulan di [konsep.md](../konsep.md), perlu konfirmasi): Menunaikan dan Menumbuhkan terpenuhi saat penggunaan mencapai jatah; Mencukupi masuk Perlu perhatian saat pemakaian 85% atau lebih dari jatah.
+- **Status ruang mengikuti tipe ruang** (dikonfirmasi 2026-09-20, lihat [konsep.md](../konsep.md)): Menunaikan dan Menumbuhkan terpenuhi saat penggunaan mencapai jatah; Mencukupi masuk Perlu perhatian saat pemakaian 85% atau lebih dari jatah.
 
 ## Hasil validasi warna
 
@@ -101,6 +137,8 @@ Artinya: slot 1–5 aman bersebelahan di urutan apa pun, dan itu persis batas ru
 
 ## Peta ke Jetpack Compose
 
+**Sudah diimplementasikan 2026-09-21** di `app/src/main/kotlin/.../ui/theme` (`Color.kt`, `Type.kt`, `Theme.kt`); token di `tokens.css` tetap sumbernya, dan `RizqflowTokensTest` menjaga kontras warna hasil validasi. Cuplikan di bawah tinggal sebagai penjelasan.
+
 Nama peran warna di `tokens.css` sama dengan Material 3, jadi langsung dipetakan ke `ColorScheme`:
 
 ```kotlin
@@ -134,11 +172,14 @@ val RizqflowLight = lightColorScheme(
 
 ## Yang perlu dikonfirmasi setelah melihat prototipe
 
+**Prototipe disetujui pemilik pada 2026-09-20.** Butir di bawah tetap dicatat sebagai asumsi yang ikut menjadi dasar; warna ruang ke-4 dan seterusnya sudah divalidasi dan diputuskan 2026-09-26 (lihat bagian Warna ruang custom di bawah). Aplikasi Android dan prototipe masih memakai warna netral untuk slot 4 ke atas.
+
 1. **Mode gelap.** Ini turunan dari palet sage karena homepage belum punya mode gelap. Nilainya bisa diubah di satu blok di `tokens.css`.
-2. **Ambang 85%** untuk Perlu perhatian di ruang Mencukupi.
+2. **Ambang 85%** untuk Perlu perhatian di ruang Mencukupi: sudah dikonfirmasi 2026-09-20.
 3. **Tanggal Hijriyah** pada layar S05 dan S16 hanyalah perkiraan; metode kalender masih keputusan terbuka.
 4. **Semua angka** (harga emas, harta, harga Pro Rp 129.000) hanya contoh.
+5. **Kemudahan mencatat (S24–S28)**: jumlah favorit, isi teks Koreksi saldo yang menghindari kesan menghakimi, dan apakah notifikasi malam perlu kolom balasan langsung.
 
 ## Keterbatasan
 
-Data tidak disimpan (reset saat halaman dimuat ulang), tanggal tetap September 2026, dan tidak ada pembayaran atau notifikasi sungguhan. Prototipe HTML tidak menguji nuansa native (gestur, haptik, ukuran sentuh); itu dinilai saat implementasi Compose di Tahap 3.
+Data tidak disimpan (reset saat halaman dimuat ulang), tanggal tetap September 2026, dan tidak ada pembayaran, notifikasi, atau izin sistem sungguhan (semuanya disimulasikan). Prototipe HTML tidak menguji nuansa native (gestur, haptik, ukuran sentuh); itu dinilai saat implementasi Compose di Tahap 3.

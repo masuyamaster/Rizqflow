@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cluster 3 lingkaran (oranye-biru-hijau, pengganti huruf O di "FLOW") diekstrak sendiri dari
+     ic_rizqflow_wordmark, dipotong pas ke bounding box-nya (860x1040 dari viewport asli
+     5440x1110, offset x=3710 y=20) supaya pusat rotasi bawaan gambar ini (titik tengahnya)
+     otomatis jadi pusat cluster yang benar saat diputar di SplashContent. Posisi & ukuran
+     penempatan di layar dihitung dari ORBIT_* fraction di SplashContent.kt, harus sinkron
+     dengan bounding box ini kalau file ini diubah. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="43dp"
+    android:height="52dp"
+    android:viewportWidth="860"
+    android:viewportHeight="1040">
+    <path android:fillColor="#3B6FA8" android:pathData="M0,820 A220,220 0 1,0 440,820 A220,220 0 1,0 0,820 Z" />
+    <path android:fillColor="#2A9A80" android:pathData="M420,820 A220,220 0 1,0 860,820 A220,220 0 1,0 420,820 Z" />
+    <path android:fillColor="#C4653A" android:pathData="M170,260 A260,260 0 1,0 690,260 A260,260 0 1,0 170,260 Z" />
+</vector>

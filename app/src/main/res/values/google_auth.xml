@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Web client ID dari proyek Google Cloud pemilik, untuk Masuk dengan Google dan izin Gmail.
+      Proyek Google Cloud: rizqflow (rizqflow-509308). Kosong = tombol Google menampilkan pesan
+      "belum disiapkan". Ini ID publik (bukan rahasia). Langkah lengkap: docs/auth-google.md.
+    -->
+    <string name="google_web_client_id" translatable="false">232915442214-5fusjgtntn65tdg34km2ppra9ee6k1ka.apps.googleusercontent.com</string>
+</resources>

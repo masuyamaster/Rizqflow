@@ -1,6 +1,6 @@
 # Rizqflow — Layar dan Flow (UI)
 
-Spesifikasi teks tampilan dan alur pengguna. **Belum desain visual**; ini bahan untuk Tahap 1 (lihat [roadmap.md](roadmap.md)).
+Spesifikasi teks tampilan dan alur pengguna. Tata letak seluruh layar ada di [wireframe.md](wireframe.md), dan prototipe klik untuk layar kunci di [design/](design/README.md) (lihat [roadmap.md](roadmap.md) untuk tahapnya).
 
 - Platform: **Android** (diputuskan 2026-09-19). Pola di bawah mengikuti konvensi Android: bottom navigation, FAB, bottom sheet, snackbar.
 - Semua angka pada wireframe hanya **contoh**, bukan saran keuangan.
@@ -77,8 +77,18 @@ T -.-> F
 | S26 | Pengingat harian | Jam dan nada pengingat malam | 6 |
 | S27 | Draf dari notifikasi | Setujui, ubah, atau abaikan draf transaksi | v1.1 |
 | S28 | Tangkap otomatis | Penjelasan izin, aplikasi yang didukung, pemetaan ke akun (Pro) | v1.1 |
+| S29 | Splash | Layar pembuka; menahan sampai riwayat masuk terbaca | 3 |
+| S30 | Masuk | Nama pengguna dan sandi, Google connect, Gmail (opsional); menggantikan S01 Sambutan | 3 |
+| S31 | Daftar | Membuat akun lokal (nama pengguna dan sandi), langsung masuk | 3 |
+| S32 | Peran ruang | Trader (batas risiko per trade) atau Investor (jadwal DCA) untuk satu ruang; Pro | 7 |
+| S33 | Transaksi berulang | Daftar aturan yang mencatat pemasukan, pengeluaran, atau transfer otomatis (harian, mingguan, bulanan); tambah, ubah, jeda, hapus | 10 |
+| S34 | Tagihan dan cicilan | Daftar tagihan dengan jatuh tempo dan status; Bayar sekali ketuk (dengan Urungkan); tambah, ubah, jeda, hapus; pengingat jatuh tempo | 10 |
+| S35 | Utang-piutang | Ringkasan sisa piutang dan utang; daftar dengan status; catat baru, pelunasan sebagian atau penuh (dengan Urungkan), rincian dengan riwayat, ubah, hapus; pengingat jatuh tempo; saran ke profil harta zakat | 10 |
+| S36 | Laporan | Ringkasan bulanan: pemasukan, pengeluaran, sisa, perbandingan bulan lalu, pengeluaran per ruang dan kategori terbesar | 10 |
 
 ## Wireframe layar kunci
+
+Hanya sebagian layar ada di sini; wireframe semua layar S01–S28 (termasuk keadaan kosong) ada di [wireframe.md](wireframe.md).
 
 ### S05 Denah (beranda)
 
@@ -118,6 +128,7 @@ T -.-> F
 - Grid ruang 2 kolom. Kesan denah datang dari tata letak ruang, bukan ilustrasi denah harfiah (lebih mudah dipakai saat ruangnya banyak).
 - "Perlu perhatian" maksimal 3 butir: haul mendekati, ruang hampir melewati jatah, pemasukan belum dialirkan, saldo akun belum dicocokkan lebih dari 7 hari (menuju S25).
 - Tanggal Hijriyah kecil di header bila modul Memberi aktif.
+- Kartu **Sisa aman hari ini** di bawah kartu rezeki, hanya bulan berjalan dan bila ada ruang Mencukupi berjatah (rumus di [konsep.md](konsep.md)). Jatah hari ini terlampaui tampil Rp 0 dengan teks lembut, tanpa merah.
 
 ### S06 Catat transaksi (tab Pengeluaran)
 
@@ -151,6 +162,7 @@ T -.-> F
 - Numpad memakai tombol `000` sebagai ganti koma, karena rupiah tidak memakai desimal.
 - Pengeluaran yang sering berulang bisa ditandai **Jadikan favorit** (nominal, kategori, ruang, dan akun ikut tersimpan); favorit tampil sebagai chip di S24.
 - Melewati jatah ruang: banner lembut di atas tombol Simpan, tombol tetap aktif.
+- Pengeluaran baru bertanggal hari ini menampilkan baris **Sisa aman hari ini** di bawah nominal; setelah nominal diisi di ruang Mencukupi berubah menjadi **Sisa aman setelah ini** (tidak pernah negatif). Tidak tampil saat mengubah transaksi lama atau bertanggal selain hari ini.
 
 ### S07 Pratinjau alokasi
 
@@ -290,6 +302,7 @@ T -.-> F
 - **Ketuk favorit langsung menyimpan** dengan nominal, kategori, ruang, dan akun favorit itu, lalu snackbar Urungkan. Satu ketukan.
 - Nominal diketik manual: kategori dan ruang mengikuti yang terakhir dipakai, akun mengikuti akun terakhir.
 - Hanya pengeluaran. Pemasukan tetap lewat S06 karena harus melewati S07.
+- Baris **Sisa aman hari ini** di bawah nominal, berubah menjadi **Sisa aman setelah ini** saat nominal diketik dan ruang yang dipakai bertipe Mencukupi; sama dengan S06.
 - Paling banyak 6 favorit tampil, urut dari yang paling sering dipakai. Favorit dibuat dari S06 dan dikelola di S13.
 
 ### S25 Koreksi saldo
@@ -349,7 +362,12 @@ Fitur v1.1 (Pro), dibuka dari S18 Lainnya.
 
 ```mermaid
 flowchart LR
-A["S01 Sambutan"] --> B["S02 Pilih pola ruang"]
+P["S29 Splash"] --> L["S30 Masuk"]
+P -->|"Sudah punya riwayat masuk"| M["S05 Denah"]
+L -->|"Belum punya akun"| R["S31 Daftar"]
+R -->|"Akun dibuat"| B["S02 Pilih pola ruang"]
+L -->|"Akun lokal yang sudah ada"| M
+L -->|"Baru masuk dengan Google, belum ada data"| B
 B --> C["S03 Atur persentase"]
 C --> D["S04 Tambah akun pertama"]
 D --> E["S05 Denah kosong"]
@@ -357,11 +375,14 @@ E --> F["Catat rezeki pertama"]
 E --> G["Coba data contoh"]
 ```
 
-- S01: tagline dan satu tombol Mulai, tanpa slide berlapis.
-- S02: kartu **Tiga hak** (Memberi, Diri, Keluarga) atau **Mulai kosong**; bisa dilewati dan diubah nanti.
-- S03: slider dengan total selalu 100%; tampilkan hasil untuk contoh Rp 1.000.000 supaya konkret.
-- S04: nama akun (bank, dompet digital, tunai) dan saldo awal.
-- S05 kosong menawarkan dua jalan: catat rezeki pertama, atau coba data contoh (mode demo).
+- S29 Splash lalu S30 Masuk (2026-09-21): splash menahan sampai riwayat masuk terbaca; tanpa riwayat tampil S30, dengan riwayat langsung ke Denah. S30 berisi tagline, tiga jaminan, tombol Google **berupa simbol G saja** (keputusan pemilik 2026-09-21; nama untuk pembaca layar tetap "Lanjutkan dengan Google"), dan tombol **Hubungkan Gmail** (opsional, izin baca). Kegagalan tampil sebagai pesan lembut, tidak memblokir. **S30 menggantikan S01**; teks S01 di bawah dipertahankan sebagai riwayat.
+- Akun lokal (2026-09-21, permintaan pemilik): S30 juga punya kolom **nama pengguna dan sandi** dan tautan **Daftar** ke S31. Akun disimpan di ponsel ini saja (hash sandi, tanpa server); sandi tidak bisa dipulihkan. Salah sandi dan nama pengguna tak dikenal memberi pesan yang sama. Setelah daftar langsung masuk dan lanjut ke S02; masuk dengan akun yang sudah ada langsung ke Denah. Wireframe dan aturan lengkap ada di [wireframe.md](wireframe.md) (S30, S31).
+- S01 (digantikan S30): tagline dan satu tombol Mulai, tanpa slide berlapis. Tautan teks **Pulihkan dari cadangan** untuk yang pindah ponsel (menuju F7).
+- S02: kartu **Tiga hak** (Memberi, Diri, Keluarga) atau **Mulai kosong**; **Mulai kosong** sekaligus cara melewati langkah ini (S03 dilewati), dan pilihan bisa diubah nanti. Layar S02 sampai S04 menampilkan penghitung langkah.
+- S03: slider dengan total selalu 100%: ruang terakhir menerima sisanya dan tidak punya slider; tampilkan hasil untuk contoh Rp 1.000.000 supaya konkret.
+- S04: jenis akun (tunai, bank, dompet digital), nama akun (wajib), dan saldo awal (boleh nol). Saldo awal **bukan rezeki**: tidak masuk "Rezeki bulan ini" dan tidak dialirkan ke ruang.
+- S05 kosong menawarkan dua jalan: catat rezeki pertama, atau coba data contoh (mode demo). Tanpa ruang (dari Mulai kosong), rezeki yang dicatat tersimpan sebagai "belum dialirkan" sampai ada ruang; Denah menawarkan Pakai pola Tiga hak.
+- Mode demo memakai data terpisah: penanda di header, dan keluar dari demo mengembalikan data pengguna (S22).
 
 ### F2 Rezeki masuk, dialirkan otomatis
 
@@ -393,7 +414,12 @@ G --> I["Kembali ke layar asal, snackbar Urungkan"]
 
 ### F4 Mengubah aturan alokasi
 
-S10 Daftar ruang, lalu S12 Aturan alokasi, lalu ubah persentase. Total harus 100%; tombol Simpan nonaktif bila tidak. Berlaku untuk pemasukan berikutnya, riwayat tidak berubah.
+S10 Daftar ruang, lalu S12 Aturan alokasi, lalu ubah persentase. Total harus 100%; tombol Simpan nonaktif bila tidak, dan juga bila belum ada perubahan. Berlaku untuk pemasukan berikutnya, riwayat tidak berubah.
+
+- Jalan masuk: S10 (baris Pembagian rezeki), tombol Atur aturan di S11 (baris ruang itu disorot), atau S18 Lainnya.
+- Keluar dengan perubahan yang belum disimpan menampilkan sheet "Buang perubahan?". Sesudah simpan: snackbar Urungkan.
+- Baris **Aturan lanjutan** (prioritas, batas atas, sisa mengalir) terkunci Pro dan membuka S21.
+- Rezeki yang tidak habis terbagi (total di bawah 100% pada Ubah sekali ini) tidak hilang: ia tersimpan sebagai "belum dialirkan" di Denah.
 
 ### F5 Dari harta sampai zakat ditunaikan
 
@@ -414,6 +440,22 @@ I --> J["Transaksi pengeluaran di Ruang Memberi dan haul baru"]
 - S15: harta (emas dalam gram, uang dan tabungan, investasi, piutang lancar) dan pengurang (hutang jangka pendek); pengingat rutin untuk memperbarui nilai.
 - S17: jumlah zakat (2,5% dari harta bersih, bisa diubah), akun sumber, konfirmasi. Hasilnya transaksi pengeluaran kategori Zakat mal di ruang Memberi.
 - Mode alternatif **Persentase donasi** untuk yang tidak memakai modul zakat: tanpa nisab dan haul.
+
+### Keputusan tambahan dari melengkapi prototipe (2026-09-21)
+
+- **S06 Transfer:** memindahkan uang antar akun; bukan pemasukan atau pengeluaran, tanpa ruang. Butuh dua akun. Pola ini datang dari data nyata, tempat transfer dicatat sebagai dua baris.
+- **S08:** kolom cari (catatan dan nominal), filter cepat Semua, Masuk, Keluar, Transfer. Baris bisa diketuk menuju S09.
+- **S09:** pengeluaran, pemasukan, dan transfer bisa diubah dan dihapus (dengan konfirmasi dan Urungkan). Alokasi pemasukan dihitung ulang dengan persentase saat itu; ruang dan persentasenya tidak bisa diedit dari sini.
+- **S10 dan S11:** tambah ruang lewat sheet (nama, tipe, ikon); ruang ke-6 memicu S21 (batas 5 ruang gratis). Arsipkan ruang lewat S11 dengan konfirmasi; ruang arsip tidak tampil dan tidak menerima alokasi baru, riwayat tetap, dan bisa dipulihkan dari baris Diarsipkan di S10. Setelah mengarsipkan, aturan alokasi perlu diatur ulang supaya total kembali 100%.
+- **S32 Peran ruang (Pro):** dibuka dari kartu Peran di S11 (ruang selain Memberi). Tanpa peran: dua pilihan, Trader dan Investor; tanpa Pro, memilih membuka S21. Trader: isi modal (papan angka) dan risiko per trade (penggeser 0,25% sampai 10%, kelipatan 0,25%), layar menampilkan batas rupiahnya. Di S06, pengeluaran di ruang Trader yang melewati batas memunculkan banner lembut (bukan merah, tetap bisa disimpan). Investor: nominal, tanggal tiap bulan (1 sampai 28), akun sumber, dan kategori; kartu status menunjukkan Selesai, Jatuh tempo (tombol Catat sekarang), atau Akan datang. Catat sekarang membuat satu pengeluaran di kategori itu. Notifikasi jatuh tempo sekali per bulan menumpang pengingat malam. Lepas peran dengan konfirmasi; transaksi lama tidak berubah. Disclaimer: alat bantu disiplin, bukan saran investasi atau trading.
+- **S33 Transaksi berulang (Gratis):** dari menu Lainnya. Daftar aturan dengan nama (catatan, atau kategori bila kosong), tujuan, nominal, frekuensi, dan kemunculan berikutnya; keadaan kosong menjelaskan gunanya. Tambah atau ubah lewat sheet: jenis (Pemasukan, Pengeluaran, Transfer), nominal, sumber atau ruang dan kategori atau akun tujuan, akun, frekuensi, tanggal mulai, tanggal akhir (opsional), dan catatan. Tanggal mulai tidak bisa sebelum hari ini dan kemunculan pertama dicatat pada tanggal itu (hari ini berarti langsung). Aturan yang sudah ada punya Jeda atau Lanjutkan (melanjutkan tidak mengejar yang terlewat) dan Hapus aturan dengan konfirmasi (transaksi yang sudah tercatat tetap ada). Aturan yang akun, ruang, atau kategorinya sudah diarsipkan ditandai Tertahan dengan pesan lembut, dan aplikasi memberi tahu sekali per pembukaan. Pencatatan berjalan saat aplikasi dibuka dan tiap kembali ke depan, tanpa penjadwal latar belakang; snackbar "N transaksi berulang dicatat" tanpa Urungkan (hapus transaksinya bila salah). Tidak jalan di mode demo. Aturan penuh ada di [model-data.md](model-data.md).
+- **S34 Tagihan dan cicilan (Gratis):** dari menu Lainnya. Daftar terurut: yang perlu dibayar (terlambat dan terdekat di atas), lalu yang dijeda, lalu yang lunas. Tiap baris: nama, ruang, kategori, dan akun; status dengan ikon plus teks (Terlambat, Hari ini, Segera, Mendatang, Dijeda, Lunas), urutan cicilan ("Cicilan ke-2 dari 12"), tanggal jatuh tempo, nominal, dan tombol Bayar. Keadaan kosong menjelaskan gunanya dan bahwa pengeluaran baru tercatat saat Bayar diketuk. Bayar membuka dialog dengan nominal bawaan dari tagihan (boleh diubah untuk listrik dan air) dan mencatat hari ini; snackbar "Listrik dibayar. Jatuh tempo berikutnya 24 Okt 2026." dengan Urungkan, atau "dibayar dan lunas" untuk pembayaran terakhir. Tambah atau ubah lewat sheet: nama, nominal, ruang, kategori, akun, pengulangan (Sekali bayar, Bulanan, Mingguan), jatuh tempo berikutnya (tanggal lampau boleh, berarti sudah terlambat), jumlah cicilan (opsional, kosong = tanpa batas), sudah dibayar sebelumnya, dan catatan. Tagihan punya Jeda pengingat atau Lanjutkan dan Hapus tagihan dengan konfirmasi (pengeluaran yang sudah tercatat tetap ada). Tagihan yang akun, ruang, atau kategorinya diarsipkan ditandai dan Bayar dinonaktifkan. Pengingat berupa notifikasi tiga hari sebelum, pada hari jatuh tempo, dan sekali bila terlambat, lalu diam sampai dibayar; ia menumpang jadwal Pengingat malam, jadi layar memberi petunjuk lembut bila Pengingat malam mati. Bayar dari notifikasi belum ada supaya nominal diperiksa dulu. Layarnya bisa dipakai di mode demo (databasenya terpisah), tetapi pengingatnya tidak jalan di sana. Aturan penuh ada di [model-data.md](model-data.md).
+- **S36 Laporan (Gratis):** dari menu Lainnya, dengan navigator bulan yang sama dengan Denah dan Transaksi (bulan depan tidak bisa dipilih). Tiga ringkasan dengan perbandingan bulan lalu — Pemasukan, Pengeluaran, dan Sisa bulan ini (pemasukan dikurangi pengeluaran) — masing-masing menampilkan nominal bulan ini, lalu baris kecil dengan ikon naik, turun, atau sama (netral, bukan warna hijau-merah, seperti status ruang lain di aplikasi) beserta persen dan nominal bulan lalu; bulan lalu nol menampilkan "Belum ada data bulan lalu" tanpa persen. Di bawahnya "Pengeluaran per ruang" dan "Kategori terbesar" (maksimal 5) sebagai batang mendatar berwarna sama dengan warna ruang di Denah, terbesar dulu; ruang atau kategori yang sudah diarsipkan tetap muncul karena ini ringkasan yang sudah terjadi, bukan jatah aktif seperti Denah. Transfer dan transaksi pinjaman (utang-piutang) tidak ikut terhitung. Keadaan kosong untuk bulan tanpa transaksi. Semua angka dihitung ulang dari transaksi seperti Denah, tidak ada yang disimpan. Laporan lanjutan (bulanan/tahunan, PDF, grafik tren, multi-mata uang) tetap Pro di Tahap 7; layar ini murni ringkasan di aplikasi.
+- **S35 Utang-piutang (Gratis):** dari menu Lainnya. Di atas daftar dua angka: Sisa piutang dan Sisa utang (hanya yang belum lunas). Daftar terurut: yang belum lunas (terlambat dan terdekat di atas, tanpa jatuh tempo di bawahnya), lalu yang lunas. Tiap baris: nama pihak, arah (Piutang atau Utang), status dengan ikon plus teks (Terlambat, Hari ini, Segera, Berjalan, Lunas) beserta jatuh tempo atau "Tanpa jatuh tempo", sisa dan pokoknya, dan tombol Terima (piutang) atau Bayar (utang). Keadaan kosong menjelaskan gunanya dan bahwa saldo bergeser tanpa memakan jatah ruang. Catat baru lewat sheet: pilihan Piutang (saya meminjamkan) atau Utang (saya meminjam), nama pihak, nominal, tanggal pinjam, jatuh tempo (opsional), saklar "Ubah saldo akun sekarang" (bawaan menyala; dimatikan untuk pinjaman lama yang uangnya sudah bergerak sebelum dicatat) dengan pilihan akun, saklar "Diperkirakan kembali" (hanya piutang), dan catatan. Terima atau Bayar membuka sheet pelunasan: nominal bawaan sebesar sisa (boleh dikurangi, tombol Lunasi semua), saklar "Ubah saldo akun" dengan pilihan akun; snackbar "Budi: pelunasan Rp 50.000 dicatat. Sisa Rp 150.000." dengan Urungkan, atau "Sudah lunas". Mengetuk baris membuka rincian: pokok, akun (atau "Saldo akun tidak diubah"), progres pelunasan, riwayat pelunasan (tiap baris bisa dihapus dengan konfirmasi), ubah nama, jatuh tempo, catatan, dan "Diperkirakan kembali", serta hapus utang-piutang dengan konfirmasi yang menjelaskan saldo akun kembali. Transaksi pinjaman muncul di daftar Transaksi (S08) sebagai "Pinjaman keluar" atau "Pinjaman masuk" dengan tanda − atau +, tidak ikut filter Masuk atau Keluar, dan mengetuknya membuka S35, bukan Detail (S09). Pengingat berupa notifikasi tiga hari sebelum, pada hari jatuh tempo, dan sekali bila terlambat, lalu diam; kata untuk piutang dibuat lembut. Ia menumpang jadwal Pengingat malam, jadi layar memberi petunjuk lembut bila Pengingat malam mati. **Saran ke S15:** di profil harta, di bawah Piutang lancar dan Hutang jangka pendek muncul "Dari Utang-piutang: Rp X" dengan tombol Pakai; nilainya tidak masuk sendiri. Aturan penuh ada di [model-data.md](model-data.md).
+- **S14 profil harta (Pro):** di mode zakat mal, satu chip per profil harta (Utama bawaan) dengan tombol + Profil, Ubah nama, dan Arsipkan (profil aktif terakhir tidak bisa). Profil tambahan tanpa Pro membuka S21. Harta (S15), status haul, riwayat, dan Tunaikan (S17) semuanya untuk profil yang terpilih; catatan transaksi zakat memuat nama profil bila ada lebih dari satu. Profil yang sudah ada tidak terkunci saat turun paket.
+- **S14 sampai S17:** status Belum diisi, Belum mencapai nisab, Haul berjalan, dan Haul genap. Menyimpan profil harta yang membuat harta mencapai nisab memulai haul hari itu; di bawah nisab, haul dipantau saja. Tunaikan zakat menjadi pengeluaran kategori Zakat mal di ruang Memberi lalu memulai haul baru. Mode Persentase donasi biasa menyembunyikan nisab dan haul tanpa menghapus data.
+- **S19:** PIN 6 angka diketik dua kali; lima kali salah menahan sementara (data tidak dihapus); sidik jari hanya bisa aktif setelah ada PIN.
+- **S20:** cadangan memakai sandi (minimal 6 karakter); pulihkan menanyakan berkas, sandi, lalu konfirmasi menimpa. Impor dari Transaksi Harian menampilkan pratinjau dulu dan menyatukan pasangan transfer.
 
 ### F6 Membuka fitur Pro
 
@@ -483,7 +525,7 @@ F -->|"Abaikan"| I["Draf dihapus"]
 
 ## Tipe ruang dan status
 
-Status di Denah bergantung pada **tipe ruang** (Menunaikan, Menumbuhkan, Mencukupi). Definisi dan usulannya ada di [konsep.md](konsep.md); ini keputusan yang perlu dikonfirmasi sebelum logika status dibuat.
+Status di Denah bergantung pada **tipe ruang** (Menunaikan, Menumbuhkan, Mencukupi). Definisi dan ambangnya (85% untuk Mencukupi) sudah dikonfirmasi pada 2026-09-20 dan ada di [konsep.md](konsep.md).
 
 ## State dan kasus tepi
 

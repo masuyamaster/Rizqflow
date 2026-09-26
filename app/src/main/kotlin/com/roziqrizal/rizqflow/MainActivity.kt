@@ -1,0 +1,100 @@
+package com.roziqrizal.rizqflow
+
+import android.content.Intent
+import android.graphics.Color
+import android.os.Bundle
+import android.view.WindowManager
+import androidx.activity.SystemBarStyle
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.fragment.app.FragmentActivity
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import kotlinx.coroutines.flow.MutableStateFlow
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
+import com.roziqrizal.rizqflow.auth.AuthController
+import com.roziqrizal.rizqflow.auth.GoogleAuthProvider
+import com.roziqrizal.rizqflow.auth.GoogleClientId
+import com.roziqrizal.rizqflow.auth.SharedPrefsAccountStore
+import com.roziqrizal.rizqflow.auth.SharedPrefsSecurityStore
+import com.roziqrizal.rizqflow.auth.SharedPrefsSessionStore
+import com.roziqrizal.rizqflow.domain.auth.AppLockService
+import com.roziqrizal.rizqflow.domain.auth.LocalAccountService
+import com.roziqrizal.rizqflow.domain.auth.Pbkdf2PasswordHasher
+import com.roziqrizal.rizqflow.ui.AppRoot
+import com.roziqrizal.rizqflow.ui.theme.RizqflowTheme
+import com.roziqrizal.rizqflow.ui.theme.ThemePreference
+import com.roziqrizal.rizqflow.ui.theme.resolveDarkTheme
+import java.util.UUID
+
+/**
+ * Titik masuk. Alur: splash sistem, lalu halaman masuk (bila belum pernah masuk) atau langsung
+ * menu utama (bila sudah punya riwayat masuk).
+ *
+ * Target SDK 35 ke atas memaksa tampilan edge-to-edge; Scaffold di RizqflowApp yang menghormati
+ * inset sistem. Warna ikon bar sistem mengikuti tema terang atau gelap (`enableEdgeToEdge`).
+ */
+class MainActivity : FragmentActivity() {
+    /** Bertambah setiap ada permintaan Catat kilat (pintasan atau tile); layar membandingkannya dengan yang sudah ditangani. */
+    private val quickCatatRequests = MutableStateFlow(0)
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        noteQuickCatat(intent)
+    }
+
+    private fun noteQuickCatat(intent: Intent?) {
+        if (intent?.action == ACTION_QUICK_CATAT) quickCatatRequests.value += 1
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        // Harus dipanggil sebelum super.onCreate: mengganti tema splash ke tema aplikasi.
+        installSplashScreen()
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        // Data keuangan: nominal tidak boleh terlihat di tampilan aplikasi terakhir atau tangkapan layar (S19).
+        window.setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE)
+        // Hanya saat dibuat baru: setelah layar diputar, intent lama tidak boleh membuka sheet lagi.
+        if (savedInstanceState == null) noteQuickCatat(intent)
+
+        val controller = AuthController(
+            store = SharedPrefsSessionStore(this),
+            provider = GoogleAuthProvider(this, GoogleClientId.clean(getString(R.string.google_web_client_id))),
+            accounts = LocalAccountService(
+                store = SharedPrefsAccountStore(this),
+                hasher = Pbkdf2PasswordHasher(),
+                newAccountId = { UUID.randomUUID().toString() },
+            ),
+            scope = lifecycleScope,
+        )
+        // Splash sistem hanya latar kosong dan menutup begitu frame pertama tergambar; selama riwayat
+        // masuk dibaca, AppRoot menampilkan wordmark penuh (splash sistem tak bisa selebar layar).
+        controller.start()
+
+        val appLock = AppLockService(SharedPrefsSecurityStore(this), Pbkdf2PasswordHasher())
+        val themePreference = ThemePreference(this)
+
+        setContent {
+            val mode by themePreference.mode.collectAsState()
+            val darkTheme = mode.resolveDarkTheme()
+            // enableEdgeToEdge dipanggil sekali di onCreate hanya cocok untuk mode Otomatis; layar
+            // Tampilan bisa memaksa terang/gelap berbeda dari sistem, jadi gaya bar sistem dihitung ulang.
+            LaunchedEffect(darkTheme) {
+                val style = if (darkTheme) SystemBarStyle.dark(Color.TRANSPARENT) else SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+                enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
+            }
+            RizqflowTheme(darkTheme = darkTheme) {
+                AppRoot(
+                    controller = controller,
+                    appLock = appLock,
+                    themePreference = themePreference,
+                    showDebugLogin = BuildConfig.DEBUG,
+                    quickCatatRequest = quickCatatRequests.collectAsState().value,
+                )
+            }
+        }
+    }
+}

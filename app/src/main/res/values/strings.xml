@@ -1,0 +1,920 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Rizqflow</string>
+
+    <!-- Format tanggal dan bulan (Format.kt) -->
+    <string name="date_today">Hari ini</string>
+    <string name="date_yesterday">Kemarin</string>
+    <string-array name="month_abbrev">
+        <item>Jan</item>
+        <item>Feb</item>
+        <item>Mar</item>
+        <item>Apr</item>
+        <item>Mei</item>
+        <item>Jun</item>
+        <item>Jul</item>
+        <item>Agu</item>
+        <item>Sep</item>
+        <item>Okt</item>
+        <item>Nov</item>
+        <item>Des</item>
+    </string-array>
+    <!-- Nama bulan Hijriyah (HijriDate.format() di :domain, dilewatkan lewat R.array.hijri_months) -->
+    <string-array name="hijri_months">
+        <item>Muharram</item>
+        <item>Safar</item>
+        <item>Rabiul Awal</item>
+        <item>Rabiul Akhir</item>
+        <item>Jumadil Awal</item>
+        <item>Jumadil Akhir</item>
+        <item>Rajab</item>
+        <item>Syaban</item>
+        <item>Ramadhan</item>
+        <item>Syawal</item>
+        <item>Dzulqa\'dah</item>
+        <item>Dzulhijjah</item>
+    </string-array>
+
+    <!-- Tab utama -->
+    <string name="tab_denah">Denah</string>
+    <string name="tab_transaksi">Transaksi</string>
+    <string name="tab_ruang">Ruang</string>
+    <string name="tab_lainnya">Lainnya</string>
+    <string name="action_catat">Catat</string>
+    <string name="action_ok">Mengerti</string>
+    <string name="action_sign_out">Keluar</string>
+
+    <!-- Isi sementara tab sampai layarnya dikerjakan -->
+    <string name="placeholder_denah">Denah dikerjakan di Tahap 4.</string>
+    <string name="placeholder_transaksi">Daftar transaksi dikerjakan di Tahap 3.</string>
+    <string name="placeholder_ruang">Daftar ruang dikerjakan di Tahap 3.</string>
+    <string name="placeholder_lainnya">Menu lain dikerjakan bertahap di Tahap 3 dan 6.</string>
+
+    <!-- S30 Masuk -->
+    <string name="login_tagline">Rezeki mengalir, setiap hak terpenuhi.</string>
+    <string name="login_point_local">Datamu tetap di ponselmu, tidak dikirim ke server</string>
+    <string name="login_point_offline">Jalan tanpa internet setelah masuk</string>
+    <string name="login_point_no_ads">Tanpa iklan</string>
+    <string name="login_google">Lanjutkan dengan Google</string>
+    <string name="login_gmail">Hubungkan Gmail</string>
+    <string name="login_gmail_note">Opsional. Izin baca Gmail untuk fitur berikutnya. Rizqflow belum membaca email apa pun dan kamu bisa menghubungkannya nanti.</string>
+    <string name="login_debug">Masuk uji (khusus debug)</string>
+    <string name="login_submit">Masuk</string>
+    <string name="login_or">atau</string>
+    <string name="login_register_prompt">Belum punya akun?</string>
+    <string name="login_register_action">Daftar</string>
+    <string name="login_fill_username">Isi nama pengguna</string>
+    <string name="login_fill_password">Isi sandi</string>
+    <string name="field_username">Nama pengguna</string>
+    <string name="field_password">Sandi</string>
+    <string name="password_show">Tampilkan</string>
+    <string name="password_hide">Sembunyikan</string>
+
+    <!-- S31 Daftar -->
+    <string name="register_title">Buat akun</string>
+    <string name="register_subtitle">Akun ini hanya ada di ponsel ini. Data keuanganmu tidak dikirim ke server.</string>
+    <string name="register_back">Kembali</string>
+    <string name="register_name">Nama panggilan (opsional)</string>
+    <string name="register_username_hint">3 sampai 32 karakter: huruf, angka, titik, garis bawah, strip</string>
+    <string name="register_password_hint">Minimal 8 karakter</string>
+    <string name="register_confirm">Ulangi sandi</string>
+    <string name="register_no_recovery">Sandi tidak bisa dipulihkan karena tidak ada server. Catat di tempat yang aman.</string>
+    <string name="register_submit">Daftar</string>
+    <string name="register_have_account">Sudah punya akun?</string>
+
+    <!-- Masalah isian pendaftaran -->
+    <string name="issue_username_short">Nama pengguna minimal 3 karakter</string>
+    <string name="issue_username_long">Nama pengguna maksimal 32 karakter</string>
+    <string name="issue_username_chars">Hanya huruf a sampai z, angka, titik, garis bawah, dan strip; mulai dengan huruf atau angka</string>
+    <string name="issue_password_short">Sandi minimal 8 karakter</string>
+    <string name="issue_password_long">Sandi maksimal 128 karakter</string>
+    <string name="issue_password_same">Sandi tidak boleh sama dengan nama pengguna</string>
+    <string name="issue_password_mismatch">Sandi dan pengulangannya tidak sama</string>
+
+    <!-- Pesan lembut -->
+    <string name="msg_not_configured">Masuk dengan Google belum disiapkan di versi ini. Pemilik perlu mengisi client ID Google (lihat docs/auth-google.md).</string>
+    <string name="msg_sign_in_failed">Belum bisa masuk. Periksa akun Google di ponsel dan coba lagi.</string>
+    <string name="msg_gmail_denied">Izin Gmail tidak diberikan. Aplikasi tetap bisa dipakai; kamu bisa menghubungkannya nanti di menu Lainnya.</string>
+    <string name="msg_gmail_unavailable">Gmail belum bisa dihubungkan sekarang. Coba lagi nanti di menu Lainnya.</string>
+
+    <string name="msg_wrong_credentials">Nama pengguna atau sandi salah.</string>
+    <string name="msg_username_taken">Nama pengguna itu sudah dipakai di ponsel ini. Pilih yang lain.</string>
+    <string name="msg_invalid_input">Periksa kembali isian pendaftaran.</string>
+
+    <!-- Akun di tab Lainnya -->
+    <string name="account_title">Akun</string>
+    <string name="account_local">Akun lokal, hanya ada di ponsel ini</string>
+    <string name="account_gmail_on">Gmail terhubung (izin baca)</string>
+    <string name="account_gmail_off">Gmail belum terhubung</string>
+
+    <!-- Onboarding S02 sampai S04 -->
+    <string name="onb_back">Kembali</string>
+    <string name="onb_step">Langkah %1$d dari %2$d</string>
+    <string name="onb_next">Lanjut</string>
+    <string name="onb_pola_title">Pilih pola ruang</string>
+    <string name="onb_pola_subtitle">Ruang adalah tempat rezeki dialirkan. Pilihan ini bisa diubah kapan saja.</string>
+    <string name="onb_tiga_title">Tiga hak</string>
+    <string name="onb_tiga_body">Cara paling mudah untuk mulai. Rezeki dibagi ke tiga ruang:</string>
+    <string name="onb_kosong_title">Mulai kosong</string>
+    <string name="onb_kosong_body">Susun ruangmu sendiri nanti di tab Ruang. Rezeki yang masuk menunggu sampai ada ruang.</string>
+    <string name="onb_room_memberi">Sedekah, infak, dan zakat</string>
+    <string name="onb_room_diri">Dana darurat, investasi, belajar</string>
+    <string name="onb_room_keluarga">Belanja, listrik dan air, sekolah</string>
+    <string name="onb_persen_title">Atur pembagian</string>
+    <string name="onb_persen_subtitle">Setiap rezeki yang masuk dialirkan ke ruang-ruang ini. Bisa diubah kapan saja di Ruang, Aturan alokasi.</string>
+    <string name="onb_persen_sample">Contoh untuk %1$s</string>
+    <string name="onb_persen_auto">Otomatis: menerima sisa</string>
+    <string name="onb_persen_slider">Persentase %1$s</string>
+    <string name="onb_persen_less">Kurangi 1 persen untuk</string>
+    <string name="onb_persen_more">Tambah 1 persen untuk</string>
+    <string name="onb_persen_total">Total</string>
+    <string name="onb_akun_title">Akun pertama</string>
+    <string name="onb_akun_subtitle">Tempat uangmu berada: dompet, rekening, atau dompet digital. Akun lain bisa ditambah nanti.</string>
+    <string name="onb_akun_kind">Jenis akun</string>
+    <string name="onb_kind_cash">Tunai</string>
+    <string name="onb_kind_bank">Bank</string>
+    <string name="onb_kind_ewallet">Dompet digital</string>
+    <string name="onb_akun_name">Nama akun</string>
+    <string name="onb_hint_cash">Contoh: Dompet</string>
+    <string name="onb_hint_bank">Contoh: Bank Jago</string>
+    <string name="onb_hint_ewallet">Contoh: GoPay</string>
+    <string name="onb_akun_balance">Saldo awal</string>
+    <string name="onb_akun_balance_note">Saldo yang ada sekarang. Ini bukan rezeki, jadi tidak dialirkan ke ruang.</string>
+    <string name="onb_failed">Belum bisa menyimpan. Data tidak berubah; coba lagi.</string>
+    <string name="onb_finish">Mulai memakai</string>
+    <string name="onb_saving">Menyimpan…</string>
+    <string name="keypad_delete">Hapus satu angka</string>
+    <plurals name="onb_percent_state">
+        <item quantity="other">%d persen</item>
+    </plurals>
+
+    <!-- Catat S06 dan Pratinjau alokasi S07 -->
+    <string name="catat_title">Catat</string>
+    <string name="catat_close">Tutup</string>
+    <string name="catat_smart_input">Catat cerdas</string>
+    <string name="catat_smart_input_title">Catat cerdas</string>
+    <string name="catat_smart_input_hint">Ketik dalam satu kalimat, misalnya "gojek 23rb dari gopay" atau "gaji masuk 8jt". Semuanya diproses di perangkat, tanpa jaringan.</string>
+    <string name="catat_smart_input_placeholder">gojek 23rb dari gopay</string>
+    <string name="catat_smart_input_unreadable">Belum ada nominal yang terbaca.</string>
+    <string name="catat_smart_input_use">Gunakan</string>
+    <string name="catat_tab_income">Pemasukan</string>
+    <string name="catat_tab_expense">Pengeluaran</string>
+    <string name="catat_tab_transfer">Transfer</string>
+    <string name="catat_transfer_needs_two">Transfer butuh dua akun. Akun lain bisa ditambah nanti.</string>
+    <string name="catat_source">Sumber</string>
+    <string name="catat_account_to">Akun tujuan</string>
+    <string name="catat_account">Akun</string>
+    <string name="catat_room">Ruang</string>
+    <string name="catat_category">Kategori</string>
+    <string name="catat_from">Dari</string>
+    <string name="catat_to">Ke</string>
+    <string name="catat_date">Tanggal</string>
+    <string name="catat_note">Catatan (opsional)</string>
+    <string name="catat_next">Lanjut</string>
+    <string name="catat_save">Simpan</string>
+    <string name="catat_save_more">Simpan + tambah</string>
+    <string name="catat_no_rooms">Belum ada ruang untuk pengeluaran. Pakai pola Tiga hak, atau tambah ruang di tab Ruang.</string>
+    <string name="catat_over_budget">Jatah %1$s bulan ini terlampaui: %2$s dari %3$s. Tetap bisa disimpan.</string>
+    <string name="catat_issue_amount">Isi nominal dulu.</string>
+    <string name="catat_issue_account">Pilih akun.</string>
+    <string name="catat_issue_category">Pilih kategori.</string>
+    <string name="catat_issue_same_account">Pilih akun tujuan yang berbeda.</string>
+    <string name="catat_error_account">Akun ini tidak bisa dipakai. Pilih akun lain.</string>
+    <string name="catat_error_room">Ruang atau kategori ini tidak bisa dipakai. Pilih lagi.</string>
+    <string name="catat_error_note">Catatan terlalu panjang.</string>
+    <string name="catat_error_generic">Belum bisa menyimpan. Coba lagi.</string>
+    <string name="catat_date_ok">Pilih</string>
+    <string name="catat_date_cancel">Batal</string>
+    <string name="review_title">Alirkan rezeki</string>
+    <string name="review_income">Pemasukan</string>
+    <string name="review_no_rooms">Belum ada ruang. Rezeki ini disimpan dulu sebagai belum dialirkan dan menunggu sampai ada ruang.</string>
+    <string name="review_unallocated">Belum dialirkan</string>
+    <string name="review_edit_once">Ubah sekali ini</string>
+    <string name="review_edit_once_note">Hanya untuk pemasukan ini; aturan tidak berubah.</string>
+    <string name="review_confirm">Alirkan</string>
+    <string name="action_undo">Urungkan</string>
+    <string name="saved_income">%1$s dialirkan ke %2$d ruang</string>
+    <string name="saved_income_none">%1$s tersimpan, belum dialirkan</string>
+    <string name="saved_expense">Pengeluaran %1$s tersimpan</string>
+    <string name="saved_transfer">Transfer %1$s tersimpan</string>
+
+    <!-- Daftar transaksi S08 dan Detail S09 -->
+    <string name="tx_title">Transaksi</string>
+    <string name="tx_search">Cari catatan atau nominal</string>
+    <string name="tx_month_prev">Bulan sebelumnya</string>
+    <string name="tx_month_next">Bulan berikutnya</string>
+    <string name="tx_filter_all">Semua</string>
+    <string name="tx_filter_income">Masuk</string>
+    <string name="tx_filter_expense">Keluar</string>
+    <string name="tx_filter_transfer">Transfer</string>
+    <string name="tx_filter_open">Saring transaksi</string>
+    <string name="tx_filter_title">Saring transaksi</string>
+    <string name="tx_filter_account">Akun</string>
+    <string name="tx_filter_room">Ruang</string>
+    <string name="tx_filter_category">Kategori</string>
+    <string name="tx_filter_clear">Hapus saringan</string>
+    <string name="tx_filter_done">Selesai</string>
+    <string name="tx_filter_remove">Lepas saringan</string>
+    <string name="tx_active_account">Akun: %1$s</string>
+    <string name="tx_active_room">Ruang: %1$s</string>
+    <string name="tx_active_category">Kategori: %1$s</string>
+    <string name="tx_empty">Belum ada transaksi. Rezeki dan pengeluaran yang kamu catat akan muncul di sini.</string>
+    <string name="tx_no_match">Tidak ada yang cocok dengan pencarianmu.</string>
+    <!-- Petunjuk hari kosong (S08, Tahap 6) -->
+    <string name="tx_empty_day_hint">Kemarin belum ada catatan pengeluaran.</string>
+    <string name="tx_empty_day_catat">Catat sekarang</string>
+    <string name="tx_empty_day_none">Tidak ada</string>
+    <string name="tx_empty_day_dismissed">Kemarin ditandai sudah dicek.</string>
+    <string name="tx_income_default">Pemasukan</string>
+    <string name="tx_expense_default">Pengeluaran</string>
+    <string name="tx_transfer_default">Transfer</string>
+    <string name="tx_loan_out_default">Pinjaman keluar</string>
+    <string name="tx_loan_in_default">Pinjaman masuk</string>
+    <string name="tx_sub_allocated">dialirkan ke %1$d ruang</string>
+    <string name="tx_sub_unallocated">belum dialirkan</string>
+    <string name="detail_title">Detail transaksi</string>
+    <string name="detail_allocated">Dialirkan saat itu</string>
+    <string name="detail_allocated_note">Persentase saat pemasukan dicatat; mengubah aturan alokasi tidak mengubah ini.</string>
+    <string name="detail_delete">Hapus transaksi</string>
+    <string name="detail_delete_title">Hapus transaksi ini?</string>
+    <string name="detail_delete_body">Transaksi ini dihapus dari catatan. Kamu bisa mengurungkannya sebentar setelah ini.</string>
+    <string name="detail_delete_confirm">Hapus</string>
+    <string name="saved_edit">Perubahan tersimpan</string>
+    <string name="deleted">Transaksi dihapus</string>
+    <string name="catat_favorite">Jadikan favorit</string>
+    <string name="catat_favorite_hint">Nominal, ruang, kategori, dan akun ikut tersimpan.</string>
+    <string name="saved_favorite">Disimpan sebagai favorit.</string>
+    <string name="saved_favorite_failed">Favorit tidak tersimpan: %1$s</string>
+
+    <string name="shortcut_catat_short">Catat kilat</string>
+    <string name="shortcut_catat_long">Catat pengeluaran kilat</string>
+    <string name="tile_catat_label">Catat kilat</string>
+    <string name="quick_title">Catat kilat</string>
+    <string name="quick_destination">Ke %1$s, %2$s</string>
+    <string name="quick_favorites">Favorit</string>
+    <string name="quick_used">%1$s tercatat: %2$s</string>
+
+    <string name="demo_badge">Mode demo</string>
+    <string name="demo_try">Coba data contoh</string>
+    <string name="demo_sheet_title">Mode demo</string>
+    <string name="demo_sheet_body">Data contoh terpisah dari datamu dan hilang saat keluar. Datamu tidak tersentuh.</string>
+    <string name="demo_exit">Keluar dari mode demo</string>
+    <string name="demo_stay">Tetap di mode demo</string>
+    <string name="menu_demo">Mode demo</string>
+    <string name="menu_demo_sub">Coba dengan data contoh, terpisah dari datamu</string>
+    <string name="menu_demo_on">Sedang memakai data contoh. Ketuk untuk keluar.</string>
+
+    <!-- Kelola akun, kategori, favorit S13 -->
+    <string name="menu_manage">Akun dan kategori</string>
+    <string name="menu_manage_sub">Akun, pos pengeluaran, dan favorit</string>
+    <string name="manage_title">Akun dan kategori</string>
+    <string name="manage_tab_accounts">Akun</string>
+    <string name="manage_tab_categories">Kategori</string>
+    <string name="manage_tab_favorites">Favorit</string>
+    <string name="manage_add_account">Tambah akun</string>
+    <string name="manage_account_limit">%1$d dari %2$d akun gratis</string>
+    <string name="manage_archived">Diarsipkan (%1$d)</string>
+    <string name="manage_new_account">Akun baru</string>
+    <string name="manage_edit_account">Ubah akun</string>
+    <string name="manage_name">Nama</string>
+    <string name="manage_kind">Jenis</string>
+    <string name="manage_opening">Saldo awal</string>
+    <string name="manage_opening_hint">Uang yang sudah ada di akun ini. Bukan rezeki, jadi tidak dialirkan ke ruang.</string>
+    <string name="manage_balance">Saldo menurut catatan: %1$s</string>
+    <string name="manage_save">Simpan</string>
+    <string name="manage_archive">Arsipkan</string>
+    <string name="manage_delete">Hapus</string>
+    <string name="manage_amount">Nominal</string>
+    <string name="manage_no_rooms">Belum ada ruang. Tambah ruang di tab Ruang.</string>
+    <string name="manage_system">Kategori sistem</string>
+    <string name="manage_add_category">Tambah kategori</string>
+    <string name="manage_new_category">Kategori baru di %1$s</string>
+    <string name="manage_category_suggestions">Usulan pos lokal</string>
+    <string name="manage_edit_category">Ubah kategori</string>
+    <string name="manage_archived_category">Diarsipkan: %1$s</string>
+    <string name="manage_favorites_hint">Tampil di Catat kilat (maksimal %1$d)</string>
+    <string name="manage_favorites_empty">Belum ada favorit. Jadikan favorit dari layar Catat.</string>
+    <string name="manage_favorites_create_hint">Favorit baru dibuat dari layar Catat (Jadikan favorit).</string>
+    <string name="manage_favorite_unusable">%1$s, %2$s, %3$s (tujuan sudah diarsipkan)</string>
+    <string name="manage_edit_favorite">Ubah favorit</string>
+    <string name="manage_err_taken">Nama itu sudah dipakai.</string>
+    <string name="manage_err_name">Nama tidak boleh kosong atau terlalu panjang.</string>
+    <string name="manage_err_amount">Nominal harus lebih dari nol.</string>
+    <string name="manage_err_account_limit">Batas akun paket gratis (3) tercapai. Akun tak terbatas ada di Rizqflow Pro.</string>
+    <string name="manage_err_last_account">Harus ada satu akun aktif. Tambah akun lain dulu sebelum mengarsipkan ini.</string>
+    <string name="manage_err_last_category">Ruang harus punya satu kategori aktif. Tambah kategori lain dulu.</string>
+    <string name="manage_err_system">Kategori sistem tidak bisa diubah.</string>
+    <string name="manage_err_favorite_limit">Favorit sudah 6, yang paling banyak. Hapus satu dulu.</string>
+
+    <!-- Koreksi saldo S25 (Tahap 6) -->
+    <string name="menu_reconcile">Koreksi saldo</string>
+    <string name="menu_reconcile_sub">Cocokkan catatan dengan saldo sebenarnya</string>
+    <string name="reconcile_title">Koreksi saldo</string>
+    <string name="reconcile_recorded">Menurut catatan</string>
+    <string name="reconcile_actual">Saldo sebenarnya</string>
+    <string name="reconcile_difference">Selisih</string>
+    <string name="reconcile_match">Catatan cocok dengan saldo</string>
+    <string name="reconcile_short">Belum tercatat sebagai pengeluaran.</string>
+    <string name="reconcile_over">Belum tercatat sebagai pemasukan.</string>
+    <string name="reconcile_file_as">Catat sebagai</string>
+    <string name="reconcile_category_fixed">Kategori: Tak terlacak</string>
+    <string name="reconcile_room">Ruang</string>
+    <string name="reconcile_income_note">Dicatat sebagai pemasukan dan dialirkan seperti pemasukan lain.</string>
+    <string name="reconcile_save">Catat selisih</string>
+    <string name="reconcile_search_self">Cari sendiri dulu</string>
+    <string name="reconcile_saved_match">Catatan cocok dengan saldo.</string>
+    <string name="reconcile_saved_expense">%1$s dicatat sebagai pengeluaran.</string>
+    <string name="reconcile_saved_income">%1$s dicatat sebagai pemasukan.</string>
+
+    <!-- Pengingat malam S26 (Tahap 6) -->
+    <string name="menu_reminder">Pengingat malam</string>
+    <string name="menu_reminder_sub">Jam pengingat harian dan izin notifikasi</string>
+    <string name="reminder_title">Pengingat malam</string>
+    <string name="reminder_body">Satu notifikasi setiap malam, tanpa nada mendesak. Balas langsung dari notifikasi (mis. \"kopi 25000\"), atau ketuk Tidak ada bila memang tidak ada yang perlu dicatat.</string>
+    <string name="reminder_enabled">Aktif</string>
+    <string name="reminder_time">Jam pengingat</string>
+    <string name="reminder_preview">Pratinjau: pukul %1$s, \"Sudah catat pengeluaran hari ini?\"</string>
+    <string name="reminder_permission_title">Izin notifikasi belum aktif</string>
+    <string name="reminder_permission_body">Tanpa izin ini, pengingat malam tidak bisa ditampilkan.</string>
+    <string name="reminder_permission_action">Aktifkan izin notifikasi</string>
+    <string name="reminder_channel_name">Pengingat malam</string>
+    <string name="reminder_channel_desc">Satu pengingat harian untuk mencatat pengeluaran</string>
+    <string name="reminder_notif_title">Sudah catat pengeluaran hari ini?</string>
+    <string name="reminder_notif_body">Balas langsung, mis. \"kopi 25000\", atau ketuk Tidak ada.</string>
+    <string name="reminder_reply_hint">mis. kopi 25000</string>
+    <string name="reminder_reply_action">Balas</string>
+    <string name="reminder_reply_saved">%1$s dicatat sebagai pengeluaran.</string>
+    <string name="reminder_dismiss_action">Tidak ada</string>
+
+    <!-- Pengingat haul (pemicu khusus di infrastruktur pengingat malam S26, Tahap 6) -->
+    <string name="reminder_haul_channel_name">Pengingat haul</string>
+    <string name="reminder_haul_channel_desc">Notifikasi saat haul zakat mendekati atau sudah genap</string>
+    <string name="reminder_haul_completed_title">Zakat sudah jatuh tempo</string>
+    <string name="reminder_haul_completed_body">Haul zakat genap. Tunaikan kapan saja lewat Beranda Zakat.</string>
+    <string name="reminder_haul_approaching_title">Haul zakat %1$d hari lagi</string>
+    <string name="reminder_haul_approaching_body">Menuju jatuh tempo zakat. Siapkan harta yang akan ditunaikan.</string>
+
+    <!-- Ekspor dan impor CSV (Tahap 6) -->
+    <string name="menu_csv">Ekspor dan impor CSV</string>
+    <string name="menu_csv_sub">Simpan semua transaksi atau muat dari Transaksi Harian</string>
+    <string name="csv_title">Ekspor dan impor CSV</string>
+    <string name="csv_export_title">Ekspor</string>
+    <string name="csv_export_body">Menyimpan seluruh transaksimu ke satu berkas CSV yang bisa dibuka di aplikasi lain.</string>
+    <string name="csv_export_action">Ekspor semua transaksi</string>
+    <string name="csv_export_done">%1$d transaksi disimpan ke berkas.</string>
+    <string name="csv_import_title">Impor</string>
+    <string name="csv_import_body">Memuat CSV yang diekspor dari Transaksi Harian di Notion. Pasangan pemasukan/pengeluaran yang cocok otomatis disatukan jadi transfer; baris yang akun atau kategorinya tidak dikenali dilewati dan dijelaskan alasannya.</string>
+    <string name="csv_import_action">Pilih berkas CSV</string>
+    <string name="csv_import_read_error">Berkas tidak bisa dibaca. Pastikan formatnya CSV.</string>
+    <string name="csv_import_preview_title">Pratinjau impor</string>
+    <string name="csv_import_summary">%1$d siap diimpor, %2$d dilewati</string>
+    <string name="csv_import_confirm">Impor %1$d transaksi</string>
+    <string name="csv_import_done">%1$d transaksi diimpor, %2$d dilewati.</string>
+    <string name="csv_import_row_income">Baris %1$s: pemasukan %2$s</string>
+    <string name="csv_import_row_expense">Baris %1$s: pengeluaran %2$s</string>
+    <string name="csv_import_row_transfer">Baris %1$s: transfer %2$s</string>
+    <string name="csv_import_row_skipped">Baris %1$s: dilewati</string>
+
+    <!-- Backup dan restore terenkripsi S20 (Tahap 6) -->
+    <string name="menu_backup">Backup dan data</string>
+    <string name="menu_backup_sub">Cadangkan atau pulihkan seluruh data, terenkripsi</string>
+    <string name="backup_title">Backup dan data</string>
+    <string name="backup_last_none">Belum pernah dicadangkan di perangkat ini.</string>
+    <string name="backup_last_at">Cadangan terakhir: %1$s, di perangkat ini.</string>
+    <string name="backup_section_title">Cadangan terenkripsi</string>
+    <string name="backup_create_action">Cadangkan sekarang</string>
+    <string name="backup_restore_action">Pulihkan dari berkas</string>
+    <string name="backup_shortcut_title">Pintasan folder</string>
+    <string name="backup_shortcut_hint">Pilih folder sekali, misalnya folder di Google Drive, supaya Cadangkan berikutnya langsung tersimpan ke sana tanpa memilih lokasi lagi.</string>
+    <string name="backup_shortcut_pick">Pilih folder</string>
+    <string name="backup_shortcut_saved_to">Cadangan otomatis ke %1$s</string>
+    <string name="backup_shortcut_change">Ganti</string>
+    <string name="backup_shortcut_remove">Hapus</string>
+    <string name="backup_shortcut_unavailable">Folder tidak lagi bisa diakses. Pilih folder lain.</string>
+    <string name="backup_footer">Data hanya ada di perangkat ini. Cadangkan secara berkala, terutama sebelum berganti perangkat.</string>
+    <string name="backup_sheet_title">Cadangkan data</string>
+    <string name="backup_password_label">Sandi</string>
+    <string name="backup_password_repeat_label">Ulangi sandi</string>
+    <string name="backup_password_hint">Sandi tidak bisa dipulihkan. Tanpa sandi ini, cadangan tidak bisa dibuka.</string>
+    <string name="backup_password_too_short">Sandi minimal 6 karakter</string>
+    <string name="backup_password_mismatch">Kedua sandi tidak sama</string>
+    <string name="backup_save_share_action">Simpan dan bagikan</string>
+    <string name="backup_done">Cadangan tersimpan.</string>
+    <string name="backup_failed">Cadangan gagal dibuat. Coba lagi.</string>
+    <string name="backup_restore_confirm_title">Timpa data sekarang?</string>
+    <string name="backup_restore_confirm_body">Semua data di perangkat ini akan diganti isi cadangan. Tindakan ini tidak bisa diurungkan.</string>
+    <string name="backup_restore_confirm_action">Timpa dan pulihkan</string>
+    <string name="backup_restore_wrong_password">Sandi salah atau berkas rusak. Data sekarang tidak disentuh.</string>
+    <string name="backup_restore_read_error">Berkas tidak bisa dibaca.</string>
+
+    <!-- Tampilan: pilihan tema (Tahap 6) -->
+    <string name="menu_tampilan">Tampilan</string>
+    <string name="menu_tampilan_sub">Tema terang, gelap, atau ikuti sistem</string>
+    <string name="tampilan_title">Tampilan</string>
+    <string name="tampilan_body">Otomatis mengikuti pengaturan gelap/terang perangkatmu.</string>
+    <string name="tampilan_system">Otomatis</string>
+    <string name="tampilan_light">Terang</string>
+    <string name="tampilan_dark">Gelap</string>
+
+    <!-- Rizqflow Pro: paywall S21 (Tahap 7). Beli dan Pulihkan pembelian belum terhubung ke Google
+         Play Billing sungguhan; lihat PaywallSheet.kt dan MainHost.kt. -->
+    <string name="menu_pro">Rizqflow Pro</string>
+    <string name="menu_pro_sub_owned">Aktif</string>
+    <string name="menu_pro_sub_free">Buka ruang, aturan, dan fitur lain</string>
+    <string name="pro_title">Rizqflow Pro</string>
+    <string name="pro_price">%1$s sekali bayar</string>
+    <string name="pro_no_subscription">Tanpa langganan</string>
+    <string name="pro_buy">Beli</string>
+    <string name="pro_restore">Pulihkan pembelian</string>
+    <string name="pro_later">Nanti saja</string>
+    <string name="pro_footer">Fitur dasar dan zakat tetap gratis.</string>
+    <string name="pro_purchase_unavailable">Pembelian Rizqflow Pro belum tersedia. Menyusul setelah aplikasi dirilis di Play Store.</string>
+    <string name="pro_benefit_unlimited_rooms">Ruang peran tak terbatas dengan sistem per peran</string>
+    <string name="pro_benefit_unlimited_accounts">Akun tak terbatas</string>
+    <string name="pro_benefit_advanced_rules">Aturan alokasi lanjutan: prioritas, batas atas, sisa mengalir ke ruang lain</string>
+    <string name="pro_benefit_multi_zakat">Multi-profil zakat dengan pengingat</string>
+    <string name="pro_benefit_gold_price">Harga emas otomatis</string>
+    <string name="pro_benefit_reports">Laporan dan insight bulanan/tahunan (PDF)</string>
+    <string name="pro_benefit_multi_currency">Multi-mata uang</string>
+    <string name="pro_benefit_widget">Widget catat kilat</string>
+    <string name="pro_benefit_themes">Tema tambahan</string>
+    <string name="pro_benefit_notification_capture">Tangkap otomatis dari notifikasi</string>
+
+    <!-- Kunci aplikasi S19 (Tahap 6) -->
+    <string name="lock_title">Terkunci</string>
+    <string name="lock_wrong_pin">PIN salah, %1$d percobaan tersisa</string>
+    <string name="lock_locked_out">Terlalu banyak percobaan. Coba lagi dalam %1$d detik</string>
+    <string name="lock_use_biometric">Pakai sidik jari</string>
+    <string name="lock_biometric_title">Buka Rizqflow</string>
+    <string name="lock_biometric_subtitle">Gunakan sidik jari atau wajah</string>
+    <string name="lock_biometric_use_pin">Pakai PIN</string>
+    <string name="menu_security">Keamanan</string>
+    <string name="menu_security_sub">PIN, sidik jari, dan kunci otomatis</string>
+    <string name="security_title">Keamanan</string>
+    <string name="security_body">PIN dan sidik jari menutup akses ke aplikasi ini di perangkatmu. Datamu tetap tersimpan di perangkat baik kunci ini aktif atau tidak.</string>
+    <string name="security_enable_pin">Aktifkan kunci PIN</string>
+    <string name="security_change_pin">Ubah PIN</string>
+    <string name="security_disable_pin">Matikan kunci</string>
+    <string name="security_biometric">Sidik jari atau wajah</string>
+    <string name="security_biometric_unavailable">Tidak tersedia di perangkat ini</string>
+    <string name="security_auto_lock">Kunci otomatis</string>
+    <string name="security_auto_lock_immediately">Segera</string>
+    <string name="security_auto_lock_1min">Setelah 1 menit</string>
+    <string name="security_auto_lock_5min">Setelah 5 menit</string>
+    <string name="security_auto_lock_15min">Setelah 15 menit</string>
+    <string name="security_enter_current_pin">Masukkan PIN sekarang</string>
+    <string name="security_enter_new_pin">Buat PIN baru</string>
+    <string name="security_confirm_new_pin">Ketik ulang PIN baru</string>
+    <string name="security_pin_mismatch">PIN tidak cocok, coba lagi</string>
+    <string name="security_locked_out">Terlalu banyak percobaan. Coba lagi sebentar lagi</string>
+
+    <!-- Tentang dan disclaimer S23 (Tahap 5) -->
+    <string name="menu_about">Tentang</string>
+    <string name="menu_about_sub">Privasi, asumsi fikih, dan lisensi</string>
+    <string name="about_title">Tentang</string>
+    <string name="about_version">Versi %1$s</string>
+    <string name="about_privacy_title">Privasi</string>
+    <string name="about_privacy_body">Data tersimpan di ponsel ini. Tidak ada akun, iklan, atau pelacak.</string>
+    <string name="about_fiqh_title">Asumsi fikih zakat mal</string>
+    <string name="about_fiqh_nisab">Nisab</string>
+    <string name="about_fiqh_nisab_value">85 gram emas</string>
+    <string name="about_fiqh_rate">Tarif</string>
+    <string name="about_fiqh_rate_value" formatted="false">2,5%</string>
+    <string name="about_fiqh_haul">Haul</string>
+    <string name="about_fiqh_haul_value">1 tahun Hijriyah</string>
+    <string name="about_fiqh_source">Sumber: asumsi awal, belum diverifikasi dengan kitab rujukan.</string>
+    <string name="about_disclaimer">Bantuan hitung, bukan fatwa. Konsultasikan dengan ulama atau lembaga zakat tepercaya.</string>
+    <string name="about_privacy_policy">Kebijakan privasi</string>
+    <string name="about_privacy_draft_note">Draf; akan diperbarui sebelum rilis mengikuti kebijakan Play Store.</string>
+    <string name="about_privacy_full">Rizqflow menyimpan seluruh data keuanganmu hanya di penyimpanan aplikasi pada perangkat ini, terpisah untuk tiap akun. Tidak ada server, tidak ada pelacak pihak ketiga, dan tidak ada iklan.\n\nMasuk dengan Google hanya memakai identitasmu (nama, email, foto profil) untuk membuka ruang kerja; kami tidak membaca kontak atau berkasmu. Bila kamu menghubungkan Gmail, akses itu hanya dipakai untuk mengenali struk transaksi dan tidak pernah dikirim ke pihak lain.\n\nMasuk dengan nama pengguna dan sandi menyimpan sandi dalam bentuk hash, bukan teks biasa, dan hanya di perangkatmu.\n\nMenghapus aplikasi menghapus seluruh datamu tanpa cadangan di tempat lain. Ekspor dan cadangan terenkripsi menyusul di versi berikutnya.</string>
+    <string name="about_licenses">Lisensi pihak ketiga</string>
+    <string name="about_licenses_note">Rizqflow dibangun dengan pustaka sumber terbuka berikut.</string>
+    <string name="about_feedback">Kirim masukan</string>
+    <string name="about_feedback_email" translatable="false">roziqrizal881992@gmail.com</string>
+    <string name="about_feedback_subject">Masukan Rizqflow %1$s</string>
+    <string name="about_feedback_error">Tidak ada aplikasi email di perangkat ini.</string>
+
+    <!-- Modul Memberi: zakat dan haul S14, S15, S17 (Tahap 5) -->
+    <string name="room_detail_zakat_title">Zakat</string>
+    <string name="room_detail_zakat_sub">Nisab, haul, dan tunaikan zakat</string>
+    <string name="zakat_title">Zakat</string>
+    <string name="zakat_status_below">Belum mencapai nisab</string>
+    <string name="zakat_status_below_hint">Dipantau; haul belum mulai.</string>
+    <string name="zakat_status_running">Haul berjalan</string>
+    <string name="zakat_status_running_day">Hari ke-%1$d dari %2$d</string>
+    <string name="zakat_status_due">Jatuh tempo %1$s</string>
+    <string name="zakat_status_completed">Haul genap</string>
+    <string name="zakat_status_completed_hint">Zakat sudah bisa ditunaikan.</string>
+    <string name="zakat_net_wealth">Harta bersih</string>
+    <string name="zakat_nisab_today">Nisab hari ini</string>
+    <string name="zakat_price_manual">Harga emas: input manual, diperbarui %1$s</string>
+    <string name="zakat_update_wealth">Perbarui nilai harta</string>
+    <string name="zakat_setup_title">Mulai dengan mengisi harta</string>
+    <string name="zakat_setup_incomplete">Lengkapi data harta</string>
+    <string name="zakat_setup_body">Isi harta dan harga emas supaya nisab dan haul bisa dihitung.</string>
+    <string name="zakat_setup_action">Isi harta</string>
+    <string name="zakat_history_title">Riwayat zakat</string>
+    <string name="zakat_history_empty">Belum ada zakat yang ditunaikan.</string>
+    <string name="zakat_donation_toggle">Persentase donasi biasa</string>
+    <string name="zakat_donation_toggle_hint">Tanpa nisab dan haul; donasi sebagai persentase rezeki.</string>
+    <string name="zakat_percentage_target">Target donasi bulan ini</string>
+    <string name="zakat_percentage_hint">%1$s dari rezeki bulan ini (10%%), tanpa nisab dan haul.</string>
+    <string name="zakat_disclaimer" formatted="false">Asumsi: nisab 85 g emas, 2,5%, haul 1 tahun Hijriyah. Bantuan hitung, bukan fatwa.</string>
+    <string name="zakat_tunaikan">Tunaikan zakat</string>
+
+    <string name="wealth_title">Profil harta</string>
+    <string name="wealth_gold_price">Harga emas per gram</string>
+    <string name="wealth_assets">Harta</string>
+    <string name="wealth_deductions">Pengurang</string>
+    <string name="wealth_add">Tambah harta</string>
+    <string name="wealth_net">Harta bersih</string>
+    <string name="wealth_save">Simpan</string>
+    <string name="wealth_label">Nama</string>
+    <string name="wealth_delete">Hapus</string>
+    <string name="wealth_kind_gold">Emas</string>
+    <string name="wealth_kind_cash">Uang dan tabungan</string>
+    <string name="wealth_kind_investment">Investasi</string>
+    <string name="wealth_kind_receivable">Piutang lancar</string>
+    <string name="wealth_kind_deduction">Hutang jangka pendek</string>
+    <string name="wealth_err_gold_price">Isi harga emas per gram dulu.</string>
+    <string name="wealth_err_item">Nama harta tidak boleh kosong.</string>
+
+    <string name="pay_zakat_title">Tunaikan zakat</string>
+    <string name="pay_zakat_due_title">Haul genap</string>
+    <string name="pay_zakat_not_due">Haul belum genap. Kamu tetap bisa menunaikan lebih awal.</string>
+    <string name="pay_zakat_net_wealth">Harta bersih %1$s</string>
+    <string name="pay_zakat_account">Akun sumber</string>
+    <string name="pay_zakat_category">Kategori Zakat mal (Memberi)</string>
+    <string name="pay_zakat_confirm">Tunaikan zakat</string>
+    <string name="pay_zakat_early_note">Jumlah bisa diubah. Bantuan hitung, bukan fatwa.</string>
+
+    <!-- Denah S05 -->
+    <string name="denah_income">Rezeki bulan ini</string>
+    <string name="denah_unallocated">Belum dialirkan: %1$s</string>
+    <string name="catat_safe_now">Sisa aman hari ini: %1$s</string>
+    <string name="catat_safe_after">Sisa aman setelah ini: %1$s</string>
+    <string name="denah_safe_title">Sisa aman hari ini</string>
+    <string name="denah_safe_hint">Jatah harian %1$s, sisa %2$d hari bulan ini</string>
+    <string name="denah_safe_over">Jatah hari ini sudah terpakai. Jatah harian %1$s, dihitung ulang besok</string>
+    <string name="denah_empty_title">Belum ada rezeki bulan ini</string>
+    <string name="denah_empty_past">Tidak ada rezeki tercatat di bulan ini</string>
+    <string name="denah_empty_body">Catat rezekimu, lalu lihat ia mengalir ke ruang-ruangnya.</string>
+    <string name="denah_empty_action">Catat rezeki</string>
+    <string name="denah_rooms">Ruang</string>
+    <string name="denah_no_allocation">Belum ada jatah</string>
+    <string name="denah_remaining">Sisa %1$s</string>
+    <string name="denah_over">Lewat %1$s</string>
+    <string name="denah_no_rooms_title">Belum ada ruang</string>
+    <string name="denah_no_rooms_body">Rezeki yang dicatat menunggu sebagai belum dialirkan sampai ada ruang.</string>
+    <string name="denah_attention">Perlu perhatian</string>
+    <string name="denah_attention_none">Tidak ada yang perlu diperhatikan sekarang.</string>
+    <string name="denah_att_over">%1$s sudah lewat jatah: %2$s dari %3$s</string>
+    <string name="denah_att_near">%1$s hampir lewat jatah: %2$s terpakai</string>
+    <string name="denah_att_unallocated">%1$s rezeki belum dialirkan ke ruang mana pun</string>
+    <string name="denah_att_reconcile">Saldo %1$s belum dicocokkan %2$d hari</string>
+    <string name="status_menunggu">Menunggu</string>
+    <string name="status_berjalan">Berjalan</string>
+    <string name="status_terpenuhi">Terpenuhi</string>
+    <string name="status_perhatian">Perlu perhatian</string>
+    <string name="status_belum">Belum tercapai</string>
+
+    <!-- Detail ruang S11 -->
+    <string name="room_detail_used">Terpakai %1$s</string>
+    <string name="room_detail_of">dari jatah %1$s</string>
+    <string name="room_detail_no_allocation">Belum ada jatah bulan ini. Jatah datang dari rezeki yang dialirkan ke ruang ini.</string>
+    <string name="room_hint_target">Terpenuhi saat terpakai mencapai jatah.</string>
+    <string name="room_hint_mencukupi" formatted="false">Perlu perhatian mulai 85% jatah; terpenuhi bila tidak melebihi jatah di akhir bulan.</string>
+    <string name="room_detail_pos">Pos</string>
+    <string name="room_detail_pos_empty">Belum ada pos di ruang ini.</string>
+    <string name="room_detail_recent">Pengeluaran terbaru</string>
+    <string name="room_detail_recent_empty">Belum ada pengeluaran di ruang ini bulan ini.</string>
+    <string name="room_detail_rules">Atur aturan</string>
+    <string name="room_detail_archive">Arsipkan ruang</string>
+    <string name="room_detail_archive_title">Arsipkan %1$s?</string>
+    <string name="room_detail_archive_body" formatted="false">Ruang ini tidak tampil di Denah dan tidak menerima alokasi baru. Riwayatnya tetap ada dan bisa dipulihkan dari daftar Ruang. Setelah itu aturan alokasi perlu diatur ulang supaya total kembali 100%.</string>
+    <string name="room_detail_archived_note">Ruang ini diarsipkan. Riwayatnya tetap tampil.</string>
+
+    <!-- Ruang S10 dan Aturan alokasi S12 -->
+    <string name="room_title">Ruang</string>
+    <string name="room_empty">Belum ada ruang. Pakai pola Tiga hak (Memberi, Diri, Keluarga) atau tambah ruangmu sendiri.</string>
+    <string name="room_apply_template">Pakai pola Tiga hak</string>
+    <string name="room_archived">%1$s diarsipkan</string>
+    <string name="room_split_title">Pembagian rezeki</string>
+    <string name="room_unbalanced">Total pembagian %1$s, belum 100%%. Rezeki yang masuk belum seluruhnya dialirkan.</string>
+    <string name="room_unbalanced_action">Atur</string>
+    <string name="room_add">Tambah ruang</string>
+    <string name="room_limit">%1$d dari %2$d ruang gratis</string>
+    <string name="room_archived_section">Diarsipkan (%1$d)</string>
+    <string name="room_restore">Pulihkan</string>
+    <string name="room_added">Ruang %1$s ditambah. Persentasenya masih 0%%.</string>
+    <string name="room_added_action">Atur persentase</string>
+    <string name="room_move_up">Naikkan %1$s</string>
+    <string name="room_move_down">Turunkan %1$s</string>
+    <string name="room_more">Menu %1$s</string>
+    <string name="room_archive">Arsipkan</string>
+    <string name="room_new_title">Ruang baru</string>
+    <string name="room_new_name">Nama ruang</string>
+    <string name="room_new_name_hint">Contoh: Liburan</string>
+    <string name="room_new_kind">Peran</string>
+    <string name="room_new_icon">Ikon</string>
+    <string name="icon_heart">Hati</string>
+    <string name="icon_sprout">Tunas</string>
+    <string name="icon_home">Rumah</string>
+    <string name="icon_star">Bintang</string>
+    <string name="icon_bolt">Petir</string>
+    <string name="room_new_confirm">Tambah</string>
+    <string name="room_err_limit">Batas ruang paket gratis tercapai. Ruang tak terbatas ada di Rizqflow Pro.</string>
+    <string name="room_err_taken">Sudah ada ruang dengan nama itu.</string>
+    <string name="room_err_name">Nama ruang 1 sampai 24 karakter.</string>
+    <string name="kind_menunaikan">Menunaikan</string>
+    <string name="kind_menumbuhkan">Menumbuhkan</string>
+    <string name="kind_mencukupi">Mencukupi</string>
+    <string name="kind_menunaikan_hint">Kewajiban dan pemberian, seperti zakat dan sedekah.</string>
+    <string name="kind_menumbuhkan_hint">Yang disisihkan untuk tumbuh, seperti dana darurat dan investasi.</string>
+    <string name="kind_mencukupi_hint">Kebutuhan sehari-hari yang habis dipakai.</string>
+    <string name="rules_title">Aturan alokasi</string>
+    <string name="rules_subtitle">Berlaku untuk pemasukan berikutnya. Catatan yang sudah ada tidak berubah.</string>
+    <string name="rules_over">Total %1$s, kelebihan %2$s. Kurangi supaya pas 100%%.</string>
+    <string name="rules_under">Total %1$s, masih kurang %2$s. Tambahkan supaya pas 100%%.</string>
+    <string name="rules_advanced">Aturan lanjutan</string>
+    <string name="rules_advanced_sub">Prioritas, batas atas, sisa mengalir · Pro</string>
+    <string name="rules_pro_note">Aturan lanjutan ada di Rizqflow Pro.</string>
+    <string name="rules_mode_percentage">Persentase dasar</string>
+    <string name="rules_mode_waterfall">Lanjutan (Pro)</string>
+    <string name="rules_cap_hint">Ruang diisi berurutan sesuai prioritas (urutan di tab Ruang) sampai batas atasnya; kelebihannya mengalir ke ruang berikutnya. Kosongkan untuk tak terbatas.</string>
+    <string name="rules_cap_unlimited">Tak terbatas</string>
+    <string name="rules_cap_sample">Contoh %1$s</string>
+    <string name="rules_save">Simpan aturan</string>
+    <string name="rules_saved">Aturan disimpan. Berlaku untuk pemasukan berikutnya.</string>
+    <string name="rules_empty">Belum ada ruang yang bisa diatur. Pakai pola Tiga hak dulu, atau tambah ruang di tab Ruang.</string>
+    <string name="rules_discard_title">Buang perubahan?</string>
+    <string name="rules_discard_body">Perubahan persentase yang belum disimpan akan hilang.</string>
+    <string name="rules_discard_keep">Lanjut mengubah</string>
+    <string name="rules_discard_confirm">Buang</string>
+    <string name="menu_rules">Aturan alokasi</string>
+    <string name="menu_rules_sub">Atur pembagian rezeki ke ruang-ruangmu</string>
+
+    <!-- Sistem per peran (Pro): Trader dan Investor -->
+    <string name="pro_benefit_role_systems">Sistem per peran: batas risiko Trader dan jadwal DCA Investor</string>
+    <string name="room_detail_role_title">Peran ruang</string>
+    <string name="room_detail_role_sub_none">Trader atau Investor (Pro)</string>
+    <string name="room_detail_role_sub_trader">Trader: batas risiko %1$s per trade</string>
+    <string name="room_detail_role_sub_investor">Investor: DCA %1$s tiap tanggal %2$d</string>
+    <string name="role_title">Peran ruang</string>
+    <string name="role_intro">Beri ruang ini sistem sendiri. Semua uang tetap dicatat sebagai pengeluaran biasa; peran hanya membantu menjaga disiplin.</string>
+    <string name="role_pick_trader_title">Trader</string>
+    <string name="role_pick_trader_body">Batas risiko per trade dari modalmu. Kamu diberi tahu dengan lembut saat mencatat kerugian yang melewatinya.</string>
+    <string name="role_pick_investor_title">Investor</string>
+    <string name="role_pick_investor_body">Jadwal DCA bulanan. Diingatkan saat tanggalnya tiba, dan sekali ketuk untuk mencatatnya.</string>
+    <string name="role_pro_badge">Pro</string>
+    <string name="role_locked_note">Paket Pro tidak aktif. Pengaturan tetap tersimpan, tetapi peringatan dan pengingatnya berhenti.</string>
+    <string name="role_open_pro">Lihat Rizqflow Pro</string>
+    <string name="role_edit">Ubah</string>
+    <string name="role_remove">Lepas peran</string>
+    <string name="role_remove_title">Lepas peran dari %1$s?</string>
+    <string name="role_remove_body">Pengaturan peran dihapus. Transaksi yang sudah dicatat tidak berubah.</string>
+    <string name="role_removed">Peran dilepas</string>
+    <string name="role_save">Simpan</string>
+    <string name="role_disclaimer">Alat bantu disiplin, bukan saran investasi atau trading.</string>
+    <string name="role_trader_limit_label">Batas risiko per trade</string>
+    <string name="role_trader_limit_hint">%1$s dari modal %2$s</string>
+    <string name="role_trader_hint">Kerugian trading dicatat sebagai pengeluaran di ruang ini. Bila satu pengeluaran melewati batas, kamu diberi tahu saat mencatat, dan tetap bisa menyimpannya.</string>
+    <string name="role_trader_form_title">Batas risiko Trader</string>
+    <string name="role_trader_capital">Modal trading</string>
+    <string name="role_trader_capital_hint">Kamu yang mengisi; aplikasi tidak menghitungnya dari saldo.</string>
+    <string name="role_trader_risk">Risiko per trade</string>
+    <string name="role_trader_preview">Batas per trade: %1$s</string>
+    <string name="role_risk_less">Kurangi risiko</string>
+    <string name="role_risk_more">Tambah risiko</string>
+    <string name="role_dca_done_title">DCA bulan ini sudah tercatat</string>
+    <string name="role_dca_done_body">%1$s masuk ke %2$s bulan ini.</string>
+    <string name="role_dca_due_title">DCA tanggal %1$d belum dicatat</string>
+    <string name="role_dca_due_body">Jadwal %1$s dari %2$s.</string>
+    <string name="role_dca_upcoming_title">DCA berikutnya tanggal %1$d</string>
+    <string name="role_dca_upcoming_body">%1$s dari %2$s.</string>
+    <string name="role_dca_record">Catat sekarang</string>
+    <string name="role_dca_recorded">DCA %1$s tercatat</string>
+    <string name="role_dca_amount">Nominal</string>
+    <string name="role_dca_day">Tanggal tiap bulan</string>
+    <string name="role_dca_account">Dari akun</string>
+    <string name="role_dca_category">Kategori</string>
+    <string name="role_dca_hint">DCA dicatat sebagai pengeluaran di kategori itu, jadi ikut menghitung jatah ruang.</string>
+    <string name="role_dca_form_title">Jadwal DCA</string>
+    <string name="role_dca_form_amount">Nominal tiap bulan</string>
+    <string name="role_dca_form_day">Tanggal tiap bulan (1 sampai 28)</string>
+    <string name="role_dca_day_less">Tanggal lebih awal</string>
+    <string name="role_dca_day_more">Tanggal lebih akhir</string>
+    <string name="role_dca_no_category">Ruang ini belum punya kategori biasa. Tambahkan dulu lewat Kelola akun dan kategori.</string>
+    <string name="role_err_conflict">Ruang ini sudah punya peran lain. Lepas dulu peran yang ada.</string>
+    <string name="role_err_invalid">Isiannya belum sah. Periksa nominal dan tanggalnya.</string>
+    <string name="catat_over_risk">Melewati batas risiko %1$s per trade (kamu mencatat %2$s). Tetap bisa disimpan.</string>
+    <string name="reminder_dca_channel_name">Pengingat DCA</string>
+    <string name="reminder_dca_channel_desc">Notifikasi saat tanggal jadwal DCA tiba dan belum dicatat</string>
+    <string name="reminder_dca_title">Jadwal DCA belum dicatat</string>
+    <string name="reminder_dca_body">%1$s dari %2$s, ruang %3$s.</string>
+
+    <!-- Multi-profil harta zakat (Pro) -->
+    <string name="zakat_profile_add">+ Profil</string>
+    <string name="zakat_profile_rename">Ubah nama</string>
+    <string name="zakat_profile_archive">Arsipkan</string>
+    <string name="zakat_profile_save">Simpan</string>
+    <string name="zakat_profile_add_title">Profil harta baru</string>
+    <string name="zakat_profile_rename_title">Ubah nama profil</string>
+    <string name="zakat_profile_name">Nama profil</string>
+    <string name="zakat_profile_name_hint">mis. Istri atau Usaha</string>
+    <string name="zakat_profile_archive_title">Arsipkan %1$s?</string>
+    <string name="zakat_profile_archive_body">Profil ini hilang dari daftar dan pengingat haulnya berhenti. Riwayat zakatnya tetap tersimpan.</string>
+    <string name="zakat_profile_err_taken">Nama profil itu sudah dipakai.</string>
+    <string name="zakat_profile_err_name">Nama profil 1 sampai 30 karakter.</string>
+    <string name="zakat_profile_err_last">Profil terakhir tidak bisa diarsipkan.</string>
+    <string name="reminder_haul_profile_body">%1$s (%2$s)</string>
+
+    <!-- Transaksi berulang (Tahap 10) -->
+    <string name="menu_recurring">Transaksi berulang</string>
+    <string name="menu_recurring_sub">Gaji atau sewa yang dicatat otomatis</string>
+    <string name="recurring_title">Transaksi berulang</string>
+    <string name="recurring_add">Tambah transaksi berulang</string>
+    <string name="recurring_empty">Belum ada transaksi berulang.</string>
+    <string name="recurring_empty_hint">Cocok untuk gaji bulanan atau sewa. Aplikasi mencatatnya sendiri saat tanggalnya tiba, termasuk yang terlewat selama aplikasi tidak dibuka.</string>
+    <string name="recurring_new">Transaksi berulang baru</string>
+    <string name="recurring_edit">Ubah transaksi berulang</string>
+    <string name="recurring_frequency">Ulangi</string>
+    <string name="recurring_freq_daily">Harian</string>
+    <string name="recurring_freq_weekly">Mingguan</string>
+    <string name="recurring_freq_monthly">Bulanan</string>
+    <string name="recurring_start">Mulai</string>
+    <string name="recurring_start_hint">Kemunculan pertama dicatat pada tanggal ini. Aturan bulanan yang mulai tanggal 31 jatuh di hari terakhir bulan yang lebih pendek.</string>
+    <string name="recurring_end">Berakhir (opsional)</string>
+    <string name="recurring_end_none">Tanpa akhir</string>
+    <string name="recurring_end_clear">Hapus</string>
+    <string name="recurring_into">Masuk ke %1$s</string>
+    <string name="recurring_row_next">Berikutnya %1$s</string>
+    <string name="recurring_row_meta">%1$s · %2$s</string>
+    <string name="recurring_status_paused">Dijeda</string>
+    <string name="recurring_status_finished">Selesai</string>
+    <string name="recurring_status_unusable">Tertahan: akun, ruang, atau kategorinya diarsipkan. Ubah atau jeda aturan ini.</string>
+    <string name="recurring_pause">Jeda</string>
+    <string name="recurring_resume">Lanjutkan</string>
+    <string name="recurring_delete">Hapus aturan</string>
+    <string name="recurring_delete_title">Hapus transaksi berulang?</string>
+    <string name="recurring_delete_body">Transaksi yang sudah tercatat darinya tetap ada.</string>
+    <string name="recurring_delete_confirm">Hapus</string>
+    <string name="recurring_err_schedule">Tanggal mulai tidak boleh sebelum hari ini, dan tanggal akhir tidak boleh sebelum tanggal mulai.</string>
+    <plurals name="recurring_ran">
+        <item quantity="other">%d transaksi berulang dicatat</item>
+    </plurals>
+    <plurals name="recurring_blocked_notice">
+        <item quantity="other">%d transaksi berulang tertahan. Periksa akun, ruang, atau kategorinya.</item>
+    </plurals>
+
+    <string name="menu_bills">Tagihan dan cicilan</string>
+    <string name="menu_bills_sub">Pengingat jatuh tempo, bayar dengan sekali ketuk</string>
+    <string name="bills_title">Tagihan dan cicilan</string>
+    <string name="bills_add">Tambah tagihan</string>
+    <string name="bills_empty">Belum ada tagihan atau cicilan.</string>
+    <string name="bills_empty_hint">Catat listrik, internet, cicilan, atau pajak. Rizqflow mengingatkan tiga hari sebelumnya, pada hari jatuh tempo, dan sekali bila terlambat. Pengeluaran baru tercatat saat Anda mengetuk Bayar, karena pembayarannya terjadi di luar aplikasi.</string>
+    <string name="bills_reminder_hint">Pengingat ikut jadwal Pengingat malam; nyalakan di menu Pengingat malam agar notifikasi tagihan muncul.</string>
+    <string name="bills_new">Tagihan baru</string>
+    <string name="bills_edit">Ubah tagihan</string>
+    <string name="bills_name">Nama tagihan</string>
+    <string name="bills_name_hint">Misalnya Listrik atau Cicilan motor</string>
+    <string name="bills_frequency">Berulang</string>
+    <string name="bills_freq_once">Sekali bayar</string>
+    <string name="bills_due">Jatuh tempo berikutnya</string>
+    <string name="bills_due_hint">Boleh tanggal yang sudah lewat bila tagihan ini terlambat. Tagihan bulanan yang jatuh tanggal 31 mengikuti hari terakhir bulan yang lebih pendek.</string>
+    <string name="bills_installments">Jumlah cicilan (opsional)</string>
+    <string name="bills_installments_hint">Kosongkan bila tanpa batas, misalnya listrik atau langganan.</string>
+    <string name="bills_already_paid">Sudah dibayar sebelumnya</string>
+    <string name="bills_already_paid_hint">Isi bila cicilan ini sudah berjalan sebelum dicatat di sini.</string>
+    <string name="bills_row_due">Jatuh tempo %1$s</string>
+    <string name="bills_row_meta">%1$s · %2$s</string>
+    <string name="bills_row_where">%1$s, %2$s, %3$s</string>
+    <string name="bills_progress">Cicilan ke-%1$d dari %2$d</string>
+    <string name="bills_paid_times">Sudah dibayar %1$d kali</string>
+    <string name="bills_once">Sekali bayar</string>
+    <string name="bills_status_overdue">Terlambat</string>
+    <string name="bills_status_today">Hari ini</string>
+    <string name="bills_status_soon">Segera</string>
+    <string name="bills_status_upcoming">Mendatang</string>
+    <string name="bills_status_paused">Dijeda</string>
+    <string name="bills_status_finished">Lunas</string>
+    <string name="bills_status_unusable">Tertahan: akun, ruang, atau kategorinya diarsipkan. Ubah tagihan ini.</string>
+    <string name="bills_pay">Bayar</string>
+    <string name="bills_pay_title">Bayar %1$s</string>
+    <string name="bills_pay_body">Pengeluaran dicatat hari ini dari %1$s. Ubah nominalnya bila tagihan bulan ini berbeda.</string>
+    <string name="bills_pay_amount">Nominal dibayar</string>
+    <string name="bills_paid_next">%1$s dibayar. Jatuh tempo berikutnya %2$s.</string>
+    <string name="bills_paid_done">%1$s dibayar dan lunas.</string>
+    <string name="bills_pause">Jeda pengingat</string>
+    <string name="bills_resume">Lanjutkan</string>
+    <string name="bills_delete">Hapus tagihan</string>
+    <string name="bills_delete_title">Hapus tagihan?</string>
+    <string name="bills_delete_body">Pengeluaran yang sudah tercatat dari pembayarannya tetap ada.</string>
+    <string name="bills_delete_confirm">Hapus</string>
+    <string name="bills_err_installments">Jumlah cicilan minimal 1 dan hanya untuk tagihan berulang; yang sudah dibayar harus lebih kecil dari jumlah cicilan.</string>
+    <string name="bills_err_finished">Tagihan ini sudah lunas.</string>
+    <string name="reminder_bill_channel_name">Pengingat tagihan</string>
+    <string name="reminder_bill_channel_desc">Notifikasi saat tagihan atau cicilan mendekati jatuh tempo atau terlambat</string>
+    <plurals name="reminder_bill_approaching">
+        <item quantity="other">%1$s jatuh tempo %2$d hari lagi</item>
+    </plurals>
+    <string name="reminder_bill_today">%1$s jatuh tempo hari ini</string>
+    <plurals name="reminder_bill_overdue">
+        <item quantity="other">%1$s terlambat %2$d hari</item>
+    </plurals>
+    <string name="reminder_bill_body">%1$s dari %2$s, ruang %3$s.</string>
+
+    <string name="menu_debts">Utang-piutang</string>
+    <string name="menu_debts_sub">Pinjam ke atau dari teman dan keluarga, dengan pelunasan bertahap</string>
+    <string name="menu_report">Laporan</string>
+    <string name="menu_report_sub">Ringkasan bulanan dan perbandingan bulan lalu</string>
+    <string name="report_title">Laporan</string>
+    <string name="report_income">Pemasukan</string>
+    <string name="report_expense">Pengeluaran</string>
+    <string name="report_net">Sisa bulan ini</string>
+    <string name="report_up">Naik %1$s</string>
+    <string name="report_down">Turun %1$s</string>
+    <string name="report_vs_last_month">%1$s dari bulan lalu (%2$s)</string>
+    <string name="report_same_as_last_month">Sama dengan bulan lalu (%1$s)</string>
+    <string name="report_no_previous_data">Belum ada data bulan lalu</string>
+    <string name="report_by_room">Pengeluaran per ruang</string>
+    <string name="report_by_category">Kategori terbesar</string>
+    <string name="report_empty">Belum ada transaksi bulan ini.</string>
+    <string name="report_empty_hint">Ringkasan pemasukan, pengeluaran, dan perbandingan bulan lalu akan muncul di sini begitu ada transaksi.</string>
+    <string name="debts_title">Utang-piutang</string>
+    <string name="debts_add">Catat utang atau piutang</string>
+    <string name="debts_empty">Belum ada utang atau piutang.</string>
+    <string name="debts_empty_hint">Catat uang yang Anda pinjamkan ke teman atau keluarga, atau yang Anda pinjam. Pelunasan sebagian atau penuh ikut menggeser saldo akun tanpa memakan jatah ruang. Bila jatuh tempo diisi dan Pengingat malam aktif, Rizqflow mengingatkan tiga hari sebelumnya, pada harinya, dan sekali bila terlambat.</string>
+    <string name="debts_sum_receivable">Sisa piutang</string>
+    <string name="debts_sum_payable">Sisa utang</string>
+    <string name="debts_kind_lent">Piutang</string>
+    <string name="debts_kind_borrowed">Utang</string>
+    <string name="debts_kind_lent_hint">Saya meminjamkan uang ke orang lain.</string>
+    <string name="debts_kind_borrowed_hint">Saya meminjam uang dari orang lain.</string>
+    <string name="debts_new">Utang-piutang baru</string>
+    <string name="debts_party">Nama pihak</string>
+    <string name="debts_party_hint">Misalnya Budi atau Ibu</string>
+    <string name="debts_start">Tanggal pinjam</string>
+    <string name="debts_due">Jatuh tempo (opsional)</string>
+    <string name="debts_no_due">Tanpa jatuh tempo</string>
+    <string name="debts_move">Ubah saldo akun sekarang</string>
+    <string name="debts_move_lent_hint">Uang keluar dari akun yang dipilih, tanpa menjadi pengeluaran. Matikan bila uangnya sudah keluar sebelum dicatat di sini.</string>
+    <string name="debts_move_borrowed_hint">Uang masuk ke akun yang dipilih, tanpa menjadi pemasukan. Matikan bila uangnya sudah diterima sebelum dicatat di sini.</string>
+    <string name="debts_collectible">Diperkirakan kembali</string>
+    <string name="debts_collectible_hint">Piutang yang dianggap macet tidak disarankan masuk harta zakat.</string>
+    <string name="debts_row_due">Jatuh tempo %1$s</string>
+    <string name="debts_outstanding">Sisa %1$s</string>
+    <string name="debts_of">dari %1$s</string>
+    <string name="debts_status_overdue">Terlambat</string>
+    <string name="debts_status_today">Hari ini</string>
+    <string name="debts_status_soon">Segera</string>
+    <string name="debts_status_open">Berjalan</string>
+    <string name="debts_status_settled">Lunas</string>
+    <string name="debts_receive">Terima</string>
+    <string name="debts_pay">Bayar</string>
+    <string name="debts_repay_title_lent">Terima pelunasan dari %1$s</string>
+    <string name="debts_repay_title_borrowed">Bayar utang ke %1$s</string>
+    <string name="debts_repay_full">Lunasi semua</string>
+    <string name="debts_repay_button">Catat pelunasan</string>
+    <string name="debts_move_short">Ubah saldo akun</string>
+    <string name="debts_repay_move_lent_hint">Uang yang diterima masuk ke akun yang dipilih. Matikan bila hanya ingin mengurangi sisa.</string>
+    <string name="debts_repay_move_borrowed_hint">Uang yang dibayar keluar dari akun yang dipilih. Matikan bila hanya ingin mengurangi sisa.</string>
+    <string name="debts_repaid">%2$s: pelunasan %1$s dicatat. Sisa %3$s.</string>
+    <string name="debts_repaid_settled">%2$s: pelunasan %1$s dicatat. Sudah lunas.</string>
+    <string name="debts_detail_meta">%1$s · sejak %2$s</string>
+    <string name="debts_from_account">Akun: %1$s</string>
+    <string name="debts_no_movement">Saldo akun tidak diubah</string>
+    <string name="debts_progress">Dilunasi %1$s dari %2$s</string>
+    <string name="debts_history">Riwayat pelunasan</string>
+    <string name="debts_history_empty">Belum ada pelunasan.</string>
+    <string name="debts_history_delete_title">Hapus pelunasan ini?</string>
+    <string name="debts_history_delete_body">Sisa bertambah lagi, dan perubahan saldo akun yang tercatat darinya ikut kembali.</string>
+    <string name="debts_delete">Hapus utang-piutang ini</string>
+    <string name="debts_delete_title">Hapus utang-piutang ini?</string>
+    <string name="debts_delete_body">Semua pelunasan dan perubahan saldo akun yang tercatat darinya ikut terhapus; saldo akun kembali seperti sebelum dicatat.</string>
+    <string name="debts_delete_confirm">Hapus</string>
+    <string name="debts_err_party">Isi nama pihak, paling banyak 40 karakter.</string>
+    <string name="debts_err_due">Jatuh tempo tidak boleh sebelum tanggal pinjam.</string>
+    <string name="debts_err_overpaid">Pelunasan melebihi sisa.</string>
+    <string name="reminder_debt_channel_name">Pengingat utang-piutang</string>
+    <string name="reminder_debt_channel_desc">Notifikasi saat utang atau piutang mendekati jatuh tempo atau terlambat</string>
+    <plurals name="reminder_debt_lent_approaching">
+        <item quantity="other">Piutang dari %1$s jatuh tempo %2$d hari lagi</item>
+    </plurals>
+    <string name="reminder_debt_lent_today">Piutang dari %1$s jatuh tempo hari ini</string>
+    <plurals name="reminder_debt_lent_overdue">
+        <item quantity="other">Piutang dari %1$s terlambat %2$d hari</item>
+    </plurals>
+    <plurals name="reminder_debt_borrowed_approaching">
+        <item quantity="other">Utang ke %1$s jatuh tempo %2$d hari lagi</item>
+    </plurals>
+    <string name="reminder_debt_borrowed_today">Utang ke %1$s jatuh tempo hari ini</string>
+    <plurals name="reminder_debt_borrowed_overdue">
+        <item quantity="other">Utang ke %1$s terlambat %2$d hari</item>
+    </plurals>
+    <string name="reminder_debt_body_lent">Sisa %1$s. Ingatkan dengan lembut ya.</string>
+    <string name="reminder_debt_body_borrowed">Sisa %1$s. Siapkan pembayarannya.</string>
+    <string name="wealth_suggest_receivable">Dari Utang-piutang: %1$s (sisa piutang yang diperkirakan kembali)</string>
+    <string name="wealth_suggest_debt">Dari Utang-piutang: %1$s (sisa utang yang jatuh tempo dalam 12 bulan atau tanpa jatuh tempo)</string>
+    <string name="wealth_suggest_use">Pakai</string>
+</resources>

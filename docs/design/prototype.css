@@ -1298,3 +1298,572 @@ details.card[open] summary {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ---------- Catat kilat, koreksi saldo, pengingat, draf (S24-S28) ---------- */
+
+.sheet__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rf-space-3);
+}
+
+.sheet__head h2 {
+  margin: 0;
+}
+
+.sheet .amount {
+  margin: var(--rf-space-2) 0;
+}
+
+.banner--info {
+  background: var(--rf-surface-container-high);
+}
+
+.banner--info .icon {
+  color: var(--rf-primary);
+}
+
+.banner__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rf-space-2);
+  margin-top: var(--rf-space-2);
+}
+
+.notif {
+  position: absolute;
+  top: var(--rf-space-3);
+  left: var(--rf-space-3);
+  right: var(--rf-space-3);
+  z-index: 10;
+  padding: var(--rf-space-3) var(--rf-space-4);
+  border: var(--rf-border);
+  border-radius: var(--rf-radius-md);
+  background: var(--rf-surface-container-lowest);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.22);
+}
+
+.notif[hidden] {
+  display: none;
+}
+
+.notif--static {
+  position: static;
+  box-shadow: none;
+}
+
+.notif__app {
+  margin: 0;
+  font-size: var(--rf-size-label);
+  color: var(--rf-on-surface-variant);
+}
+
+.notif__title {
+  margin: 2px 0;
+  font-weight: 700;
+}
+
+.notif__body {
+  margin: 0 0 var(--rf-space-2);
+  color: var(--rf-on-surface-variant);
+}
+
+.notif--static .notif__body {
+  margin-bottom: 0;
+}
+
+.notif__reply {
+  display: flex;
+  gap: var(--rf-space-2);
+}
+
+.notif__reply input {
+  flex: 1;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 var(--rf-space-3);
+  border: var(--rf-border);
+  border-radius: var(--rf-radius-sm);
+  background: var(--rf-background);
+  color: inherit;
+  font: inherit;
+}
+
+.notif__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rf-space-1);
+  margin-top: var(--rf-space-2);
+}
+
+.draft {
+  margin-bottom: var(--rf-space-3);
+}
+
+.draft__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--rf-space-3);
+  flex-wrap: wrap;
+  font-size: var(--rf-size-title);
+}
+
+.draft__top .muted {
+  font-size: var(--rf-size-body);
+}
+
+.draft__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rf-space-2);
+  margin-top: var(--rf-space-3);
+}
+
+.triggers {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* ---------- Onboarding (S01-S04), aturan alokasi (S12), mode demo ---------- */
+
+.welcome {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--rf-space-4);
+  padding-top: var(--rf-space-6);
+  text-align: center;
+}
+
+.welcome__mark {
+  display: flex;
+  justify-content: center;
+  gap: var(--rf-space-3);
+}
+
+.welcome__mark .room-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--rf-radius-md);
+}
+
+.welcome__mark .room-icon .icon {
+  width: 28px;
+  height: 28px;
+}
+
+.welcome__brand {
+  margin: 0;
+  font-family: var(--rf-font-display);
+  font-weight: 400;
+  font-size: var(--rf-size-hero);
+  line-height: 1.1;
+}
+
+.welcome__brand:focus {
+  outline: none;
+}
+
+.welcome__tag {
+  margin: 0;
+  font-family: var(--rf-font-display);
+  font-size: var(--rf-size-title);
+  color: var(--rf-on-surface-variant);
+}
+
+.welcome__points {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  display: grid;
+  gap: var(--rf-space-2);
+  text-align: left;
+}
+
+.welcome__points li {
+  display: flex;
+  align-items: center;
+  gap: var(--rf-space-2);
+}
+
+.welcome__points .icon {
+  width: 20px;
+  height: 20px;
+  color: var(--rf-primary);
+}
+
+.welcome__actions {
+  margin-top: var(--rf-space-4);
+}
+
+.step-note {
+  margin: 0;
+  font-size: var(--rf-size-label);
+  font-weight: 700;
+  color: var(--rf-on-surface-variant);
+}
+
+.choice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rf-space-3);
+  width: 100%;
+  padding: var(--rf-space-4);
+  text-align: left;
+  background: var(--rf-surface-container-lowest);
+  border: var(--rf-border);
+  border-radius: var(--rf-radius-md);
+}
+
+.choice + .choice {
+  margin-top: var(--rf-space-3);
+}
+
+.choice[aria-pressed='true'] {
+  border-color: var(--rf-primary);
+  box-shadow: inset 0 0 0 1px var(--rf-primary);
+}
+
+.choice__radio {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+  border: 2px solid var(--rf-outline);
+  border-radius: var(--rf-radius-full);
+}
+
+.choice[aria-pressed='true'] .choice__radio {
+  border-color: var(--rf-primary);
+  background: radial-gradient(circle, var(--rf-primary) 42%, transparent 46%);
+}
+
+.choice__body {
+  display: grid;
+  gap: var(--rf-space-1);
+  min-width: 0;
+}
+
+.choice__list {
+  list-style: none;
+  margin: var(--rf-space-2) 0 0;
+  padding: 0;
+  display: grid;
+  gap: var(--rf-space-2);
+}
+
+.choice__list li {
+  display: flex;
+  align-items: center;
+  gap: var(--rf-space-2);
+}
+
+.choice__list .room-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.choice__list .room-icon .icon {
+  width: 18px;
+  height: 18px;
+}
+
+.field-input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 var(--rf-space-3);
+  border: var(--rf-border);
+  border-radius: var(--rf-radius-sm);
+  background: var(--rf-surface-container-lowest);
+  color: inherit;
+  font: inherit;
+}
+
+.rule-row {
+  padding: var(--rf-space-3) 0;
+}
+
+.rule-row + .rule-row {
+  border-top: var(--rf-border);
+}
+
+.rule-row.is-focus {
+  margin-inline: calc(-1 * var(--rf-space-2));
+  padding-inline: var(--rf-space-2);
+  border-radius: var(--rf-radius-sm);
+  background: color-mix(in srgb, var(--seg) 9%, transparent);
+}
+
+.rule-row__top {
+  display: flex;
+  align-items: center;
+  gap: var(--rf-space-3);
+}
+
+.rule-row__pct {
+  font-weight: 700;
+  font-size: var(--rf-size-title);
+}
+
+.rule-row__ctl {
+  display: flex;
+  align-items: center;
+  gap: var(--rf-space-2);
+  margin-top: var(--rf-space-2);
+}
+
+.rule-row__ctl input[type='range'] {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  accent-color: var(--seg);
+}
+
+.step-btn {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: var(--rf-radius-full);
+  background: var(--rf-surface-container-high);
+  font-weight: 700;
+  font-size: var(--rf-size-title);
+}
+
+.total-line .chip {
+  align-self: center;
+}
+
+.badge--btn {
+  border: 0;
+}
+
+.chip--idle {
+  background: var(--rf-surface-container-high);
+}
+
+.chip--idle .icon {
+  color: var(--rf-on-surface-variant);
+}
+
+.empty-card {
+  text-align: center;
+  margin-top: var(--rf-space-3);
+}
+
+.empty-card__title {
+  margin: 0;
+  font-weight: 700;
+  font-size: var(--rf-size-title);
+}
+
+.empty-card .list-row__sub {
+  margin: var(--rf-space-1) 0 0;
+}
+
+/* ---------- Layar tambahan: PIN, profil harta, kartu simulasi ---------- */
+
+.pin-dots {
+  display: flex;
+  justify-content: center;
+  gap: var(--rf-space-3);
+  margin: var(--rf-space-4) 0 var(--rf-space-2);
+}
+
+.pin-dot {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--rf-outline);
+  border-radius: var(--rf-radius-full);
+}
+
+.pin-dot.is-on {
+  border-color: var(--rf-primary);
+  background: var(--rf-primary);
+}
+
+.pin-error {
+  min-height: 1.4em;
+  margin: 0;
+  text-align: center;
+  font-size: var(--rf-size-label);
+  font-weight: 700;
+  color: var(--rf-on-surface-variant);
+}
+
+.harta-row {
+  padding: var(--rf-space-3) 0;
+  border-bottom: var(--rf-border);
+}
+
+.harta-row__head {
+  display: flex;
+  align-items: center;
+  gap: var(--rf-space-2);
+  margin-bottom: var(--rf-space-2);
+}
+
+.harta-row__head .icon-btn {
+  flex: none;
+  margin-left: 0;
+}
+
+.sim-card {
+  margin-top: var(--rf-space-4);
+  border-style: dashed;
+}
+
+/* ---------- Teks besar (150% dan 200%): baris daftar tidak terjepit ---------- */
+
+.list-row__sub {
+  overflow-wrap: anywhere;
+}
+
+.phone[data-scale='1.5'] .list-row,
+.phone[data-scale='2'] .list-row,
+.phone[data-scale='1.5'] .pending,
+.phone[data-scale='2'] .pending {
+  flex-wrap: wrap;
+}
+
+.phone[data-scale='1.5'] .list-row__main,
+.phone[data-scale='2'] .list-row__main,
+.phone[data-scale='1.5'] .pending__text,
+.phone[data-scale='2'] .pending__text {
+  flex: 1 1 7em;
+}
+
+.phone[data-scale='1.5'] .list-row__end,
+.phone[data-scale='2'] .list-row__end {
+  flex: 1 0 100%;
+  text-align: right;
+}
+
+/* ---------- Splash (S29) ---------- */
+
+.splash {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+}
+
+.splash__icon {
+  width: 140px;
+  height: 140px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--rf-radius-full);
+  background: var(--rf-primary);
+}
+
+.splash__pill {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  width: 92px;
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 23px;
+  background: var(--rf-background);
+}
+
+.splash__pill i {
+  height: 12px;
+}
+
+.auth-form {
+  display: grid;
+  gap: var(--rf-space-2);
+  width: 100%;
+  margin-top: var(--rf-space-4);
+  text-align: left;
+}
+
+.auth-field .field-label {
+  margin: 0 0 var(--rf-space-1);
+}
+
+.auth-note {
+  min-height: 1.2em;
+  margin: var(--rf-space-1) 0 0;
+  font-size: var(--rf-size-label);
+  color: var(--rf-on-surface-variant);
+}
+
+.auth-note.is-error {
+  color: var(--rf-error);
+}
+
+.field-input[aria-invalid='true'] {
+  border-color: var(--rf-error);
+}
+
+.auth-pass {
+  display: flex;
+  align-items: center;
+  gap: var(--rf-space-1);
+}
+
+.auth-pass .field-input {
+  flex: 1;
+  min-width: 0;
+}
+
+.auth-or {
+  display: flex;
+  align-items: center;
+  gap: var(--rf-space-3);
+  width: 100%;
+  margin: var(--rf-space-4) 0 var(--rf-space-3);
+  font-size: var(--rf-size-label);
+  color: var(--rf-on-surface-variant);
+}
+
+.auth-or::before,
+.auth-or::after {
+  content: '';
+  flex: 1;
+  border-top: var(--rf-border);
+}
+
+.auth-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: var(--rf-space-3) 0 0;
+}
+
+/* ---------- Tombol Google (varian ikon): latar putih, garis tepi tipis, logo G empat warna ---------- */
+
+.google-btn {
+  align-self: center;
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #747775;
+  border-radius: var(--rf-radius-full);
+  background: #ffffff;
+}
+
+:root[data-theme='dark'] .google-btn {
+  border-color: #8e918f;
+  background: #131314;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme='light'])) .google-btn {
+    border-color: #8e918f;
+    background: #131314;
+  }
+}

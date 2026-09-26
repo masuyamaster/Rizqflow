@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Pintasan ikon (tekan lama): membuka Catat kilat (S24) tanpa melewati Denah. -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="catat_kilat"
+        android:enabled="true"
+        android:icon="@drawable/ic_quick_catat"
+        android:shortcutShortLabel="@string/shortcut_catat_short"
+        android:shortcutLongLabel="@string/shortcut_catat_long">
+        <intent
+            android:action="com.roziqrizal.rizqflow.QUICK_CATAT"
+            android:targetPackage="com.roziqrizal.rizqflow"
+            android:targetClass="com.roziqrizal.rizqflow.MainActivity" />
+    </shortcut>
+</shortcuts>

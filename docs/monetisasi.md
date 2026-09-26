@@ -41,6 +41,8 @@ Yang **sengaja tidak** dipaywall:
 
 Rancang **lapisan entitlement** dari awal: satu tempat yang menjawab "fitur ini boleh dipakai user ini?". Batas ruang, aturan lanjutan, dan multi-profil haul semuanya bertanya ke sana, sehingga model harga bisa berubah tanpa membongkar kode. Ini juga selaras dengan arsitektur modul yang bisa ditukar, dan menjadi bukti desain di portofolio.
 
+**Status implementasi (2026-09-23):** lapisan ini sudah berjalan. `Entitlements`/`PlanEntitlements`/`Feature`/`Plan` (`:domain`, sejak Tahap 2) menjawab "boleh atau tidak"; `PurchaseStore` (`:app`, SharedPreferences app-wide, sejak paket Google Play terikat ke akun Play Store perangkat, bukan ke satu akun ledger lokal) menyimpan paket yang dimiliki; `LivePlanEntitlements` membacanya ulang tiap dipanggil supaya perubahan langsung berlaku. Paywall S21 dan titik penguncian ruang/akun sudah membuka bottom sheet ini. Yang **belum**: `PurchaseStore.grant()` belum dipanggil dari mana pun — tombol Beli dan Pulihkan pembelian di S21 sengaja hanya menampilkan pesan "belum tersedia" sampai Google Play Billing sungguhan terpasang (perlu listing Play Console, Tahap 8, lebih dulu).
+
 Konsekuensi yang diterima: karena aplikasi offline, penguncian di sisi klien bisa dilewati oleh pengguna yang mahir. Untuk harga sekali bayar dengan taruhan kecil, ini bisa diterima; verifikasi cukup lewat status pembelian dari toko.
 
 ## Catatan realistis
@@ -49,8 +51,9 @@ Aplikasi niche seperti ini kemungkinan menghasilkan uang kecil. Anggap monetisas
 
 ## Yang masih perlu diputuskan
 
-- [ ] **Pengingat haul.** Usulan: untuk satu profil tetap gratis (konsisten dengan prinsip 2), pengingat multi-profil masuk Pro. Di tabel atas, "multi-profil haul dengan pengingat" ada di Pro, jadi butuh konfirmasi.
-- [ ] **Batas ruang gratis.** Usulan: 5 ruang total (3 inti + 2 peran). Angka ini masih tebakan.
+- [x] **Pengingat haul: satu profil gratis, multi-profil Pro** (disetujui pemilik 2026-09-24, sebelumnya default kerja sejak 2026-09-23). Konsisten dengan prinsip 2 (dasar zakat selalu gratis): tanpa Pro hanya profil pertama yang disapa; profil lain tetap tersimpan dan bisa dipakai, hanya pengingatnya diam. Konsekuensi: setelah turun paket, pengingat profil tambahan mati tanpa sepengetahuan pengguna, jadi kartu profil perlu baris info lembut "Pengingat aktif hanya untuk profil pertama" (tugas di Tahap 7).
+- [x] **Batas ruang gratis: 5 ruang** total (3 inti + 2 peran), disetujui pemilik 2026-09-21.
+- [x] **Batas akun gratis: 3 akun** (mis. tunai, bank, dompet digital), disetujui pemilik 2026-09-21. Kategori tidak dibatasi; akun tak terbatas masuk Pro.
 - [x] **Widget catat kilat**: masuk Pro (2026-09-20). Pintasan ikon, tile Quick Settings, dan balasan notifikasi tetap gratis karena mencatat dengan cepat adalah janji utama (lihat "Disiplin mencatat" di [konsep.md](konsep.md)).
 - [ ] **Harga final Pro dan Sync**, sebaiknya berdasarkan uji minat (landing page atau daftar tunggu) sebelum banyak kode ditulis.
 - [x] **Platform**: Android saja (2026-09-19), jadi pembelian lewat Google Play Billing: produk in-app sekali beli untuk Pro, langganan untuk Sync di fase 2.
@@ -67,5 +70,17 @@ Aplikasi niche seperti ini kemungkinan menghasilkan uang kecil. Anggap monetisas
 | Laporan | Ringkasan bulanan di aplikasi | Laporan dan insight bulanan/tahunan, PDF |
 | Menangkap pembayaran digital | Catat kilat dan Koreksi saldo | Tangkap otomatis dari notifikasi (v1.1) |
 | Lainnya | – | Multi-mata uang, widget, tema |
+
+**Aturan alokasi lanjutan, rancangan lengkap (disetujui pemilik 2026-09-23, sudah diimplementasikan — lihat roadmap.md Tahap 7):**
+- **Prioritas = waterfall**, bukan sekadar pemutus seri seperti mode persentase: ruang diisi satu-satu berurutan sampai batas atasnya, menggantikan cara kerja persentase untuk seluruh ruleset saat mode ini aktif.
+- **Batas atas** dalam **nominal rupiah tetap per bulan** (bukan persentase kedua yang membingungkan).
+- **Sisa (overflow)** mengalir **otomatis berantai** ke ruang berikutnya sesuai urutan prioritas; ruang tanpa batas atas (kosong) berarti tak terbatas dan menampung seluruh sisa — cocok sebagai ruang penutup di prioritas terakhir.
+- **Cakupan: satu toggle untuk seluruh ruleset**, bukan campur persentase dan lanjutan dalam satu ruleset yang sama (lebih sederhana dipahami dan diimplementasikan).
+
+**Sistem per peran, rancangan (disetujui pemilik 2026-09-23, sudah diimplementasikan; layar S32):**
+- **Modul opsional per ruang** (seperti modul Memberi), bukan tipe ruang baru; satu ruang satu peran. Memasang dan mengubah butuh Pro; melepas selalu boleh, dan turun paket hanya membuat peringatan dan pengingat diam.
+- **Trader:** batas risiko per trade = modal (diisi pengguna) x persen risiko. Pengeluaran di ruang itu yang melewatinya memunculkan peringatan lembut saat mencatat; tidak pernah memblokir.
+- **Investor:** jadwal DCA bulanan (nominal, tanggal 1 sampai 28, akun, kategori). Dicatat sebagai pengeluaran di ruang itu (sesuai keputusan investasi = pengeluaran, [konsep.md](konsep.md)), bukan transfer; pengingat sekali per bulan.
+- Sengaja tanpa harga aset, portofolio, atau jurnal trade lengkap ("Sengaja tidak masuk" di konsep.md).
 
 Alur saat pengguna menyentuh fitur terkunci ada di [ui-flow.md](ui-flow.md) (flow F6 dan layar S21).

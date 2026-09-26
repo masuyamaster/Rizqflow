@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Sama dengan token rf-background di docs/design/tokens.css (mode terang). -->
+    <color name="rf_background">#FAF9F7</color>
+    <!-- Warna utama (sage) untuk latar ikon aplikasi. -->
+    <color name="ic_launcher_background">#4D6359</color>
+</resources>
